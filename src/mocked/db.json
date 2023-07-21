@@ -1,0 +1,21 @@
+{
+  "bankAccounts": [
+    {
+      "id": 1,
+      "bankName": "AIB",
+      "accountName": "Current",
+      "balance": 9369.13,
+      "active": true,
+      "isSelected": true
+    },
+    {
+      "id": 1,
+      "bankName": "AIB",
+      "accountName": "Family joint",
+      "balance": 25369.13,
+      "active": true,
+      "isSelected": true
+    }
+  ],
+  "transactions": []
+}

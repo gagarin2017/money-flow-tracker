@@ -16,7 +16,7 @@ function App() {
       <Layout style={{ height: "100vh" }}>
         <Header style={headerStyle}>Money Flow Tracker</Header>
         <Layout hasSider>
-          <Sider style={siderStyle}>
+          <Sider style={siderStyle} width={200}>
             <BankAccountList />
           </Sider>
           <Content style={contentStyle}>Content</Content>

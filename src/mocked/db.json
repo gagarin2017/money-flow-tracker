@@ -6,15 +6,15 @@
       "accountName": "Current",
       "balance": 9369.13,
       "active": true,
-      "isSelected": true
+      "logo": "img/AIB.png"
     },
     {
-      "id": 1,
+      "id": 2,
       "bankName": "AIB",
       "accountName": "Family joint",
       "balance": 25369.13,
       "active": true,
-      "isSelected": true
+      "logo": "img/AIB.png"
     }
   ],
   "transactions": []

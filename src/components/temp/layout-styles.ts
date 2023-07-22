@@ -16,8 +16,8 @@ export const contentStyle: React.CSSProperties = {
 };
 
 export const siderStyle: React.CSSProperties = {
-  textAlign: "center",
-  lineHeight: "120px",
+  textAlign: "left",
+  // lineHeight: "120px",
   color: "#fff",
   backgroundColor: "#3ba0e9",
 };

@@ -13,4 +13,7 @@ export const store = configureStore({
 
 setupListeners(store.dispatch);
 
-export { useFetchBankAccountsQuery } from "./apis/bank-accounts-api";
+export {
+  useFetchBankAccountsQuery,
+  useUpdateBankAccountMutation,
+} from "./apis/bank-accounts-api";

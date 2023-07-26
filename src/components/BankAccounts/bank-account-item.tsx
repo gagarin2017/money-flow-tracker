@@ -1,51 +1,14 @@
 import BankAccount from "../../model/bank-account";
-import type { MenuProps } from "antd";
-import { Avatar, Card, Skeleton, Switch, Button, Dropdown } from "antd";
+import { Avatar, Card, Tooltip, Typography } from "antd";
+import { useState } from "react";
+import { AiOutlineSetting } from "react-icons/ai";
+import EditBankAccountForm from "./form/edit-bank-account-form";
+import { bankLogoMap } from "../../UI/logo-map";
 
 const { Meta } = Card;
 
-// import { getAmountString } from "../../Util/common";
-
+const MAX_ACC_LENGTH = 15;
 export const DEFAULT_BALANCE_AMT = 100.01;
-
-const items: MenuProps["items"] = [
-  {
-    key: "1",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.antgroup.com"
-      >
-        1st menu item
-      </a>
-    ),
-  },
-  {
-    key: "2",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.aliyun.com"
-      >
-        2nd menu item
-      </a>
-    ),
-  },
-  {
-    key: "3",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.luohanacademy.com"
-      >
-        3rd menu item
-      </a>
-    ),
-  },
-];
 
 interface BankAccountItemProps {
   bankAccount: BankAccount;
@@ -58,6 +21,9 @@ const BankAccountItem = ({
   isSelected,
   handleSelectBankAccount,
 }: BankAccountItemProps) => {
+  const [editBankAccountFormVisible, setEditBankAccountFormVisible] =
+    useState(false);
+
   // Format the number as a currency
   const formattedCurrency = new Intl.NumberFormat("en-IE", {
     style: "currency",
@@ -66,43 +32,62 @@ const BankAccountItem = ({
 
   const balanceTxt = <p style={{ color: "green" }}>{formattedCurrency}</p>;
 
+  const handleBankAccountEditClick = () => {
+    setEditBankAccountFormVisible(true);
+  };
+
+  const handleFormClose = () => {
+    setEditBankAccountFormVisible(false);
+  };
+
+  const bankLogo: any = bankLogoMap.get(bankAccount.bankLogo);
+
+  const accName = bankAccount.accountName;
+
+  let accountNameIsLong = accName.length > MAX_ACC_LENGTH;
+  const accountNameToShow = accountNameIsLong
+    ? accName.substring(0, MAX_ACC_LENGTH - 3) + "..."
+    : accName;
+
   return (
-    <Card
-      style={{
-        height: 90,
-        width: 200,
-        marginBottom: 5,
-        backgroundColor: `${isSelected ? "lightBlue" : ""}`,
-      }}
-      loading={false}
-      onClick={() => handleSelectBankAccount(bankAccount.id)}
-      bodyStyle={{ padding: 5, paddingTop: 10 }}
-    >
-      <Meta
-        avatar={
-          <Avatar
-            shape="square"
-            // src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=1",
-            src={bankAccount.logo}
-          />
-        }
-        title={
-          <div>
-            {bankAccount.accountName}
-            <Dropdown
-              menu={{ items }}
-              placement="topLeft"
-              arrow={{ pointAtCenter: true }}
-            >
-              <Button style={{ float: "right" }} size="small" type="text">
-                {"\u22EE"}
-              </Button>
-            </Dropdown>
-          </div>
-        }
-        description={balanceTxt}
+    <div>
+      <Card
+        style={{
+          height: 73,
+          width: 200,
+          marginBottom: 5,
+          backgroundColor: `${isSelected ? "lightBlue" : ""}`,
+        }}
+        loading={false}
+        onClick={() => handleSelectBankAccount(bankAccount.id)}
+        bodyStyle={{ padding: 5, paddingTop: 10 }}
+      >
+        <Meta
+          avatar={
+            <Tooltip title={bankLogo.desc}>
+              <Avatar shape="square" src={bankLogo.img} />
+            </Tooltip>
+          }
+          title={
+            <div>
+              <Tooltip title={accountNameIsLong && bankAccount.accountName}>
+                {accountNameToShow}
+              </Tooltip>
+              <AiOutlineSetting
+                onClick={() => handleBankAccountEditClick()}
+                style={{ float: "right", color: "lightGrey" }}
+              />
+            </div>
+          }
+          description={balanceTxt}
+        />
+      </Card>
+      <EditBankAccountForm
+        bankAccount={bankAccount}
+        isVisible={editBankAccountFormVisible}
+        handleFormClose={handleFormClose}
       />
-    </Card>
+    </div>
   );
 };
 

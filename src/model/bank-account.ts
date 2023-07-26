@@ -5,5 +5,5 @@ export default interface BankAccount {
   balance: number;
   active: boolean;
   isSelected: boolean;
-  logo: string;
+  bankLogo: string;
 }

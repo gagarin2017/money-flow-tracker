@@ -15,7 +15,7 @@ const bankAccountsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:3005",
     fetchFn: async (...args) => {
-      await pause(1000);
+      // await pause(1000);
       return fetch(...args);
     },
   }),
@@ -32,16 +32,9 @@ const bankAccountsApi = createApi({
         },
         query: (bankAccount) => {
           return {
-            url: "/bankAccounts",
-            method: "POST",
-            body: {
-              bankName: bankAccount.bankName,
-              accountName: bankAccount.accountName,
-              balance: bankAccount.balance,
-              active: bankAccount.active,
-              isSelected: bankAccount.isSelected,
-              logo: bankAccount.logo,
-            },
+            url: `/bankAccounts/${bankAccount.id}`,
+            method: "PATCH",
+            body: bankAccount,
           };
         },
       }),
@@ -59,5 +52,6 @@ const bankAccountsApi = createApi({
   },
 });
 
-export const { useFetchBankAccountsQuery } = bankAccountsApi;
+export const { useFetchBankAccountsQuery, useUpdateBankAccountMutation } =
+  bankAccountsApi;
 export { bankAccountsApi };

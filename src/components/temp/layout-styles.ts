@@ -5,6 +5,8 @@ export const headerStyle: React.CSSProperties = {
   paddingInline: 50,
   lineHeight: "64px",
   backgroundColor: "#7dbcea",
+  fontWeight: "bold",
+  fontSize: "15pt",
 };
 
 export const contentStyle: React.CSSProperties = {

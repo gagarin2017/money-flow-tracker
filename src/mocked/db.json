@@ -1,20 +1,60 @@
 {
   "bankAccounts": [
     {
-      "id": 1,
-      "bankName": "AIB",
-      "accountName": "Current",
+      "bankName": "Bank of Ireland",
+      "accountName": "Mortgage",
       "balance": 9369.13,
       "active": true,
-      "logo": "img/AIB.png"
+      "bankLogo": "boiLogo",
+      "id": 1
     },
     {
       "id": 2,
       "bankName": "AIB",
+      "accountName": "Current",
+      "balance": 9369.13,
+      "active": true,
+      "bankLogo": "aibLogo"
+    },
+    {
+      "id": 3,
+      "bankName": "EBS",
+      "accountName": "Savings",
+      "balance": 9369.13,
+      "active": true,
+      "bankLogo": "ebsLogo"
+    },
+    {
+      "id": 4,
+      "bankName": "AIB",
       "accountName": "Family joint",
       "balance": 25369.13,
       "active": true,
-      "logo": "img/AIB.png"
+      "bankLogo": "aibLogo"
+    },
+    {
+      "id": 5,
+      "bankName": "AIB",
+      "accountName": "Visa",
+      "balance": 25369.13,
+      "active": true,
+      "bankLogo": "aibLogo"
+    },
+    {
+      "bankName": "KBC",
+      "accountName": "Master card",
+      "balance": 9369.13,
+      "active": true,
+      "bankLogo": "kbcLogo",
+      "id": 6
+    },
+    {
+      "bankName": "Bank of Ireland",
+      "accountName": "Money market account",
+      "balance": 25369.13,
+      "active": true,
+      "bankLogo": "aibLogo",
+      "id": 7
     }
   ],
   "transactions": []

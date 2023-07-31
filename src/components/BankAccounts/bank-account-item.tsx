@@ -1,5 +1,5 @@
 import BankAccount from "../../model/bank-account";
-import { Avatar, Card, Tooltip, Typography } from "antd";
+import { Avatar, Card, Tooltip } from "antd";
 import { useState } from "react";
 import { AiOutlineSetting } from "react-icons/ai";
 import EditBankAccountForm from "./form/edit-bank-account-form";

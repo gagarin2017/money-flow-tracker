@@ -41,6 +41,7 @@ function LogoSelect({
             };
           })}
           onChange={handleLogoChange}
+          style={{ minWidth: 140 }}
         />
       </Space>
     </>

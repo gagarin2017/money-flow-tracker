@@ -3,7 +3,6 @@ import { ErrorMessage, Form, Formik, FormikHelpers, Field } from "formik";
 import FormsModal from "../../../UI/forms-modal";
 import BankAccount from "../../../model/bank-account";
 import LogoSelect from "./logo-select";
-import { useUpdateBankAccountMutation } from "../../../store";
 
 interface EditBankAccountFormProps {
   bankAccount: BankAccount;
@@ -16,8 +15,6 @@ function EditBankAccountForm({
   isVisible,
   handleFormClose,
 }: EditBankAccountFormProps) {
-  const [addBankAccount, { isLoading }] = useUpdateBankAccountMutation();
-
   const onSubmit = async (
     formValues: BankAccount,
     { resetForm }: FormikHelpers<BankAccount>
@@ -26,7 +23,7 @@ function EditBankAccountForm({
 
     bankAccountToSave.accountName = formValues.accountName;
     bankAccountToSave.bankLogo = formValues.bankLogo;
-    addBankAccount(bankAccountToSave);
+    // addBankAccount(bankAccountToSave);
 
     resetForm();
     handleFormClose();

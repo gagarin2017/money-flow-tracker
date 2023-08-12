@@ -1,13 +1,13 @@
-import BankAccount from "../../model/bank-account";
-import { Avatar, Card, Tooltip } from "antd";
+import { Avatar, Button, Card, Tooltip } from "antd";
 import { useState } from "react";
-import { AiOutlineSetting } from "react-icons/ai";
-import EditBankAccountForm from "./form/edit-bank-account-form";
 import { bankLogoMap } from "../../UI/logo-map";
+import BankAccount from "../../model/bank-account";
+import EditBankAccountForm from "./form/edit-bank-account-form";
+import { getAmountAsFormatedString } from "../../utils/currency-helper";
+import { shortenGivenTextWithEllipsis } from "../../utils/display-text-helper";
 
 const { Meta } = Card;
 
-const MAX_ACC_LENGTH = 15;
 export const DEFAULT_BALANCE_AMT = 100.01;
 
 interface BankAccountItemProps {
@@ -24,14 +24,6 @@ const BankAccountItem = ({
   const [editBankAccountFormVisible, setEditBankAccountFormVisible] =
     useState(false);
 
-  // Format the number as a currency
-  const formattedCurrency = new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(bankAccount.balance);
-
-  const balanceTxt = <p style={{ color: "green" }}>{formattedCurrency}</p>;
-
   const handleBankAccountEditClick = () => {
     setEditBankAccountFormVisible(true);
   };
@@ -42,12 +34,15 @@ const BankAccountItem = ({
 
   const bankLogo: any = bankLogoMap.get(bankAccount.bankLogo);
 
-  const accName = bankAccount.accountName;
+  const { shortenedText, textIsTooLong } = shortenGivenTextWithEllipsis(
+    bankAccount.accountName
+  );
 
-  let accountNameIsLong = accName.length > MAX_ACC_LENGTH;
-  const accountNameToShow = accountNameIsLong
-    ? accName.substring(0, MAX_ACC_LENGTH - 3) + "..."
-    : accName;
+  const balanceTxt = (
+    <p style={{ color: "green" }}>
+      {getAmountAsFormatedString(bankAccount.balance)}
+    </p>
+  );
 
   return (
     <div>
@@ -58,6 +53,7 @@ const BankAccountItem = ({
           marginBottom: 5,
           backgroundColor: `${isSelected ? "lightBlue" : ""}`,
         }}
+        data-testid="bank-account"
         loading={false}
         onClick={() => handleSelectBankAccount(bankAccount.id)}
         bodyStyle={{ padding: 5, paddingTop: 10 }}
@@ -69,15 +65,19 @@ const BankAccountItem = ({
             </Tooltip>
           }
           title={
-            <div>
-              <Tooltip title={accountNameIsLong && bankAccount.accountName}>
-                {accountNameToShow}
+            <>
+              <Tooltip title={textIsTooLong && bankAccount.accountName}>
+                {shortenedText}
               </Tooltip>
-              <AiOutlineSetting
+              <Button
+                type="text"
+                size="small"
                 onClick={() => handleBankAccountEditClick()}
-                style={{ float: "right", color: "lightGrey" }}
-              />
-            </div>
+                style={{ float: "right", color: "grey" }}
+              >
+                {"\u22EE"}
+              </Button>
+            </>
           }
           description={balanceTxt}
         />

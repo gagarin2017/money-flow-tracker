@@ -1,16 +1,13 @@
 import {
-  headerStyle,
-  siderStyle,
   contentStyle,
   footerStyle,
+  headerStyle,
+  siderStyle,
 } from "./components/temp/layout-styles";
 
+import { Layout } from "antd";
 import BankAccountList from "./components/BankAccounts/bank-account-list";
-import { Button, Layout } from "antd";
 import { Provider } from "./context/bank-accounts-context";
-import { useContext, useEffect } from "react";
-
-import BankAccountsContext from "./context/bank-accounts-context";
 
 const { Header, Footer, Sider, Content } = Layout;
 

@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 import BankAccount from "../model/bank-account";
 
 // Define the type for the UserContext data
-interface BankAccountsData {
+export interface BankAccountsData {
   bankAccounts: BankAccount[];
   isLoading: boolean;
   fetchBankAccounts: () => void;

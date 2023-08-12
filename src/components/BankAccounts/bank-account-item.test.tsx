@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import user from "@testing-library/user-event";
 import BankAccount from "../../model/bank-account";
@@ -38,8 +38,10 @@ const renderComponent = (isSelected: boolean) => {
   return { bankAccount };
 };
 
-test("bank account widget displays bank logo, account name, balance and edit button", async () => {
+test("that bank account widget displays bank logo, account name, balance and edit button", async () => {
   const { bankAccount } = renderComponent(false);
+
+  const bankAccountCard = screen.getByTestId("bank-account");
 
   const bankLogo = screen.getByRole("img");
 
@@ -51,6 +53,7 @@ test("bank account widget displays bank logo, account name, balance and edit but
     getAmountAsFormatedString(bankAccount.balance)
   );
 
+  expect(bankAccountCard).toBeInTheDocument();
   expect(bankLogo).toBeInTheDocument();
   expect(bankLogo).toHaveAttribute("src", "kbc-logo.png");
   expect(accountName).toBeInTheDocument();

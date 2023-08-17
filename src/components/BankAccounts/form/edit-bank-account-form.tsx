@@ -3,6 +3,8 @@ import { ErrorMessage, Form, Formik, FormikHelpers, Field } from "formik";
 import FormsModal from "../../../UI/forms-modal";
 import BankAccount from "../../../model/bank-account";
 import LogoSelect from "./logo-select";
+import { getAmountAsFormatedString } from "../../../utils/currency-helper";
+import { useBankAccountsContext } from "../../../context/bank-accounts-context";
 
 interface EditBankAccountFormProps {
   bankAccount: BankAccount;
@@ -15,6 +17,8 @@ function EditBankAccountForm({
   isVisible,
   handleFormClose,
 }: EditBankAccountFormProps) {
+  const { editBankAccountById } = useBankAccountsContext();
+
   const onSubmit = async (
     formValues: BankAccount,
     { resetForm }: FormikHelpers<BankAccount>
@@ -23,8 +27,7 @@ function EditBankAccountForm({
 
     bankAccountToSave.accountName = formValues.accountName;
     bankAccountToSave.bankLogo = formValues.bankLogo;
-    // addBankAccount(bankAccountToSave);
-
+    editBankAccountById(bankAccountToSave);
     resetForm();
     handleFormClose();
   };
@@ -56,11 +59,7 @@ function EditBankAccountForm({
                 <Col span={12}>
                   <Space direction="vertical">
                     <label htmlFor="accountName">Account name</label>
-                    <Field
-                      type="accountName"
-                      name="accountName"
-                      style={{ height: 25 }}
-                    />
+                    <Field name="accountName" style={{ height: 25 }} />
                     <ErrorMessage name="accountName" component="div" />
                   </Space>
                 </Col>
@@ -78,7 +77,11 @@ function EditBankAccountForm({
               </Row>
               <Row>
                 <Col span={12}>
-                  <h4>Account Balance: {bankAccount.balance}</h4>
+                  <h4>
+                    {`Account Balance: ${getAmountAsFormatedString(
+                      bankAccount.balance
+                    )}`}
+                  </h4>
                 </Col>
               </Row>
             </Form>

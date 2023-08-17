@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useBankAccountsContext } from "../../context/bank-accounts-context";
 import BankAccount from "../../model/bank-account";
 import BankAccountItem from "./bank-account-item";
+import { Empty } from "antd";
 
 const BankAccountList = () => {
   const { bankAccounts, fetchBankAccounts } = useBankAccountsContext();
@@ -22,7 +23,7 @@ const BankAccountList = () => {
 
   let content;
 
-  if (bankAccounts) {
+  if (bankAccounts && bankAccounts.length > 0) {
     const sortedAccountsByBankName = [...bankAccounts].sort((a, b) =>
       a.bankName > b.bankName ? 1 : -1
     );
@@ -36,6 +37,13 @@ const BankAccountList = () => {
         />
       );
     });
+  } else {
+    content = (
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={<span style={{ color: "black" }}>No accounts yet.</span>}
+      />
+    );
   }
 
   return (

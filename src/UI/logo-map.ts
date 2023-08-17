@@ -5,7 +5,7 @@ import kbcLogo from "../img/kbc-logo.png";
 
 export const bankLogos = ["aibLogo", "boiLogo"];
 
-export const bankLogoMap = new Map<string, any>([
+export const bankLogoMap = new Map<string, { img: string; desc: string }>([
   [
     "aibLogo",
     {

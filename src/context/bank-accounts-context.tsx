@@ -35,18 +35,18 @@ function Provider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const editBankAccountById = async (bankAccount: BankAccount) => {
-    console.log("saving bank account", bankAccount);
+  const editBankAccountById = async (account: BankAccount) => {
+    console.log("saving bank account", account);
 
     try {
       const response = await fetch(
-        `http://localhost:3005/bankAccounts/${bankAccount.id}`,
+        `http://localhost:3005/bankAccounts/${account.id}`,
         {
           method: "PUT", // Use the appropriate HTTP method (PUT, POST, etc.)
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(bankAccount),
+          body: JSON.stringify(account),
         }
       );
 
@@ -57,11 +57,11 @@ function Provider({ children }: { children: React.ReactNode }) {
       console.log("Response: ", response);
 
       const updatedBankAccountsList: BankAccount[] = bankAccounts.map(
-        (book) => {
-          if (book.id === bankAccount.id) {
-            return { ...bankAccounts, ...bankAccount };
+        (bankAccount) => {
+          if (bankAccount.id === account.id) {
+            return { ...bankAccount, ...account };
           }
-          return book;
+          return bankAccount;
         }
       );
 

@@ -28,7 +28,7 @@ function LogoSelect({
       <Space content="horisontal">
         <Image
           width={30}
-          src={bankLogoMap.get(bankLogo)?.img}
+          src={bankLogoMap.get(bankLogo)?.logo}
           alt={bankLogo}
           preview={false}
         />
@@ -37,7 +37,7 @@ function LogoSelect({
           options={Array.from(bankLogoMap.keys()).map((key) => {
             return {
               value: key,
-              label: bankLogoMap.get(key)?.desc,
+              label: bankLogoMap.get(key)?.name,
             };
           })}
           onChange={handleLogoChange}

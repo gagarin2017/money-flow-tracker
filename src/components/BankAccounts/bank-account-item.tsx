@@ -32,7 +32,7 @@ const BankAccountItem = ({
     setEditBankAccountFormVisible(false);
   };
 
-  const bankLogo: any = bankLogoMap.get(bankAccount.bankLogo);
+  const account: any = bankLogoMap.get(bankAccount.bankLogo);
 
   const { shortenedText, textIsTooLong } = shortenGivenTextWithEllipsis(
     bankAccount.accountName
@@ -60,8 +60,8 @@ const BankAccountItem = ({
       >
         <Meta
           avatar={
-            <Tooltip title={bankLogo.desc}>
-              <Avatar shape="square" src={bankLogo.img} />
+            <Tooltip title={account.name}>
+              <Avatar shape="square" src={account.logo} />
             </Tooltip>
           }
           title={
@@ -82,11 +82,13 @@ const BankAccountItem = ({
           description={balanceTxt}
         />
       </Card>
-      <EditBankAccountForm
-        bankAccount={bankAccount}
-        isVisible={editBankAccountFormVisible}
-        handleFormClose={handleFormClose}
-      />
+      {editBankAccountFormVisible && (
+        <EditBankAccountForm
+          bankAccount={bankAccount}
+          isVisible={editBankAccountFormVisible}
+          handleFormClose={handleFormClose}
+        />
+      )}
     </div>
   );
 };

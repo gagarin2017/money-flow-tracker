@@ -5,6 +5,7 @@ import BankAccount from "../../../model/bank-account";
 import LogoSelect from "./logo-select";
 import { getAmountAsFormatedString } from "../../../utils/currency-helper";
 import { useBankAccountsContext } from "../../../context/bank-accounts-context";
+import { bankLogoMap } from "../../../UI/logo-map";
 
 interface EditBankAccountFormProps {
   bankAccount: BankAccount;
@@ -27,6 +28,8 @@ function EditBankAccountForm({
 
     bankAccountToSave.accountName = formValues.accountName;
     bankAccountToSave.bankLogo = formValues.bankLogo;
+    bankAccountToSave.bankName =
+      bankLogoMap.get(formValues.bankLogo)?.name || "Bank";
     editBankAccountById(bankAccountToSave);
     resetForm();
     handleFormClose();

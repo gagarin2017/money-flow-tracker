@@ -71,7 +71,7 @@ it("should should have the correct title, account name input field, bank logo se
 
   expect(bankLogo).toHaveAttribute(
     "src",
-    bankLogoMap.get(bankAccount.bankLogo)?.img
+    bankLogoMap.get(bankAccount.bankLogo)?.logo
   );
 
   const bankLogoDropdown: HTMLElement = screen.getByRole("combobox");
@@ -93,7 +93,7 @@ it("should change the logo image as per bank account selected in the dropdown", 
 
   expect(bankLogo).toHaveAttribute(
     "src",
-    bankLogoMap.get(bankAccount.bankLogo)?.img
+    bankLogoMap.get(bankAccount.bankLogo)?.logo
   );
 
   const bankLogoDropdown: HTMLElement = screen.getByRole("combobox");
@@ -103,15 +103,15 @@ it("should change the logo image as per bank account selected in the dropdown", 
   fireEvent.mouseDown(bankLogoDropdown);
 
   if (ebsBankLogo) {
-    fireEvent.click(screen.getByText(ebsBankLogo.desc));
+    fireEvent.click(screen.getByText(ebsBankLogo.name));
   }
 
   expect(bankLogo).not.toHaveAttribute(
     "src",
-    bankLogoMap.get(bankAccount.bankLogo)?.img
+    bankLogoMap.get(bankAccount.bankLogo)?.logo
   );
 
-  expect(bankLogo).toHaveAttribute("src", ebsBankLogo?.img);
+  expect(bankLogo).toHaveAttribute("src", ebsBankLogo?.logo);
 });
 
 it("should call handleClose when Ok button is clicked", async () => {
@@ -145,7 +145,7 @@ it("should try to save the updated account when form is submitted", async () => 
 
   const expectedAccountToBeSaved: BankAccount = {
     id: 1,
-    bankName: "Test Bank",
+    bankName: "KBC",
     accountName: newAccountName,
     bankLogo: "kbcLogo",
     isSelected: true,

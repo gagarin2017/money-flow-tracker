@@ -5,15 +5,16 @@ import BankAccountItem from "./bank-account-item";
 import { Empty } from "antd";
 
 const BankAccountList = () => {
-  const { bankAccounts, fetchBankAccounts } = useBankAccountsContext();
+  const {
+    bankAccounts,
+    fetchBankAccounts,
+    selectedBankAccountId,
+    setSelectedBankAccountId,
+  } = useBankAccountsContext();
 
   useEffect(() => {
     fetchBankAccounts();
   }, []);
-
-  const [selectedBankAccountId, setSelectedBankAccountId] = useState<
-    number | undefined
-  >(undefined);
 
   const handleSelectBankAccount = (id: number) => {
     // update state
@@ -24,10 +25,7 @@ const BankAccountList = () => {
   let content;
 
   if (bankAccounts && bankAccounts.length > 0) {
-    const sortedAccountsByBankName = [...bankAccounts].sort((a, b) =>
-      a.bankName > b.bankName ? 1 : -1
-    );
-    content = sortedAccountsByBankName?.map((bankAccount: BankAccount) => {
+    content = bankAccounts.map((bankAccount: BankAccount) => {
       return (
         <BankAccountItem
           key={bankAccount.id}

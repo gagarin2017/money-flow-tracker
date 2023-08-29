@@ -4,21 +4,27 @@ import BankAccount from "../model/bank-account";
 // Define the type for the UserContext data
 export interface BankAccountsData {
   bankAccounts: BankAccount[];
+  selectedBankAccountId: number;
   isLoading: boolean;
   fetchBankAccounts: () => void;
   editBankAccountById: (bankAccount: BankAccount) => void;
+  setSelectedBankAccountId: (id: number) => void;
 }
 
 const BankAccountsContext = createContext<BankAccountsData>({
   bankAccounts: [],
+  selectedBankAccountId: -1,
   isLoading: true,
   fetchBankAccounts: () => {},
   editBankAccountById: (bankAccount: BankAccount) => {},
+  setSelectedBankAccountId: (id: number) => {},
 });
 
 function Provider({ children }: { children: React.ReactNode }) {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
+  const [selectedBankAccountId, setSelectedBankAccountId] =
+    useState<number>(-1);
 
   const fetchBankAccounts = async () => {
     try {
@@ -27,7 +33,14 @@ function Provider({ children }: { children: React.ReactNode }) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setBankAccounts(data);
+
+      if (data.length > 0) {
+        const sortedAccountsByBankName = [...data].sort((a, b) =>
+          a.bankName > b.bankName ? 1 : -1
+        );
+        setBankAccounts(sortedAccountsByBankName);
+        setSelectedBankAccountId(sortedAccountsByBankName[0].id);
+      }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -76,9 +89,11 @@ function Provider({ children }: { children: React.ReactNode }) {
 
   const valueToShare = {
     bankAccounts,
+    selectedBankAccountId,
     isLoading,
     fetchBankAccounts,
     editBankAccountById,
+    setSelectedBankAccountId,
   } as BankAccountsData;
 
   return (

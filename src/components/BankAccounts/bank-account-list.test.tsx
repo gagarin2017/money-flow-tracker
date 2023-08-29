@@ -53,19 +53,24 @@ const dummyBankAccounts: BankAccount[] = [
 
 const mockedFetchAccountsFunction = jest.fn();
 const mockedEditAccountFunction = jest.fn();
+const mockedSetSelectedBankAccountIdFunction = jest.fn();
 
 const contextValueWithAccounts = getValueToShare(
   dummyBankAccounts,
+  -1,
   false,
   mockedFetchAccountsFunction,
-  mockedEditAccountFunction
+  mockedEditAccountFunction,
+  mockedSetSelectedBankAccountIdFunction
 );
 
 const contextValueWithoutAccounts = getValueToShare(
   [],
+  -1,
   false,
   mockedFetchAccountsFunction,
-  mockedEditAccountFunction
+  mockedEditAccountFunction,
+  mockedSetSelectedBankAccountIdFunction
 );
 
 it("should display card per each bank account passed to the list sorted by bank name", async () => {

@@ -10,6 +10,7 @@ export const headerStyle: React.CSSProperties = {
 };
 
 export const contentStyle: React.CSSProperties = {
+  padding: 10,
   textAlign: "center",
   minHeight: 120,
   lineHeight: "120px",

@@ -18,15 +18,19 @@ export function setMatchMedia() {
 
 export const getValueToShare = (
   bankAccounts: BankAccount[],
+  selectedBankAccountId: number,
   isLoading: boolean,
   fetchBankAccounts: () => {},
-  editBankAccountById: (bankAccount: BankAccount) => {}
+  editBankAccountById: (bankAccount: BankAccount) => {},
+  setSelectedBankAccountId: (id: number) => {}
 ) => {
   return {
     bankAccounts,
+    selectedBankAccountId,
     isLoading,
     fetchBankAccounts,
     editBankAccountById,
+    setSelectedBankAccountId,
   } as BankAccountsData;
 };
 

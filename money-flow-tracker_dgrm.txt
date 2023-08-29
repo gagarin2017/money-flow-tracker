@@ -1,0 +1,20 @@
+title Money Flow Tracker
+
+actor #green:0.5 Actor
+Actor->App:
+App->Sider: render side section
+participantgroup #lightgreen **Billing Account Context Provider**
+Sider->Bank Account List:render bank Accounts
+Bank Account List->>Bank Account Item:reander bank account
+Bank Account List<<--Bank Account Item:bank account
+destroysilent Bank Account Item
+participant Bank Account Context #1da1f2
+Bank Account List->Bank Account Context: fetch accounts
+fontawesome f233 API
+Bank Account Context->>API: request
+Bank Account Context<<--API: response
+Bank Account List<<--Bank Account Context:list of accounts
+destroysilent Bank Account List
+end
+App->Content:render content
+Content->Content Tab List: render tabs

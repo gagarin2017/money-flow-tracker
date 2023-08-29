@@ -1,7 +1,7 @@
 {
   "bankAccounts": [
     {
-      "bankName": "Bank of Ireland",
+      "bankName": "Bank Of Ireland",
       "accountName": "Mortgage",
       "balance": 9369.13,
       "active": true,

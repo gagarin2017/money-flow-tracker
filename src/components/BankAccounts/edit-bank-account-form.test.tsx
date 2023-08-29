@@ -15,12 +15,15 @@ setMatchMedia();
 
 const mockedFetchAccountsFunction = jest.fn();
 const mockedEditAccountFunction = jest.fn();
+const mockedSetSelectedBankAccountIdFunction = jest.fn();
 
 const contextValueWithoutAccounts = getValueToShare(
   [],
+  -1,
   false,
   mockedFetchAccountsFunction,
-  mockedEditAccountFunction
+  mockedEditAccountFunction,
+  mockedSetSelectedBankAccountIdFunction
 );
 
 const mockedHandleFormClose = jest.fn();

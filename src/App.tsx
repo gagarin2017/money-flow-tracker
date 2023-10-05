@@ -7,7 +7,8 @@ import {
 
 import { Layout } from "antd";
 import BankAccountList from "./components/BankAccounts/bank-account-list";
-import { Provider } from "./context/bank-accounts-context";
+import { BankAccountsProvider } from "./context/bank-accounts-context";
+import { TransactionsProvider } from "./context/transactions-context";
 import ContentTabList from "./components/Tabs/content-tab-list";
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -18,14 +19,16 @@ function App() {
       <Layout style={{ height: "100vh" }}>
         <Header style={headerStyle}>Money Flow Tracker</Header>
         <Layout hasSider>
-          <Provider>
+          <BankAccountsProvider>
             <Sider style={siderStyle} width={200}>
               <BankAccountList />
             </Sider>
             <Content style={contentStyle}>
-              <ContentTabList />
+              <TransactionsProvider>
+                <ContentTabList />
+              </TransactionsProvider>
             </Content>
-          </Provider>
+          </BankAccountsProvider>
         </Layout>
         <Footer style={footerStyle}>Footer</Footer>
       </Layout>

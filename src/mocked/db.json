@@ -11,18 +11,18 @@
     {
       "id": 2,
       "bankName": "AIB",
-      "accountName": "Current",
+      "accountName": "Current acc name blah",
       "balance": 9369.13,
       "active": true,
       "bankLogo": "aibLogo"
     },
     {
       "id": 3,
-      "bankName": "EBS",
+      "bankName": "AIB",
       "accountName": "Savings",
       "balance": 9369.13,
       "active": true,
-      "bankLogo": "ebsLogo"
+      "bankLogo": "aibLogo"
     },
     {
       "id": 4,
@@ -49,7 +49,7 @@
       "id": 6
     },
     {
-      "bankName": "Bank of Ireland",
+      "bankName": "AIB",
       "accountName": "Money market account",
       "balance": 25369.13,
       "active": true,
@@ -57,5 +57,34 @@
       "id": 7
     }
   ],
-  "transactions": []
+  "transactions": [
+    {
+      "id": 100,
+      "date": "29/09/2023",
+      "account": 7,
+      "categoryName": "Groceries",
+      "category": {
+        "id": 1,
+        "name": "Groceries",
+        "parentCategory": null,
+        "subCategories": []
+      },
+      "amount": 7.32,
+      "runningBalance": 12.334
+    },
+    {
+      "id": 101,
+      "date": "01/09/2023",
+      "account": 3,
+      "categoryName": "Groceries",
+      "category": {
+        "id": 1,
+        "name": "Groceries",
+        "parentCategory": null,
+        "subCategories": []
+      },
+      "amount": 71.32,
+      "runningBalance": 12.334
+    }
+  ]
 }

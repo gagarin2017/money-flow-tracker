@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:server": "json-server --watch src/mocked/db.json --port 3005",
+    "start:server": "json-server --watch src/mocked/db.json --routes src/mocked/routes.json --port 3005",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom --watchAll=true",
     "coverage": "react-scripts test --env=jsdom --watchAll=false --coverage",

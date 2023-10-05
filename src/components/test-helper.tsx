@@ -2,6 +2,9 @@ import "@testing-library/jest-dom";
 import BankAccountsContext, {
   BankAccountsData,
 } from "../context/bank-accounts-context";
+import TransactionsContext, {
+  TransactionsData,
+} from "../context/transactions-context";
 import BankAccount from "../model/bank-account";
 
 export function setMatchMedia() {
@@ -16,7 +19,7 @@ export function setMatchMedia() {
     };
 }
 
-export const getValueToShare = (
+export const getBankAccCtxValueToShare = (
   bankAccounts: BankAccount[],
   selectedBankAccountId: number,
   isLoading: boolean,
@@ -34,7 +37,20 @@ export const getValueToShare = (
   } as BankAccountsData;
 };
 
-// Provide mock context value
+export const getTransactionsCtxValueToShare = (
+  bankAccounts: BankAccount[],
+  selectedBankAccountId: number,
+  isLoading: boolean,
+  fetchBankAccounts: () => {},
+  editBankAccountById: (bankAccount: BankAccount) => {},
+  setSelectedBankAccountId: (id: number) => {}
+) => {
+  return {
+    transactions,
+    fetchTransactionsByBankAccountId,
+  } as TransactionsData;
+};
+
 export const MockBankAccountProvider = ({
   children,
   valueToShare,
@@ -45,4 +61,16 @@ export const MockBankAccountProvider = ({
   <BankAccountsContext.Provider value={valueToShare}>
     {children}
   </BankAccountsContext.Provider>
+);
+
+export const MockTransactionsProvider = ({
+  children,
+  valueToShare,
+}: {
+  children: React.ReactNode;
+  valueToShare: TransactionsData;
+}) => (
+  <TransactionsContext.Provider value={valueToShare}>
+    {children}
+  </TransactionsContext.Provider>
 );

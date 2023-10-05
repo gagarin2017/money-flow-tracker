@@ -1,3 +1,4 @@
+import "../../../index.css";
 import { Col, Row, Space } from "antd";
 import { ErrorMessage, Form, Formik, FormikHelpers, Field } from "formik";
 import FormsModal from "../../../UI/forms-modal";
@@ -6,6 +7,7 @@ import LogoSelect from "./logo-select";
 import { getAmountAsFormatedString } from "../../../utils/currency-helper";
 import { useBankAccountsContext } from "../../../context/bank-accounts-context";
 import { bankLogoMap } from "../../../UI/logo-map";
+import * as Yup from "yup";
 
 interface EditBankAccountFormProps {
   bankAccount: BankAccount;
@@ -24,19 +26,39 @@ function EditBankAccountForm({
     formValues: BankAccount,
     { resetForm }: FormikHelpers<BankAccount>
   ) => {
-    const bankAccountToSave: BankAccount = { ...bankAccount };
+    console.log("form submit");
+    if (
+      bankAccount.accountName !== formValues.accountName ||
+      bankAccount.bankLogo !== formValues.bankLogo
+    ) {
+      const bankAccountToSave: BankAccount = { ...bankAccount };
 
-    bankAccountToSave.accountName = formValues.accountName;
-    bankAccountToSave.bankLogo = formValues.bankLogo;
-    bankAccountToSave.bankName =
-      bankLogoMap.get(formValues.bankLogo)?.name || "Bank";
-    editBankAccountById(bankAccountToSave);
+      bankAccountToSave.accountName = formValues.accountName;
+      bankAccountToSave.bankLogo = formValues.bankLogo;
+      bankAccountToSave.bankName =
+        bankLogoMap.get(formValues.bankLogo)?.name || "Bank";
+
+      console.log("bank acc to  be saved: ", bankAccountToSave);
+
+      editBankAccountById(bankAccountToSave);
+    }
     resetForm();
     handleFormClose();
   };
 
+  const editBankAccSchema = Yup.object().shape({
+    accountName: Yup.string()
+      .min(2, "it is too short")
+      .max(50, "it is too long")
+      .required("Required"),
+  });
+
   return (
-    <Formik initialValues={bankAccount} onSubmit={onSubmit}>
+    <Formik
+      initialValues={bankAccount}
+      onSubmit={onSubmit}
+      validationSchema={editBankAccSchema}
+    >
       {({
         handleSubmit,
         handleReset,
@@ -63,7 +85,11 @@ function EditBankAccountForm({
                   <Space direction="vertical">
                     <label htmlFor="accountName">Account name</label>
                     <Field name="accountName" style={{ height: 25 }} />
-                    <ErrorMessage name="accountName" component="div" />
+                    <ErrorMessage
+                      className="form-field-error"
+                      name="accountName"
+                      component="div"
+                    />
                   </Space>
                 </Col>
                 <Col span={12}>

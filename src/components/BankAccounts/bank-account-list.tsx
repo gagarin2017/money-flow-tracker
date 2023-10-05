@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { Empty } from "antd";
+import { useEffect } from "react";
+import TheSkeleton from "../../UI/the-skeleton";
 import { useBankAccountsContext } from "../../context/bank-accounts-context";
 import BankAccount from "../../model/bank-account";
 import BankAccountItem from "./bank-account-item";
-import { Empty } from "antd";
 
 const BankAccountList = () => {
   const {
@@ -10,6 +11,7 @@ const BankAccountList = () => {
     fetchBankAccounts,
     selectedBankAccountId,
     setSelectedBankAccountId,
+    isLoading,
   } = useBankAccountsContext();
 
   useEffect(() => {
@@ -25,7 +27,11 @@ const BankAccountList = () => {
   let content;
 
   if (bankAccounts && bankAccounts.length > 0) {
-    content = bankAccounts.map((bankAccount: BankAccount) => {
+    const sortedAccountsByBankName = [...bankAccounts].sort((a, b) =>
+      a.bankName > b.bankName ? 1 : -1
+    );
+    setSelectedBankAccountId(sortedAccountsByBankName[0].id);
+    content = sortedAccountsByBankName.map((bankAccount: BankAccount) => {
       return (
         <BankAccountItem
           key={bankAccount.id}
@@ -35,11 +41,14 @@ const BankAccountList = () => {
         />
       );
     });
+  } else if (isLoading) {
+    content = <TheSkeleton width={150} />;
   } else {
     content = (
       <Empty
+        style={{ fontWeight: "bolder" }}
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={<span style={{ color: "black" }}>No accounts yet.</span>}
+        description="No accounts exist yet."
       />
     );
   }

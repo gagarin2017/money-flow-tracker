@@ -7,7 +7,9 @@ import {
   getBankAccCtxValueToShare,
   setMatchMedia,
 } from "../test-helper";
-import BankAccountList from "./bank-account-list";
+import BankAccountList from "../BankAccounts/bank-account-list";
+import { Transaction } from "../../model/transaction";
+import { Category } from "../../model/category";
 
 setMatchMedia();
 
@@ -30,32 +32,58 @@ const dummyBankAccounts: BankAccount[] = [
     isSelected: false,
     bankLogo: "boiLogo",
   },
+];
+
+const dummyTransactions: Transaction[] = [
   {
-    id: 2,
-    bankName: "KBC Bank 2",
-    accountName: "Jane Smith",
-    balance: 2300,
-    active: true,
-    isSelected: false,
-    bankLogo: "kbcLogo",
+    id: 100,
+    date: new Date(),
+    bankAccount: 7,
+    categoryName: "Groceries",
+    category: {
+      id: 1,
+      name: "Groceries",
+      parentCategory: {} as Category,
+      subCategories: [],
+    },
+    amount: 7.32,
+    runningBalance: 12.334,
+    balance: 1255,
+    description: "",
+    descriptionName: "",
+    memo: "",
+    reconciled: true,
+    tag: "",
+    type: "",
   },
   {
-    id: 3,
-    bankName: "AIB Bank 3",
-    accountName: "Alice Johnson",
-    balance: 800,
-    active: false,
-    isSelected: false,
-    bankLogo: "aibLogo",
+    id: 101,
+    date: new Date(),
+    bankAccount: 3,
+    categoryName: "Groceries",
+    category: {
+      id: 1,
+      name: "Groceries",
+      parentCategory: {} as Category,
+      subCategories: [],
+    },
+    amount: 71.32,
+    runningBalance: 12.334,
+    balance: 1255,
+    description: "",
+    descriptionName: "",
+    memo: "",
+    reconciled: true,
+    tag: "",
+    type: "",
   },
-  // Add more dummy bank accounts here if needed
 ];
 
 const mockedFetchAccountsFunction = jest.fn();
 const mockedEditAccountFunction = jest.fn();
 const mockedSetSelectedBankAccountIdFunction = jest.fn();
 
-const contextValueWithAccounts = getBankAccCtxValueToShare(
+const contextValueWithBankAccounts = getBankAccCtxValueToShare(
   dummyBankAccounts,
   dummyBankAccounts[1].id,
   false,
@@ -64,18 +92,9 @@ const contextValueWithAccounts = getBankAccCtxValueToShare(
   mockedSetSelectedBankAccountIdFunction
 );
 
-const contextValueWithoutAccounts = getBankAccCtxValueToShare(
-  [],
-  -1,
-  false,
-  mockedFetchAccountsFunction,
-  mockedEditAccountFunction,
-  mockedSetSelectedBankAccountIdFunction
-);
-
 it("should display card per each bank account passed to the list sorted by bank name", async () => {
   render(
-    <MockBankAccountProvider valueToShare={contextValueWithAccounts}>
+    <MockBankAccountProvider valueToShare={contextValueWithBankAccounts}>
       <BankAccountList />
     </MockBankAccountProvider>
   );
@@ -94,40 +113,6 @@ it("should display card per each bank account passed to the list sorted by bank 
   expect(bankAccountLogo02).toHaveAttribute("src", "boi-logo-1.png");
   expect(bankAccountLogo03).toHaveAttribute("src", "boi-logo-1.png");
   expect(bankAccountLogo04).toHaveAttribute("src", "kbc-logo.png");
-
-  expect(mockedFetchAccountsFunction).toHaveBeenCalledTimes(1);
-});
-
-test("that selected bank account card has unique style", async () => {
-  render(
-    <MockBankAccountProvider valueToShare={contextValueWithAccounts}>
-      <BankAccountList />
-    </MockBankAccountProvider>
-  );
-
-  const bankAccountCards = screen.getAllByTestId("bank-account");
-
-  expect(bankAccountCards[0]).not.toHaveStyle("background-color: lightBlue");
-  expect(bankAccountCards[1]).toHaveStyle("background-color: lightBlue");
-  expect(bankAccountCards[2]).not.toHaveStyle("background-color: lightBlue");
-  expect(bankAccountCards[3]).not.toHaveStyle("background-color: lightBlue");
-
-  expect(mockedFetchAccountsFunction).toHaveBeenCalledTimes(1);
-});
-
-test("that Empty component is displayed when there are no bank accounts passed to the list", async () => {
-  render(
-    <MockBankAccountProvider valueToShare={contextValueWithoutAccounts}>
-      <BankAccountList />
-    </MockBankAccountProvider>
-  );
-
-  const bankAccountCards = screen.queryAllByTestId("bank-account");
-
-  const emptyData = screen.getByText("No accounts exist yet.");
-
-  expect(bankAccountCards).toHaveLength(0);
-  expect(emptyData).toBeInTheDocument();
 
   expect(mockedFetchAccountsFunction).toHaveBeenCalledTimes(1);
 });

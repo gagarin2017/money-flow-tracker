@@ -1,7 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import BankAccount from "../model/bank-account";
 
-// Define the type for the UserContext data
 export interface BankAccountsData {
   bankAccounts: BankAccount[];
   selectedBankAccountId: number;
@@ -20,7 +19,7 @@ const BankAccountsContext = createContext<BankAccountsData>({
   setSelectedBankAccountId: (id: number) => {},
 });
 
-function Provider({ children }: { children: React.ReactNode }) {
+function BankAccountsProvider({ children }: { children: React.ReactNode }) {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedBankAccountId, setSelectedBankAccountId] =
@@ -32,14 +31,20 @@ function Provider({ children }: { children: React.ReactNode }) {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+
+      // DEV ONLY! 1 second pause
+      // await pause(5000);
+
       const data = await response.json();
 
       if (data.length > 0) {
-        const sortedAccountsByBankName = [...data].sort((a, b) =>
-          a.bankName > b.bankName ? 1 : -1
-        );
-        setBankAccounts(sortedAccountsByBankName);
-        setSelectedBankAccountId(sortedAccountsByBankName[0].id);
+        setBankAccounts(data);
+
+        // const sortedAccountsByBankName = [...data].sort((a, b) =>
+        //   a.bankName > b.bankName ? 1 : -1
+        // );
+        // setBankAccounts(sortedAccountsByBankName);
+        // setSelectedBankAccountId(sortedAccountsByBankName[0].id);
       }
       setLoading(false);
     } catch (error) {
@@ -110,4 +115,11 @@ export function useBankAccountsContext() {
 
 export default BankAccountsContext;
 
-export { Provider };
+export { BankAccountsProvider };
+
+// DEV ONLY!
+const pause = (duration: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration);
+  });
+};

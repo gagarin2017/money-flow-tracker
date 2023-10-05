@@ -6,7 +6,7 @@ import BankAccount from "../../model/bank-account";
 import { getAmountAsFormatedString } from "../../utils/currency-helper";
 import {
   MockBankAccountProvider,
-  getValueToShare,
+  getBankAccCtxValueToShare,
   setMatchMedia,
 } from "../test-helper";
 import EditBankAccountForm from "./form/edit-bank-account-form";
@@ -17,7 +17,7 @@ const mockedFetchAccountsFunction = jest.fn();
 const mockedEditAccountFunction = jest.fn();
 const mockedSetSelectedBankAccountIdFunction = jest.fn();
 
-const contextValueWithoutAccounts = getValueToShare(
+const contextValueWithoutAccounts = getBankAccCtxValueToShare(
   [],
   -1,
   false,

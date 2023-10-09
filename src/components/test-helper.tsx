@@ -24,7 +24,7 @@ export const getBankAccCtxValueToShare = (
   selectedBankAccountId: number,
   isLoading: boolean,
   fetchBankAccounts: () => {},
-  editBankAccountById: (bankAccount: BankAccount) => {},
+  editBankAccount: (bankAccount: BankAccount) => {},
   setSelectedBankAccountId: (id: number) => {}
 ) => {
   return {
@@ -32,23 +32,9 @@ export const getBankAccCtxValueToShare = (
     selectedBankAccountId,
     isLoading,
     fetchBankAccounts,
-    editBankAccountById,
+    editBankAccount,
     setSelectedBankAccountId,
   } as BankAccountsData;
-};
-
-export const getTransactionsCtxValueToShare = (
-  bankAccounts: BankAccount[],
-  selectedBankAccountId: number,
-  isLoading: boolean,
-  fetchBankAccounts: () => {},
-  editBankAccountById: (bankAccount: BankAccount) => {},
-  setSelectedBankAccountId: (id: number) => {}
-) => {
-  return {
-    transactions,
-    fetchTransactionsByBankAccountId,
-  } as TransactionsData;
 };
 
 export const MockBankAccountProvider = ({

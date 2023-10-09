@@ -1,20 +1,20 @@
 {
-  "bankAccounts": [
+  "bank-accounts": [
     {
-      "bankName": "Bank Of Ireland",
+      "bankName": "EBS",
       "accountName": "Mortgage",
       "balance": 9369.13,
       "active": true,
-      "bankLogo": "boiLogo",
+      "bankLogo": "ebsLogo",
       "id": 1
     },
     {
       "id": 2,
-      "bankName": "AIB",
-      "accountName": "Current acc name blah",
+      "bankName": "Bank Of Ireland",
+      "accountName": "AIB Current",
       "balance": 9369.13,
       "active": true,
-      "bankLogo": "aibLogo"
+      "bankLogo": "boiLogo"
     },
     {
       "id": 3,

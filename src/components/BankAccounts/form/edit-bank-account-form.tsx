@@ -20,7 +20,7 @@ function EditBankAccountForm({
   isVisible,
   handleFormClose,
 }: EditBankAccountFormProps) {
-  const { editBankAccountById } = useBankAccountsContext();
+  const { editBankAccount } = useBankAccountsContext();
 
   const onSubmit = async (
     formValues: BankAccount,
@@ -40,7 +40,7 @@ function EditBankAccountForm({
 
       console.log("bank acc to  be saved: ", bankAccountToSave);
 
-      editBankAccountById(bankAccountToSave);
+      editBankAccount(bankAccountToSave);
     }
     resetForm();
     handleFormClose();

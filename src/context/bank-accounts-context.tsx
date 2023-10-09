@@ -1,12 +1,17 @@
 import { createContext, useContext, useState } from "react";
 import BankAccount from "../model/bank-account";
+import {
+  editBankAccountsAPI,
+  fetchBankAccountsAPI,
+} from "../components/services/bank-account-api";
+import { sortBankAccountsByBankName } from "../utils/bank-account-helper";
 
 export interface BankAccountsData {
   bankAccounts: BankAccount[];
   selectedBankAccountId: number;
   isLoading: boolean;
   fetchBankAccounts: () => void;
-  editBankAccountById: (bankAccount: BankAccount) => void;
+  editBankAccount: (bankAccount: BankAccount) => void;
   setSelectedBankAccountId: (id: number) => void;
 }
 
@@ -15,7 +20,7 @@ const BankAccountsContext = createContext<BankAccountsData>({
   selectedBankAccountId: -1,
   isLoading: true,
   fetchBankAccounts: () => {},
-  editBankAccountById: (bankAccount: BankAccount) => {},
+  editBankAccount: (bankAccount: BankAccount) => {},
   setSelectedBankAccountId: (id: number) => {},
 });
 
@@ -27,24 +32,14 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
 
   const fetchBankAccounts = async () => {
     try {
-      const response = await fetch("http://localhost:3005/bankAccounts");
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      // DEV ONLY! 1 second pause
-      // await pause(5000);
-
-      const data = await response.json();
+      const data = await fetchBankAccountsAPI();
 
       if (data.length > 0) {
-        setBankAccounts(data);
-
-        // const sortedAccountsByBankName = [...data].sort((a, b) =>
-        //   a.bankName > b.bankName ? 1 : -1
-        // );
-        // setBankAccounts(sortedAccountsByBankName);
-        // setSelectedBankAccountId(sortedAccountsByBankName[0].id);
+        if (data && data.length > 0) {
+          const sortedBankAccounts = sortBankAccountsByBankName(data);
+          setSelectedBankAccountId(sortedBankAccounts[0].id);
+          setBankAccounts(sortedBankAccounts);
+        }
       }
       setLoading(false);
     } catch (error) {
@@ -53,26 +48,9 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const editBankAccountById = async (account: BankAccount) => {
-    console.log("saving bank account", account);
-
+  const editBankAccount = async (account: BankAccount) => {
     try {
-      const response = await fetch(
-        `http://localhost:3005/bankAccounts/${account.id}`,
-        {
-          method: "PUT", // Use the appropriate HTTP method (PUT, POST, etc.)
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(account),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      console.log("Response: ", response);
+      const fetchedAccount = editBankAccountsAPI(account);
 
       const updatedBankAccountsList: BankAccount[] = bankAccounts.map(
         (bankAccount) => {
@@ -83,12 +61,9 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
         }
       );
 
-      setBankAccounts(updatedBankAccountsList);
-
-      // Handle successful update, e.g., show a success message
+      setBankAccounts(sortBankAccountsByBankName(updatedBankAccountsList));
     } catch (error) {
       console.error("Error updating bank account:", error);
-      // Handle error, e.g., show an error message
     }
   };
 
@@ -97,7 +72,7 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
     selectedBankAccountId,
     isLoading,
     fetchBankAccounts,
-    editBankAccountById,
+    editBankAccount,
     setSelectedBankAccountId,
   } as BankAccountsData;
 

@@ -19,19 +19,13 @@ const BankAccountList = () => {
   }, []);
 
   const handleSelectBankAccount = (id: number) => {
-    // update state
     setSelectedBankAccountId(id);
-    // fetch transactions for this account
   };
 
   let content;
 
   if (bankAccounts && bankAccounts.length > 0) {
-    const sortedAccountsByBankName = [...bankAccounts].sort((a, b) =>
-      a.bankName > b.bankName ? 1 : -1
-    );
-    setSelectedBankAccountId(sortedAccountsByBankName[0].id);
-    content = sortedAccountsByBankName.map((bankAccount: BankAccount) => {
+    content = bankAccounts.map((bankAccount: BankAccount) => {
       return (
         <BankAccountItem
           key={bankAccount.id}

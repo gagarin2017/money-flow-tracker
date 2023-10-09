@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import BankAccount from "../model/bank-account";
 import { Transaction } from "../model/transaction";
+import { fetchAccountTransactionsAPI } from "../components/services/transactions-api";
 
 export interface TransactionsData {
   transactions: Transaction[];
@@ -34,23 +35,15 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:3005/transactions/bankAccount/${bankAccountId}`
+      const data: Transaction[] = await fetchAccountTransactionsAPI(
+        bankAccountId
       );
 
       // DEV ONLY! 1 second pause
-      await pause(5000);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
+      // await pause(5000);
 
       setTransactions(data);
       setLoading(false);
-
-      console.log("Response: ", response);
     } catch (error) {
       console.error(
         `Error fetching transactions for account ${bankAccountId}:`,

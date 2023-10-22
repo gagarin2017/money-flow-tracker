@@ -32,14 +32,14 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
 
   const fetchBankAccounts = async () => {
     try {
-      const data = await fetchBankAccountsAPI();
+      const rawData = await fetchBankAccountsAPI();
+      // const data = rawData._embedded.bankAccounts;
+      const data = rawData;
 
-      if (data.length > 0) {
-        if (data && data.length > 0) {
-          const sortedBankAccounts = sortBankAccountsByBankName(data);
-          setSelectedBankAccountId(sortedBankAccounts[0].id);
-          setBankAccounts(sortedBankAccounts);
-        }
+      if (data && data.length > 0) {
+        const sortedBankAccounts = sortBankAccountsByBankName(data);
+        setSelectedBankAccountId(sortedBankAccounts[0].id);
+        setBankAccounts(sortedBankAccounts);
       }
       setLoading(false);
     } catch (error) {

@@ -2,7 +2,10 @@ import { BASE_URL } from "./api-common";
 import BankAccount from "../../model/bank-account";
 
 export const fetchBankAccountsAPI = async () => {
-  const url = BASE_URL.concat("/").concat("bank-accounts").concat("/");
+  const url = BASE_URL.concat("/")
+    .concat("bank-accounts")
+    .concat("/")
+    .concat("active");
   const response = await fetch(url);
 
   if (!response.ok) {

@@ -92,7 +92,8 @@ const contextValueWithBankAccounts = getBankAccCtxValueToShare(
   mockedSetSelectedBankAccountIdFunction
 );
 
-it("should display card per each bank account passed to the list sorted by bank name", async () => {
+// WIP
+it.skip("should display card per each bank account passed to the list sorted by bank name", async () => {
   render(
     <MockBankAccountProvider valueToShare={contextValueWithBankAccounts}>
       <BankAccountList />

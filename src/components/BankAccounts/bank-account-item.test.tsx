@@ -173,7 +173,7 @@ it("should display the ellipsis and the tooltip if account name is too long", as
     bankAccount.accountName
   );
 
-  const accountName = screen.getByText(expectedAccountName.shortenedText);
+  const accountName = screen.getByText(expectedAccountName.resultText);
 
   expect(accountName).toBeInTheDocument();
 

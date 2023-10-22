@@ -34,11 +34,11 @@
     },
     {
       "id": 5,
-      "bankName": "AIB",
+      "bankName": "not known",
       "accountName": "Visa",
       "balance": 25369.13,
       "active": true,
-      "bankLogo": "aibLogo"
+      "bankLogo": "defaultLogo"
     },
     {
       "bankName": "KBC",
@@ -49,42 +49,299 @@
       "id": 6
     },
     {
-      "bankName": "AIB",
+      "bankName": "default",
       "accountName": "Money market account",
       "balance": 25369.13,
       "active": true,
-      "bankLogo": "aibLogo",
+      "bankLogo": "defaultLogo",
       "id": 7
     }
   ],
   "transactions": [
     {
-      "id": 100,
-      "date": "29/09/2023",
-      "account": 7,
-      "categoryName": "Groceries",
-      "category": {
-        "id": 1,
-        "name": "Groceries",
-        "parentCategory": null,
-        "subCategories": []
+      "id": 7100,
+      "date": "2021-07-13",
+      "bankAccount": {
+        "id": 5,
+        "bankName": "AIB-VISA-PLATINUM",
+        "active": true,
+        "balance": -265.46,
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/bank-accounts/9"
+          },
+          {
+            "rel": "allBankAccounts",
+            "href": "http://localhost:8080/api/bank-accounts/"
+          }
+        ]
       },
-      "amount": 7.32,
-      "runningBalance": 12.334
+      "description": {
+        "id": 3,
+        "name": "",
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/descriptions/3"
+          },
+          {
+            "rel": "allDescriptions",
+            "href": "http://localhost:8080/api/descriptions/"
+          }
+        ]
+      },
+      "memo": "",
+      "category": {
+        "id": 32,
+        "name": "Groceries",
+        "parentCategory": {
+          "id": 31,
+          "name": "Food & Dining",
+          "subCategories": [],
+          "links": [
+            {
+              "rel": "self",
+              "href": "http://localhost:8080/api/categories/31"
+            },
+            {
+              "rel": "allCategories",
+              "href": "http://localhost:8080/api/categories/"
+            }
+          ]
+        },
+        "subCategories": [],
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/categories/32"
+          },
+          {
+            "rel": "allCategories",
+            "href": "http://localhost:8080/api/categories/"
+          }
+        ]
+      },
+      "tag": {
+        "id": 2,
+        "name": "",
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/tags/2"
+          },
+          {
+            "rel": "allTags",
+            "href": "http://localhost:8080/api/tags/"
+          }
+        ]
+      },
+      "reconsiled": true,
+      "amount": -38.88,
+      "runningBalance": -128.42,
+      "betweenAccountsTransaction": false,
+      "created_At": "2023-10-15T18:58:17.199",
+      "updated_At": "2023-10-15T19:00:13.963",
+      "links": [
+        {
+          "rel": "self",
+          "href": "http://localhost:8080/api/transactions/7100"
+        },
+        {
+          "rel": "allTransactions",
+          "href": "http://localhost:8080/api/transactions/{?dateFrom,dateTo}"
+        }
+      ]
     },
     {
-      "id": 101,
-      "date": "01/09/2023",
-      "account": 3,
-      "categoryName": "Groceries",
-      "category": {
-        "id": 1,
-        "name": "Groceries",
-        "parentCategory": null,
-        "subCategories": []
+      "id": 7101,
+      "date": "2021-07-12",
+      "bankAccount": {
+        "id": 5,
+        "bankName": "AIB-VISA-PLATINUM",
+        "active": true,
+        "balance": -265.46,
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/bank-accounts/9"
+          },
+          {
+            "rel": "allBankAccounts",
+            "href": "http://localhost:8080/api/bank-accounts/"
+          }
+        ]
       },
-      "amount": 71.32,
-      "runningBalance": 12.334
+      "description": {
+        "id": 3,
+        "name": "",
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/descriptions/3"
+          },
+          {
+            "rel": "allDescriptions",
+            "href": "http://localhost:8080/api/descriptions/"
+          }
+        ]
+      },
+      "memo": "",
+      "category": {
+        "id": 32,
+        "name": "Groceries",
+        "parentCategory": {
+          "id": 31,
+          "name": "Food & Dining",
+          "subCategories": [],
+          "links": [
+            {
+              "rel": "self",
+              "href": "http://localhost:8080/api/categories/31"
+            },
+            {
+              "rel": "allCategories",
+              "href": "http://localhost:8080/api/categories/"
+            }
+          ]
+        },
+        "subCategories": [],
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/categories/32"
+          },
+          {
+            "rel": "allCategories",
+            "href": "http://localhost:8080/api/categories/"
+          }
+        ]
+      },
+      "tag": {
+        "id": 2,
+        "name": "",
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/tags/2"
+          },
+          {
+            "rel": "allTags",
+            "href": "http://localhost:8080/api/tags/"
+          }
+        ]
+      },
+      "reconsiled": true,
+      "amount": -17.06,
+      "runningBalance": -128.42,
+      "betweenAccountsTransaction": false,
+      "created_At": "2023-10-15T18:58:17.199",
+      "updated_At": "2023-10-15T19:00:13.963",
+      "links": [
+        {
+          "rel": "self",
+          "href": "http://localhost:8080/api/transactions/7100"
+        },
+        {
+          "rel": "allTransactions",
+          "href": "http://localhost:8080/api/transactions/{?dateFrom,dateTo}"
+        }
+      ]
+    },
+    {
+      "id": 7103,
+      "date": "2021-07-13",
+      "bankAccount": {
+        "id": 1,
+        "bankName": "AIB-VISA-PLATINUM",
+        "active": true,
+        "balance": -265.46,
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/bank-accounts/9"
+          },
+          {
+            "rel": "allBankAccounts",
+            "href": "http://localhost:8080/api/bank-accounts/"
+          }
+        ]
+      },
+      "description": {
+        "id": 3,
+        "name": "",
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/descriptions/3"
+          },
+          {
+            "rel": "allDescriptions",
+            "href": "http://localhost:8080/api/descriptions/"
+          }
+        ]
+      },
+      "memo": "",
+      "category": {
+        "id": 32,
+        "name": "Groceries",
+        "parentCategory": {
+          "id": 31,
+          "name": "Food & Dining",
+          "subCategories": [],
+          "links": [
+            {
+              "rel": "self",
+              "href": "http://localhost:8080/api/categories/31"
+            },
+            {
+              "rel": "allCategories",
+              "href": "http://localhost:8080/api/categories/"
+            }
+          ]
+        },
+        "subCategories": [],
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/categories/32"
+          },
+          {
+            "rel": "allCategories",
+            "href": "http://localhost:8080/api/categories/"
+          }
+        ]
+      },
+      "tag": {
+        "id": 2,
+        "name": "",
+        "links": [
+          {
+            "rel": "self",
+            "href": "http://localhost:8080/api/tags/2"
+          },
+          {
+            "rel": "allTags",
+            "href": "http://localhost:8080/api/tags/"
+          }
+        ]
+      },
+      "reconsiled": true,
+      "amount": -88.12,
+      "runningBalance": -228.42,
+      "betweenAccountsTransaction": false,
+      "created_At": "2023-10-15T18:58:17.199",
+      "updated_At": "2023-10-15T19:00:13.963",
+      "links": [
+        {
+          "rel": "self",
+          "href": "http://localhost:8080/api/transactions/7100"
+        },
+        {
+          "rel": "allTransactions",
+          "href": "http://localhost:8080/api/transactions/{?dateFrom,dateTo}"
+        }
+      ]
     }
   ]
 }

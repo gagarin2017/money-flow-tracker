@@ -32,9 +32,13 @@ const BankAccountItem = ({
     setEditBankAccountFormVisible(false);
   };
 
-  const account: any = bankLogoMap.get(bankAccount.bankLogo);
+  let account: any = bankLogoMap.get(bankAccount.bankLogo);
 
-  const { shortenedText, textIsTooLong } = shortenGivenTextWithEllipsis(
+  if (account === undefined || account.name === undefined) {
+    account = bankLogoMap.get("defaultLogo");
+  }
+
+  const { resultText, textIsTooLong } = shortenGivenTextWithEllipsis(
     bankAccount.accountName
   );
 
@@ -60,14 +64,14 @@ const BankAccountItem = ({
       >
         <Meta
           avatar={
-            <Tooltip title={account.name}>
+            <Tooltip title={account.name === "unknown" ? "" : account.name}>
               <Avatar shape="square" src={account.logo} />
             </Tooltip>
           }
           title={
             <>
               <Tooltip title={textIsTooLong && bankAccount.accountName}>
-                {shortenedText}
+                {resultText}
               </Tooltip>
               <Button
                 type="text"

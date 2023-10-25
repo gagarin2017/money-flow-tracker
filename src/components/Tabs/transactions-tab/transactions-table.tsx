@@ -4,6 +4,7 @@ import { useBankAccountsContext } from "../../../context/bank-accounts-context";
 import { Category } from "../../../model/category";
 import { Transaction } from "../../../model/transaction";
 
+// The representation of the transaction (we might not want to include all transaction fields to be displayed on the UI)
 interface DataType {
   key: number;
   id: number;

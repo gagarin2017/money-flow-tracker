@@ -51,7 +51,7 @@
     {
       "bankName": "default",
       "accountName": "Money market account",
-      "balance": 25369.13,
+      "balance": 35369.18,
       "active": true,
       "bankLogo": "defaultLogo",
       "id": 7
@@ -62,8 +62,8 @@
       "id": 7100,
       "date": "2021-07-13",
       "bankAccount": {
-        "id": 5,
-        "bankName": "AIB-VISA-PLATINUM",
+        "id": 4,
+        "bankName": "KBC",
         "active": true,
         "balance": -265.46,
         "links": [
@@ -137,8 +137,8 @@
         ]
       },
       "reconsiled": true,
-      "amount": -38.88,
-      "runningBalance": -128.42,
+      "amount": -32.28,
+      "runningBalance": -178.22,
       "betweenAccountsTransaction": false,
       "created_At": "2023-10-15T18:58:17.199",
       "updated_At": "2023-10-15T19:00:13.963",
@@ -158,9 +158,9 @@
       "date": "2021-07-12",
       "bankAccount": {
         "id": 5,
-        "bankName": "AIB-VISA-PLATINUM",
+        "bankName": "KBC",
         "active": true,
-        "balance": -265.46,
+        "balance": -99.16,
         "links": [
           {
             "rel": "self",
@@ -233,7 +233,7 @@
       },
       "reconsiled": true,
       "amount": -17.06,
-      "runningBalance": -128.42,
+      "runningBalance": 128.42,
       "betweenAccountsTransaction": false,
       "created_At": "2023-10-15T18:58:17.199",
       "updated_At": "2023-10-15T19:00:13.963",
@@ -249,13 +249,13 @@
       ]
     },
     {
-      "id": 7103,
+      "id": 7102,
       "date": "2021-07-13",
       "bankAccount": {
-        "id": 1,
-        "bankName": "AIB-VISA-PLATINUM",
+        "id": 4,
+        "bankName": "AIB",
         "active": true,
-        "balance": -265.46,
+        "balance": 200.86,
         "links": [
           {
             "rel": "self",
@@ -327,8 +327,8 @@
         ]
       },
       "reconsiled": true,
-      "amount": -88.12,
-      "runningBalance": -228.42,
+      "amount": 111.11,
+      "runningBalance": -2238.4,
       "betweenAccountsTransaction": false,
       "created_At": "2023-10-15T18:58:17.199",
       "updated_At": "2023-10-15T19:00:13.963",

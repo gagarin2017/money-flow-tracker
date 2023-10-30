@@ -1,6 +1,7 @@
 export interface Category {
   id: number;
   name: string;
-  parentCategory: Category;
+  parentCategory?: Category;
   subCategories: Category[];
+  _links?: object;
 }

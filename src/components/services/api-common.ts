@@ -1,5 +1,5 @@
-// export const BASE_URL = "http://localhost:8080/api";
-export const BASE_URL = "http://localhost:3005";
+export const BASE_URL = "http://localhost:8080/api";
+// export const BASE_URL = "http://localhost:3005";
 
 export const CATEGORIES_NODE = "categories";
 export const DESCRIPTIONS_NODE = "descriptions";

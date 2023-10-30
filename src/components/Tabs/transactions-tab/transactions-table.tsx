@@ -1,158 +1,161 @@
-import { Space, Table, Tag } from "antd";
+import { Button, Popconfirm, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useBankAccountsContext } from "../../../context/bank-accounts-context";
 import { Category } from "../../../model/category";
 import { Transaction } from "../../../model/transaction";
+import { Description } from "../../../model/description";
+import { Tag as TxTag } from "../../../model/tag";
+import { getCategoryAsString } from "../../../utils/transactions-helper";
+import { getAmountAsFormatedString } from "../../../utils/currency-helper";
+import {
+  DATE_FORMAT_DD_MM_YYYY,
+  getStringFromDateWFormatter,
+} from "../../../utils/date-helper";
 
 // The representation of the transaction (we might not want to include all transaction fields to be displayed on the UI)
 interface DataType {
   key: number;
   id: number;
-  date: string;
-  payee: string;
+  date: Date;
+  category: Category;
+  description: Description;
   memo: string;
-  //   category: Category;
-  categoryName: string;
-  //   description: string;
-  //   descriptionName: string;
-  //   memo: string;
-  tag: string;
-  //   balance: number;
-  //   type: string;
-  //   reconciled: boolean;
+  tag: TxTag;
+  reconsiled: boolean;
   amount: number;
   runningBalance: number;
-  //   name: string;
-  //   age: number;
-  //   address: string;
-  //   tags: string[];
 }
-
-const columns: ColumnsType<DataType> = [
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-    width: 10,
-  },
-  {
-    title: "Payee",
-    dataIndex: "payee",
-    key: "payee",
-  },
-  {
-    title: "Memo",
-    dataIndex: "memo",
-    key: "memo",
-  },
-  {
-    title: "Category",
-    dataIndex: "categoryName",
-    key: "categoryName",
-  },
-  {
-    title: "Tag",
-    dataIndex: "tag",
-    key: "tag",
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "a/c balance",
-    dataIndex: "runningBalance",
-    key: "runningBalance",
-  },
-  //   {
-  //     title: "Tags",
-  //     key: "tags",
-  //     dataIndex: "tags",
-  //     render: (_, { tags }) => (
-  //       <>
-  //         {tags.map((tag) => {
-  //           let color = tag.length > 5 ? "geekblue" : "green";
-  //           if (tag === "loser") {
-  //             color = "volcano";
-  //           }
-  //           return (
-  //             <Tag color={color} key={tag}>
-  //               {tag.toUpperCase()}
-  //             </Tag>
-  //           );
-  //         })}
-  //       </>
-  //     ),
-  //   },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.id}</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
-];
 
 interface TransactionsTableProps {
   transactions: Transaction[];
+  isLoading: boolean;
 }
 
-function TransactionsTable({ transactions }: TransactionsTableProps) {
-  const data: DataType[] = transactions.map((tx) => {
-    return {
-      key: tx.id,
-      id: tx.id,
-      date: "29/08/2023",
-      payee: "payeeName",
-      memo: "",
-      categoryName: "Groceries",
-      tag: "",
-      amount: tx.amount,
-      runningBalance: tx.runningBalance,
-    } as DataType;
-  });
+function TransactionsTable({
+  transactions,
+  isLoading,
+}: TransactionsTableProps) {
+  const columns: ColumnsType<DataType> = [
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      render: (_: any, record: Transaction) =>
+        getStringFromDateWFormatter(record.date, DATE_FORMAT_DD_MM_YYYY),
+    },
+    {
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+      render: (_: any, record: Transaction) => {
+        return getCategoryAsString(record.category);
+      },
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      render: (_: any, record: Transaction) => {
+        return record.description.name;
+      },
+    },
+    {
+      title: "Memo",
+      dataIndex: "memo",
+      key: "memo",
+    },
+    {
+      title: "Tag",
+      dataIndex: "tag",
+      key: "tag",
+      render: (_: any, record: Transaction) => {
+        return record.tag.name;
+      },
+    },
+    {
+      title: "Reconsiled",
+      dataIndex: "reconciled",
+      key: "reconciled",
+      render: (_: any, { reconsiled }: Transaction) => {
+        return (
+          <Tag color={reconsiled ? "green" : "volcano"}>
+            {reconsiled ? "Yes" : "No"}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (_: any, record: Transaction) => {
+        return record.amount > 0 ? (
+          <span style={{ color: "green" }}>
+            {getAmountAsFormatedString(record.amount)}
+          </span>
+        ) : (
+          <span style={{ color: "red" }}>
+            {getAmountAsFormatedString(record.amount)}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Balance",
+      dataIndex: "runningBalance",
+      key: "runningBalance",
+      render: (_: any, record: Transaction) => {
+        return record.runningBalance < 0 ? (
+          <span style={{ color: "red" }}>
+            {getAmountAsFormatedString(record.runningBalance)}
+          </span>
+        ) : (
+          <span>{getAmountAsFormatedString(record.runningBalance)}</span>
+        );
+      },
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, record: Transaction) => (
+        <Space size="middle">
+          <Button type="link">{`Edit tx id ${record.id}`}</Button>
+          <Popconfirm
+            title="Delete this transaction?"
+            onConfirm={() => handleTransactionDelete(record.id)}
+            onCancel={() => {}}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link">Delete</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
-  // const data: DataType[] = [
-  //   {
-  //     key: 1,
-  //     id: 1,
-  //     date: "29/08/2023",
-  //     payee: "payeeName",
-  //     memo: "",
-  //     categoryName: "Groceries",
-  //     tag: "",
-  //     amount: 23.5,
-  //     runningBalance: 10255.11,
-  //   },
-  //   {
-  //     key: 2,
-  //     id: 2,
-  //     date: "29/08/2023",
-  //     payee: "payeeName",
-  //     memo: "",
-  //     categoryName: "Groceries",
-  //     tag: "",
-  //     amount: 23.5,
-  //     runningBalance: 10255.11,
-  //   },
-  //   {
-  //     key: 3,
-  //     id: 3,
-  //     date: "29/08/2023",
-  //     payee: "payeeName",
-  //     memo: "",
-  //     categoryName: "Groceries",
-  //     tag: "",
-  //     amount: 23.5,
-  //     runningBalance: 10255.11,
-  //   },
-  // ];
+  const handleTransactionDelete = (transactionId: number) => {
+    console.log("Deleting transaction", transactionId);
+  };
 
-  return <Table columns={columns} dataSource={data} />;
+  const data: DataType[] = transactions.map((tx) => ({ ...tx, key: tx.id }));
+
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      loading={isLoading}
+      pagination={{ pageSize: 9, showSizeChanger: false }}
+      onRow={(record, index) => ({
+        style: {
+          backgroundColor:
+            index !== undefined && (index === 0 || index % 2 === 0)
+              ? "default"
+              : "#F7FCFF",
+        },
+      })}
+    />
+  );
 }
 
 export default TransactionsTable;

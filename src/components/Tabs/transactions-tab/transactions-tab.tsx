@@ -13,10 +13,8 @@ function TransactionsTab() {
     fetchTransactionsByBankAccountId(selectedBankAccountId);
   }, [selectedBankAccountId]);
 
-  return isLoading ? (
-    <TheSkeleton width={1500} />
-  ) : (
-    <TransactionsTable transactions={transactions} />
+  return (
+    <TransactionsTable transactions={transactions} isLoading={isLoading} />
   );
 }
 

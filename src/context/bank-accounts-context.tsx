@@ -55,7 +55,7 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
       const updatedBankAccountsList: BankAccount[] = bankAccounts.map(
         (bankAccount) => {
           if (bankAccount.id === account.id) {
-            return { ...bankAccount, ...account };
+            return { ...bankAccount, ...fetchedAccount };
           }
           return bankAccount;
         }

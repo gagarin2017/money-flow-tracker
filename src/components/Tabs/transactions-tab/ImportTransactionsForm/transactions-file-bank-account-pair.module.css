@@ -1,0 +1,9 @@
+.transactions-file-bank-account-pair {
+  color: blue;
+  position: relative;
+}
+
+.transactions-file-bank-account-pair span {
+  color: green;
+  margin-right: 10px;
+}

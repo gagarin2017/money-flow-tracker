@@ -12,10 +12,10 @@ export enum ParsingStatus {
 }
 
 export const readAndParseTxFiles = (
-  fileAccountName: TransactionsFileBankAccount
+  fileBankAccount: TransactionsFileBankAccount
 ): Promise<FileParserResults> => {
   return new Promise((resolve, reject) => {
-    Papa.parse(fileAccountName.file, {
+    Papa.parse(fileBankAccount.file, {
       complete: (results) => {
         let prettyJson: Transaction[] | undefined = undefined;
         let parsingResults: FileParserResults = {} as FileParserResults;
@@ -23,27 +23,27 @@ export const readAndParseTxFiles = (
         const errorParsingResult = {
           parsingErrors: ["File could not be parsed. Parser doesn't exist"],
           status: ParsingStatus.ERROR,
-          fileName: fileAccountName.file.name,
-          accountId: fileAccountName.bankAccountId,
+          fileName: fileBankAccount.file.name,
+          accountId: fileBankAccount.bankAccountId,
         } as FileParserResults;
 
-        switch (+fileAccountName.bankAccountId) {
+        switch (+fileBankAccount.bankAccountId) {
           case 10:
             prettyJson = prettyfyJson12(
               results.data,
-              fileAccountName.bankAccountId
+              fileBankAccount.bankAccountId
             );
             break;
           case 17:
             prettyJson = prettyfyJson12(
               results.data,
-              fileAccountName.bankAccountId
+              fileBankAccount.bankAccountId
             );
             break;
           case 9:
             prettyJson = prettyfyJson13(
               results.data,
-              fileAccountName.bankAccountId
+              fileBankAccount.bankAccountId
             );
             break;
           default:
@@ -54,7 +54,7 @@ export const readAndParseTxFiles = (
           parsingResults = {
             buildTransactionsForRequest: prettyJson,
             status: ParsingStatus.FINISHED,
-            accountId: fileAccountName.bankAccountId,
+            accountId: fileBankAccount.bankAccountId,
           } as FileParserResults;
           return resolve(parsingResults);
         } else {
@@ -65,8 +65,8 @@ export const readAndParseTxFiles = (
         return reject({
           parsingErrors: [error.message],
           status: ParsingStatus.ERROR,
-          fileName: fileAccountName.file.name,
-          accountId: fileAccountName.bankAccountId,
+          fileName: fileBankAccount.file.name,
+          accountId: fileBankAccount.bankAccountId,
         } as FileParserResults);
       },
       skipEmptyLines: true,

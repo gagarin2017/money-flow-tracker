@@ -1,3 +1,4 @@
+import { Description } from "../../model/description";
 import { Transaction } from "../../model/transaction";
 import {
   getDateFromStringWFormatter,
@@ -60,7 +61,7 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
     return {
       date: txDate,
       bankAccount: +accountId,
-      description: row[DESC_COLUMN_INDEX],
+      description: {name: row[DESC_COLUMN_INDEX]} as Description,
       amount,
     } as Transaction;
   });

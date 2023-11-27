@@ -33,12 +33,12 @@
       "bankLogo": "aibLogo"
     },
     {
-      "id": 5,
-      "bankName": "not known",
+      "id": 9,
+      "bankName": "AIB",
       "accountName": "Visa",
       "balance": 25369.13,
       "active": true,
-      "bankLogo": "defaultLogo"
+      "bankLogo": "aibLogo"
     },
     {
       "bankName": "KBC",

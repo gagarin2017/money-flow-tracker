@@ -1,5 +1,6 @@
 import { AutoComplete } from "antd";
 import BankAccount from "../../../../model/bank-account";
+import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 // import { useSelector } from "react-redux";
 // import { RootState } from "../../../store/money-flow-tracker-store";
 
@@ -15,6 +16,8 @@ const BankAccountsAutocomplete = ({
   file,
   formikArrayHelper,
 }: BankAccountsAutocompleteProps) => {
+  const { bankAccounts } = useBankAccountsContext();
+
   const onSelect = (value: string, option: any) => {
     formikArrayHelper.push({
       file: file,
@@ -25,8 +28,6 @@ const BankAccountsAutocomplete = ({
   // const bankAccounts = useSelector(
   //   (state: RootState) => state.bankAccounts.activeBankAccounts
   // );
-
-  const bankAccounts: BankAccount[] = [{} as BankAccount];
 
   const bankAccountOptions = bankAccounts.map((account) => {
     const bankAccountName = `${account.bankName}-${account.accountName}`;

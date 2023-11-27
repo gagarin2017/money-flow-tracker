@@ -33,8 +33,10 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
   const fetchBankAccounts = async () => {
     try {
       const rawData = await fetchBankAccountsAPI();
-      const data = rawData._embedded.bankAccounts;
-      // const data = rawData;
+
+      // const data = rawData._embedded.bankAccounts;
+      const data = rawData;
+
 
       if (data && data.length > 0) {
         const sortedBankAccounts = sortBankAccountsByBankName(data);

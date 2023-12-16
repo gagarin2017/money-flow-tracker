@@ -5,6 +5,7 @@ import TransactionsTable from "./transactions-table";
 import TheSkeleton from "../../../UI/the-skeleton";
 import TransactionsMenu from "./transactions-menu";
 import { Col, Row, Space } from "antd";
+import { ImportTransactionsProvider } from "../../../context/import-transactions-context";
 
 function TransactionsTab() {
   const { selectedBankAccountId } = useBankAccountsContext();
@@ -22,7 +23,9 @@ function TransactionsTab() {
           span={24}
           style={{ display: "flex", marginTop: 10, marginBottom: 10 }}
         >
-          <TransactionsMenu />
+          <ImportTransactionsProvider>
+            <TransactionsMenu />
+          </ImportTransactionsProvider>
         </Col>
         <Col span={24}>
           <TransactionsTable

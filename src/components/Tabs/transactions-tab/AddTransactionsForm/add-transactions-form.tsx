@@ -1,27 +1,22 @@
-import { Collapse, Empty } from "antd";
-import {
-  ErrorMessage,
-  Field,
-  FieldArray,
-  Form,
-  Formik,
-  FormikHelpers,
-} from "formik";
-import { useDispatch, useSelector } from "react-redux";
+import { Collapse } from "antd";
+import { FieldArray, Form, Formik, FormikHelpers } from "formik";
 import BankAccount from "../../../../model/bank-account";
-import { Category } from "../../../../model/category";
 import { Transaction } from "../../../../model/transaction";
 
 import FormsModal from "../../../../UI/forms-modal";
-import { getDateFromString } from "../../../../utils/date-helper";
+import {
+  ImportTransactionsActionType,
+  useImportTransactionsContext,
+} from "../../../../context/import-transactions-context";
 import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
+import AccountTransactionsToBeImported from "./account-transactions-to-be-imported";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
 } from "./add-transactions-utils";
-import TransactionsToBeImportedTable from "./transactions-to-be-imported-table";
-import { FileParserResults } from "../ImportTransactionsForm/model/file-parser-results";
-import AccountTransactionsToBeImported from "./account-transactions-to-be-imported";
+import { useEffect } from "react";
+import { fetchCategoriesAPI } from "../../../services/categories-api";
+import Error from "../../../../model/error";
 
 const { Panel } = Collapse;
 
@@ -34,35 +29,41 @@ interface NewTransactionsFormData {
   accountTransactions: AccountTransaction[];
 }
 
-interface AddTransactionsFormProps {
-  transactions?: Transaction[];
-  isAddTransactionsFormModalVisible: boolean;
-  parsedTransactions: AccountTransaction[];
-  handleAddTransactionsFormModalVisibility: () => void;
-}
+const AddTransactionsForm = () => {
+  const { state, dispatch } = useImportTransactionsContext();
 
-const AddTransactionsForm = ({
-  transactions,
-  isAddTransactionsFormModalVisible,
-  parsedTransactions,
-  handleAddTransactionsFormModalVisibility,
-}: AddTransactionsFormProps) => {
-  // const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch({ type: ImportTransactionsActionType.FETCH_START });
 
-  // const selectedAccount = useSelector(
-  //   (state: RootState) => state.bankAccounts.selectedAccount
-  // );
+        const response = await fetchCategoriesAPI();
 
-  // const parsedTransactions = useSelector(
-  //   (state: RootState) => state.transactions.importedTransactions
-  // );
+        dispatch({
+          type: ImportTransactionsActionType.SET_CATEGORIES,
+          payload: response,
+        });
+      } catch (error) {
+        dispatch({
+          type: ImportTransactionsActionType.ADD_ERROR,
+          payload: {
+            description: error,
+            message: error,
+            type: "error",
+          } as Error,
+        });
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const getInitialValue = () => {
     let initialForm = {} as NewTransactionsFormData;
 
-    if (parsedTransactions && parsedTransactions.length > 0) {
+    if (state.newTransactions && state.newTransactions.length > 0) {
       initialForm = {
-        accountTransactions: parsedTransactions,
+        accountTransactions: state.newTransactions,
       };
     } else {
       initialForm = {
@@ -76,54 +77,13 @@ const AddTransactionsForm = ({
     }
 
     return initialForm;
-
-    // return {
-    //   accountTransactions: [
-    //     {
-    //       bankAccount: {
-    //         id: 10,
-    //         bankName: "AIB",
-    //         accountName: "Visa",
-    //         balance: 269.13,
-    //         active: true,
-    //         bankLogo: "aibLogo",
-    //       },
-    //       transactions: [
-    //         {
-    //           id: -3.8600111129118986,
-    //           date: "2022-09-02",
-    //           description: "PAYPAL *ZOOPLUS SE",
-    //           amount: -50.66,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       bankAccount: {
-    //         id: 9,
-    //         bankName: "AIB",
-    //         accountName: "Visa",
-    //         balance: 25369.13,
-    //         active: true,
-    //         bankLogo: "aibLogo",
-    //       },
-    //       transactions: [
-    //         {
-    //           id: -84.77295312958823,
-    //           date: "2022-09-02",
-    //           description: "AMZNMktplace",
-    //           amount: -32.97,
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // };
   };
 
   const handleFormClose = () => {
-    handleAddTransactionsFormModalVisibility();
-    // dispatch(transactionsActions.clearImportedTransactions());
-    // dispatch(transactionsActions.closeImportTransactionsTableFormModal());
-    // dispatch(fetchAccountTransactions(selectedAccount?.id));
+    dispatch({
+      type: ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE,
+      payload: false,
+    });
   };
 
   const onSubmit = async (
@@ -152,25 +112,23 @@ const AddTransactionsForm = ({
     handleFormClose();
   };
 
-  // if button is not visible - then we are importing transactions from files, rather than adding them manually
-  // const isAddTransactionButtonVisible = useSelector(
-  //   (state: RootState) => state.transactions.isAddTransactionButtonVisible
-  // );
-
   const areThereAnyTransactionsToImport =
-    parsedTransactions && parsedTransactions.length === 0;
+    state.newTransactions && state.newTransactions.length === 0;
 
   return (
     <Formik
       initialValues={getInitialValue()}
       onSubmit={(values) => {
-      console.log("🚀 ~ file: add-transactions-form.tsx:167 ~ values:", values)
+        console.log(
+          "🚀 ~ file: add-transactions-form.tsx:167 ~ values:",
+          values
+        );
       }}
     >
       {({ values, handleSubmit, handleReset, isSubmitting }) => (
         <FormsModal
           title={`Add new Transactions`}
-          isModalVisible={isAddTransactionsFormModalVisible}
+          isModalVisible={state.isAddTransactionsFormModalVisible}
           handleOk={handleSubmit}
           handleCancel={() => {
             handleReset();

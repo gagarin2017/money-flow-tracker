@@ -1,5 +1,10 @@
 import { Alert, Col, notification, Row, Spin } from "antd";
 import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
+import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
+import {
+  ImportTransactionsActionType,
+  useImportTransactionsContext,
+} from "../../../../context/import-transactions-context";
 import FormsModal from "../../../../UI/forms-modal";
 import {
   ParsingStatus,
@@ -9,27 +14,21 @@ import { FileParserResults } from "./model/file-parser-results";
 import { TransactionsFileBankAccount } from "./model/transactions-file-bank-account";
 import TransactionsFilesBankAccountList from "./transactions-files-bank-account-list";
 import TransactionsFilesInput from "./transactions-files-input";
-import { Transaction } from "../../../../model/transaction";
 
 type TransactionsFilesFormData = {
   selectedFiles: any[];
   transactionsFileBankAccountField: TransactionsFileBankAccount[];
 };
 
-interface ImportTransactionsFormProps {
-  isImportTransactionsModalVisible: boolean;
-  handleFormClose: () => void;
-  populateFileTransactions: (fileParserResults: FileParserResults []) => void;
-}
-
-const ImportTransactionsForm = ({
-  isImportTransactionsModalVisible,
-  handleFormClose,
-  populateFileTransactions
-}: ImportTransactionsFormProps) => {
+const ImportTransactionsForm = () => {
+  const { bankAccounts } = useBankAccountsContext();
+  const { state, dispatch } = useImportTransactionsContext();
 
   const onFormClose = () => {
-    handleFormClose();
+    dispatch({
+      type: ImportTransactionsActionType.IMPORT_TXS_FORM_VISIBLE,
+      payload: false,
+    });
   };
 
   const processTransactionFiles = async (
@@ -55,7 +54,6 @@ const ImportTransactionsForm = ({
     formValues: TransactionsFilesFormData,
     { resetForm }: FormikHelpers<TransactionsFilesFormData>
   ) => {
-
     let closePopup: boolean = false;
 
     const parsedTransactions: FileParserResults[] =
@@ -73,16 +71,18 @@ const ImportTransactionsForm = ({
         });
       });
 
-    const transactionsToBeImported = parsedTransactions.filter(
+    const parserResults = parsedTransactions.filter(
       (result) => result.status === ParsingStatus.FINISHED
     );
 
-    if (transactionsToBeImported.length > 0) {
-      
-      console.log("transactionsToBeImported", transactionsToBeImported);
+    if (parserResults.length > 0) {
+      console.log("transactionsToBeImported", parserResults);
 
-      populateFileTransactions(transactionsToBeImported)
-      closePopup = true
+      dispatch({
+        type: ImportTransactionsActionType.ADD_NEW_TXS,
+        payload: { bankAccounts, parserResults },
+      });
+      closePopup = true;
     }
 
     if (closePopup) {
@@ -111,11 +111,11 @@ const ImportTransactionsForm = ({
         return (
           <FormsModal
             title={`Import Transactions from files`}
-            isModalVisible={isImportTransactionsModalVisible}
+            isModalVisible={state.isImportTransactionsFormVisible}
             handleOk={handleSubmit}
             handleCancel={() => {
               handleReset();
-              handleFormClose();
+              onFormClose();
             }}
             customWidth={520}
             isLoading={isSubmitting}

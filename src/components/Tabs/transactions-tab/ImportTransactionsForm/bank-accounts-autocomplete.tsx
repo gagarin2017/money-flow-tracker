@@ -1,5 +1,4 @@
 import { AutoComplete } from "antd";
-import BankAccount from "../../../../model/bank-account";
 import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 // import { useSelector } from "react-redux";
 // import { RootState } from "../../../store/money-flow-tracker-store";
@@ -24,10 +23,6 @@ const BankAccountsAutocomplete = ({
       bankAccountId: option.accountid,
     });
   };
-
-  // const bankAccounts = useSelector(
-  //   (state: RootState) => state.bankAccounts.activeBankAccounts
-  // );
 
   const bankAccountOptions = bankAccounts.map((account) => {
     const bankAccountName = `${account.bankName}-${account.accountName}`;

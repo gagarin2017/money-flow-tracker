@@ -1,7 +1,7 @@
-import { Field, ErrorMessage } from "formik";
+import { Col, Row } from "antd";
+import { ErrorMessage, Field } from "formik";
+import AddTransactionsFormTransactionCategoryField from "./add-transactions-form-transaction-category-field";
 import { FormTransaction } from "./add-transactions-utils";
-import { Divider, Row, Col } from "antd";
-import style from "antd/es/alert/style";
 
 const ROW_WIDTH = 1410;
 
@@ -20,11 +20,11 @@ function AccountTransactionsToBeImported({
   };
   const rowStyle: React.CSSProperties = {
     padding: 0,
-    width: "100%"
+    width: "100%",
   };
   return (
     <>
-      <Row gutter={[2, 4]} justify={"center"} style={{width: ROW_WIDTH}}>
+      <Row gutter={[2, 4]} justify={"center"} style={{ width: ROW_WIDTH }}>
         <Col className="gutter-row" span={3} key={"Date"}>
           <div style={style}>Date</div>
         </Col>
@@ -47,82 +47,81 @@ function AccountTransactionsToBeImported({
           <div style={style}>Action</div>
         </Col>
       </Row>
-        {transactions.map((transaction, txIndex) => {
-          return (
-            <Row gutter={[2, 4]} justify={"center"} key={transaction.id} style={{width: ROW_WIDTH}}>
-              <Col className="gutter-row" span={3}>
-                <div>
-                  <Field
-                  length={2}
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.date`}
-                  />
-                  <ErrorMessage
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.date`}
-                    component="div"
-                  />
-                </div>
-              </Col>
-              <Col className="gutter-row" span={3}>
+      {transactions.map((transaction, txIndex) => {
+        return (
+          <Row
+            gutter={[2, 4]}
+            justify={"center"}
+            key={transaction.id}
+            style={{ width: ROW_WIDTH }}
+          >
+            <Col className="gutter-row" span={3}>
+              {transaction.date}
+            </Col>
+            <Col className="gutter-row" span={3}>
               <div style={rowStyle}>
-                  <Field
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.payee`}
-                  />
-                  <ErrorMessage
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.payee`}
-                    component="div"
-                  />
-                </div>
-              </Col>
-              <Col className="gutter-row" span={3}>
-                <div>
-                  <Field
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.description`}
-                  />
-                  <ErrorMessage
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.description`}
-                    component="div"
-                  />
-                </div>
-              </Col>
-              <Col className="gutter-row" span={3}>
-                <div>
-                  <Field
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
-                  />
-                  <ErrorMessage
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
-                    component="div"
-                  />
-                </div>
-              </Col>
-              <Col className="gutter-row" span={3}>
-                <div>
-                  <Field
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
-                  />
-                  <ErrorMessage
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
-                    component="div"
-                  />
-                </div>
-              </Col>
-              <Col className="gutter-row" span={3}>
-                <div>
-                  <Field
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
-                  />
-                  <ErrorMessage
-                    name={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
-                    component="div"
-                  />
-                </div>
-              </Col>
-              <Col className="gutter-row" span={3}>
-                <div>Action buttons</div>
-              </Col>
-            </Row>
-          );
-        })}
+                <Field
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.payee`}
+                />
+                <ErrorMessage
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.payee`}
+                  component="div"
+                />
+              </div>
+            </Col>
+            <Col className="gutter-row" span={3}>
+              <div>
+                <Field
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.description`}
+                />
+                <ErrorMessage
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.description`}
+                  component="div"
+                />
+              </div>
+            </Col>
+            <Col className="gutter-row" span={3}>
+              <div>
+                <AddTransactionsFormTransactionCategoryField
+                  fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
+                />
+                {/* <Field 
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
+                />
+                <ErrorMessage
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
+                  component="div"
+                /> */}
+              </div>
+            </Col>
+            <Col className="gutter-row" span={3}>
+              <div>
+                <Field
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
+                />
+                <ErrorMessage
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
+                  component="div"
+                />
+              </div>
+            </Col>
+            <Col className="gutter-row" span={3}>
+              <div>
+                <Field
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
+                />
+                <ErrorMessage
+                  name={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
+                  component="div"
+                />
+              </div>
+            </Col>
+            <Col className="gutter-row" span={3}>
+              <div>Action buttons</div>
+            </Col>
+          </Row>
+        );
+      })}
     </>
   );
 }

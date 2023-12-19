@@ -5,6 +5,7 @@ import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTra
 import BankAccount from "../model/bank-account";
 import { Category } from "../model/category";
 import Error from "../model/error";
+import { Tag } from "../model/tag";
 
 export const enum ImportTransactionsActionType {
   FETCH_START = "StartFetchingData",
@@ -13,6 +14,7 @@ export const enum ImportTransactionsActionType {
   ADD_TXS_FORM_VISIBLE = "AddTransactionsFormModalVisible",
   ADD_NEW_TXS = "AddNewTransactions",
   SET_CATEGORIES = "GetCategories",
+  SET_TAGS = "GetTags",
 }
 
 // Define the state type
@@ -23,6 +25,7 @@ export interface ImportTransactionsState {
   isLoading: boolean;
   errors: Error[];
   categories: Category[];
+  tags: Tag[];
 }
 
 // Define the action type
@@ -45,6 +48,10 @@ type ImportTransactionsAction =
   | {
       type: ImportTransactionsActionType.SET_CATEGORIES;
       payload: Category[];
+    }
+  | {
+      type: ImportTransactionsActionType.SET_TAGS;
+      payload: Tag[];
     }
   | {
       type: ImportTransactionsActionType.ADD_NEW_TXS;
@@ -78,6 +85,8 @@ const newTransactionsReducer = (
       return { ...state, isAddTransactionsFormModalVisible: action.payload };
     case ImportTransactionsActionType.SET_CATEGORIES:
       return { ...state, isLoading: false, categories: action.payload };
+    case ImportTransactionsActionType.SET_TAGS:
+      return { ...state, isLoading: false, tags: action.payload };
     case ImportTransactionsActionType.ADD_ERROR:
       return {
         ...state,
@@ -117,6 +126,7 @@ function ImportTransactionsProvider({
     isAddTransactionsFormModalVisible: false,
     newTransactions: [],
     categories: [],
+    tags: [],
     isLoading: false,
     errors: [],
   });

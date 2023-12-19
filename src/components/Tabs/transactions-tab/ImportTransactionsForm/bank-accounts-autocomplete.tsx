@@ -40,6 +40,7 @@ const BankAccountsAutocomplete = ({
           option?.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
         );
       }}
+      allowClear
     />
   );
 };

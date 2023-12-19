@@ -9,7 +9,7 @@ import {
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
 import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
-import AccountTransactionsToBeImported from "./account-transactions-to-be-imported";
+import AccountTransactionsToBeImportedList from "./account-transactions-to-be-imported-list";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
@@ -17,6 +17,7 @@ import {
 import { useEffect } from "react";
 import { fetchCategoriesAPI } from "../../../services/categories-api";
 import Error from "../../../../model/error";
+import { fetchTagsAPI } from "../../../services/tags-api";
 
 const { Panel } = Collapse;
 
@@ -37,11 +38,24 @@ const AddTransactionsForm = () => {
       try {
         dispatch({ type: ImportTransactionsActionType.FETCH_START });
 
-        const response = await fetchCategoriesAPI();
+        const categoriesResponse = await fetchCategoriesAPI();
+        const tagsResponse = await fetchTagsAPI();
+        console.log(
+          "🚀 ~ file: add-transactions-form.tsx:41 ~ fetchData ~ categories response:",
+          categoriesResponse._embedded.categories
+        );
+        console.log(
+          "🚀 ~ file: add-transactions-form.tsx:41 ~ fetchData ~ tags response:",
+          tagsResponse._embedded.tags
+        );
 
         dispatch({
           type: ImportTransactionsActionType.SET_CATEGORIES,
-          payload: response,
+          payload: categoriesResponse._embedded.categories,
+        });
+        dispatch({
+          type: ImportTransactionsActionType.SET_TAGS,
+          payload: tagsResponse._embedded.tags,
         });
       } catch (error) {
         dispatch({
@@ -124,6 +138,8 @@ const AddTransactionsForm = () => {
           values
         );
       }}
+      validateOnMount={false} // Do not validate on mount
+      validateOnChange={false} // Do not validate on change
     >
       {({ values, handleSubmit, handleReset, isSubmitting }) => (
         <FormsModal
@@ -153,7 +169,7 @@ const AddTransactionsForm = () => {
                           key={index}
                         >
                           <div style={{ maxHeight: 500, overflow: "scroll" }}>
-                            <AccountTransactionsToBeImported
+                            <AccountTransactionsToBeImportedList
                               accountIndex={index}
                               transactions={accTransactions.transactions}
                             />
@@ -165,8 +181,6 @@ const AddTransactionsForm = () => {
                 )}
               </FieldArray>
             )}
-
-            <button type="submit">Submit</button>
           </Form>
         </FormsModal>
       )}

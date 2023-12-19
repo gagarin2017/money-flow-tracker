@@ -74,8 +74,8 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     try {
       const data: any = await fetchAccountTransactionsAPI(bankAccountId);
 
-      // const transactions = data._embedded.transactions;
-      const transactions = data;
+      const transactions = data._embedded.transactions;
+      // const transactions = data;
 
       // DEV ONLY! 1 second pause
       // await pause(5000);

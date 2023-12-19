@@ -33,8 +33,7 @@ export const EMPTY_FORM_TRANSACTION = {
 export const createAutoCompleteDescTagDataSource = (
   savedValuesList: Tag[] | Description[]
 ): DataSourceItemType[] => {
-
-  return [] 
+  return [];
 
   // return savedValuesList.map((item) => {
   //   return { key: item.id, value: item.name };
@@ -79,7 +78,7 @@ function transformTransactionsToTableTransactions(
       // console.log("🚀 ~ file: add-transactions-utils.ts:78 ~ txToImport:", txToImport)
       const date = getStringFromDate(txToImport.date);
       return {
-        id: -date.length * Math.random() * txToImport.description.name.length,
+        id: -date.length * Math.random() * 1234,
         date: date,
         description: txToImport.description.name,
         amount: txToImport.amount,

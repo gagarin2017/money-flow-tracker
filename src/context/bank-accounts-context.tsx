@@ -5,6 +5,7 @@ import {
   fetchBankAccountsAPI,
 } from "../components/services/bank-account-api";
 import { sortBankAccountsByBankName } from "../utils/bank-account-helper";
+import { isSpringBoot } from "../components/services/api-common";
 
 export interface BankAccountsData {
   bankAccounts: BankAccount[];
@@ -34,8 +35,9 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
     try {
       const rawData = await fetchBankAccountsAPI();
 
-      const data = rawData._embedded.bankAccounts;
-      // const data = rawData;
+      // TODO: Dev ONLY!
+      // fix for production
+      const data = isSpringBoot ? rawData._embedded.bankAccounts : rawData;
 
       if (data && data.length > 0) {
         const sortedBankAccounts = sortBankAccountsByBankName(data);

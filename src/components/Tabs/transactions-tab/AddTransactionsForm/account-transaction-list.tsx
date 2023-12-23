@@ -1,5 +1,5 @@
 import { Col, Row } from "antd";
-import AccountTransactionToBeImported from "./account-transaction-to-be-imported";
+import AccountTransactionToBeImported from "./account-transaction";
 import { FormTransaction } from "./add-transactions-utils";
 
 export const ROW_WIDTH = 1410;

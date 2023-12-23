@@ -1,11 +1,11 @@
 import { Col, Row } from "antd";
-import { Field } from "formik";
-import { ROW_WIDTH } from "./account-transactions-to-be-imported-list";
-import AddTransactionsFormTransactionCategoryField from "./add-transactions-form-transaction-category-field";
+import { ROW_WIDTH } from "./account-transaction-list";
 import { FormTransaction } from "./add-transactions-utils";
-import AddTransactionsFormDescriptionField from "./transaction-fields/add-transactions-form-description-field";
-import AddTransactionsFormPayeeField from "./transaction-fields/add-transactions-form-payee-field";
-import AddTransactionsFormTransactionDescriptionAndTagField from "./transaction-fields/add-transactions-form-transaction-description-and-tag-field";
+import AddTransactionsFormAmountField from "./transaction-fields/add-transaction-form-amount-field";
+import AddTransactionsFormDescriptionField from "./transaction-fields/add-transaction-form-description-field";
+import AddTransactionsFormPayeeField from "./transaction-fields/add-transaction-form-payee-field";
+import AddTransactionsFormTransactionCategoryField from "./transaction-fields/add-transaction-form-category-field";
+import AddTransactionsFormTransactionDescriptionAndTagField from "./transaction-fields/add-transaction-form-description-tag-field";
 
 interface AccountTransactionsToBeImportedProps {
   transaction: FormTransaction;
@@ -51,8 +51,8 @@ function AccountTransactionToBeImported({
         />
       </Col>
       <Col className="gutter-row" span={3}>
-        <Field
-          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
+        <AddTransactionsFormAmountField
+          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
         />
       </Col>
       <Col className="gutter-row" span={3}>

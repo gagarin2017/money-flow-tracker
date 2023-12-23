@@ -8,6 +8,7 @@ import {
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { AccountTransaction } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
 import { transformParsedTransactions } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-utils";
+import { isSpringBoot } from "../components/services/api-common";
 
 export interface TransactionsData {
   transactions: Transaction[];
@@ -74,8 +75,9 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     try {
       const data: any = await fetchAccountTransactionsAPI(bankAccountId);
 
-      const transactions = data._embedded.transactions;
-      // const transactions = data;
+      // DEV ONLY! 1 second pause
+      // Fix for production
+      const transactions = isSpringBoot ? data._embedded.transactions : data;
 
       // DEV ONLY! 1 second pause
       // await pause(5000);

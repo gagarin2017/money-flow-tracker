@@ -1,5 +1,8 @@
-export const BASE_URL = "http://localhost:8080/api";
-// export const BASE_URL = "http://localhost:3005";
+export const isSpringBoot = false;
+
+export const BASE_URL = isSpringBoot
+  ? "http://localhost:8080/api"
+  : "http://localhost:3005";
 
 export const CATEGORIES_NODE = "categories";
 export const DESCRIPTIONS_NODE = "descriptions";

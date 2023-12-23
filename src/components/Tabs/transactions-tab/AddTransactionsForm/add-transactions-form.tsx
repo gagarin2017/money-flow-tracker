@@ -9,7 +9,7 @@ import {
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
 import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
-import AccountTransactionsToBeImportedList from "./account-transactions-to-be-imported-list";
+import AccountTransactionsToBeImportedList from "./account-transaction-list";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
@@ -18,6 +18,7 @@ import { useEffect } from "react";
 import { fetchCategoriesAPI } from "../../../services/categories-api";
 import Error from "../../../../model/error";
 import { fetchTagsAPI } from "../../../services/tags-api";
+import { isSpringBoot } from "../../../services/api-common";
 
 const { Panel } = Collapse;
 
@@ -40,22 +41,24 @@ const AddTransactionsForm = () => {
 
         const categoriesResponse = await fetchCategoriesAPI();
         const tagsResponse = await fetchTagsAPI();
-        console.log(
-          "🚀 ~ file: add-transactions-form.tsx:41 ~ fetchData ~ categories response:",
-          categoriesResponse._embedded.categories
-        );
-        console.log(
-          "🚀 ~ file: add-transactions-form.tsx:41 ~ fetchData ~ tags response:",
-          tagsResponse._embedded.tags
-        );
+
+        // TODO: Dev ONLY!
+        // Fix it when in production
+        const categories = isSpringBoot
+          ? categoriesResponse._embedded.categories
+          : categoriesResponse;
+
+        // TODO: Dev ONLY!
+        // Fix it when in production
+        const tags = isSpringBoot ? tagsResponse._embedded.tags : tagsResponse;
 
         dispatch({
           type: ImportTransactionsActionType.SET_CATEGORIES,
-          payload: categoriesResponse._embedded.categories,
+          payload: categories,
         });
         dispatch({
           type: ImportTransactionsActionType.SET_TAGS,
-          payload: tagsResponse._embedded.tags,
+          payload: tags,
         });
       } catch (error) {
         dispatch({

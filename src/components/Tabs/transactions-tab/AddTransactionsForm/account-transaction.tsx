@@ -1,23 +1,23 @@
 import { Col, Row } from "antd";
 import { ROW_WIDTH } from "./account-transaction-list";
-import { FormTransaction } from "./add-transactions-utils";
+import { FormTransaction } from "../add-transactions-utils";
 import AddTransactionsFormAmountField from "./transaction-fields/add-transaction-form-amount-field";
 import AddTransactionsFormDescriptionField from "./transaction-fields/add-transaction-form-description-field";
 import AddTransactionsFormPayeeField from "./transaction-fields/add-transaction-form-payee-field";
 import AddTransactionsFormTransactionCategoryField from "./transaction-fields/add-transaction-form-category-field";
 import AddTransactionsFormTransactionDescriptionAndTagField from "./transaction-fields/add-transaction-form-description-tag-field";
 
-interface AccountTransactionsToBeImportedProps {
+interface AccountTransactionProps {
   transaction: FormTransaction;
   accountIndex: number;
   txIndex: number;
 }
 
-function AccountTransactionToBeImported({
+function AccountTransaction({
   accountIndex,
   txIndex,
   transaction,
-}: AccountTransactionsToBeImportedProps) {
+}: AccountTransactionProps) {
   return (
     <Row
       gutter={[2, 4]}
@@ -33,6 +33,7 @@ function AccountTransactionToBeImported({
           payeeFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.payee`}
           categoryFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
           tagFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
+          amountFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
         />
       </Col>
       <Col className="gutter-row" span={3}>
@@ -48,6 +49,7 @@ function AccountTransactionToBeImported({
       <Col className="gutter-row" span={3}>
         <AddTransactionsFormTransactionDescriptionAndTagField
           fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
+          isTagField
         />
       </Col>
       <Col className="gutter-row" span={3}>
@@ -62,4 +64,4 @@ function AccountTransactionToBeImported({
   );
 }
 
-export default AccountTransactionToBeImported;
+export default AccountTransaction;

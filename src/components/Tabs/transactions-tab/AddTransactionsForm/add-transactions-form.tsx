@@ -9,16 +9,20 @@ import {
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
 import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
-import AccountTransactionsToBeImportedList from "./account-transaction-list";
+import AccountTransactionsList from "./account-transaction-list";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
-} from "./add-transactions-utils";
+  fetchPayeesCategoriesTags,
+} from "../add-transactions-utils";
 import { useEffect } from "react";
 import { fetchCategoriesAPI } from "../../../services/categories-api";
 import Error from "../../../../model/error";
 import { fetchTagsAPI } from "../../../services/tags-api";
 import { isSpringBoot } from "../../../services/api-common";
+import { Category } from "../../../../model/category";
+import { Description } from "../../../../model/description";
+import { getDateFromString } from "../../../../utils/date-helper";
 
 const { Panel } = Collapse;
 
@@ -35,44 +39,7 @@ const AddTransactionsForm = () => {
   const { state, dispatch } = useImportTransactionsContext();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        dispatch({ type: ImportTransactionsActionType.FETCH_START });
-
-        const categoriesResponse = await fetchCategoriesAPI();
-        const tagsResponse = await fetchTagsAPI();
-
-        // TODO: Dev ONLY!
-        // Fix it when in production
-        const categories = isSpringBoot
-          ? categoriesResponse._embedded.categories
-          : categoriesResponse;
-
-        // TODO: Dev ONLY!
-        // Fix it when in production
-        const tags = isSpringBoot ? tagsResponse._embedded.tags : tagsResponse;
-
-        dispatch({
-          type: ImportTransactionsActionType.SET_CATEGORIES,
-          payload: categories,
-        });
-        dispatch({
-          type: ImportTransactionsActionType.SET_TAGS,
-          payload: tags,
-        });
-      } catch (error) {
-        dispatch({
-          type: ImportTransactionsActionType.ADD_ERROR,
-          payload: {
-            description: error,
-            message: error,
-            type: "error",
-          } as Error,
-        });
-      }
-    };
-
-    fetchData();
+    fetchPayeesCategoriesTags(isSpringBoot, dispatch);
   }, []);
 
   const getInitialValue = () => {
@@ -107,21 +74,25 @@ const AddTransactionsForm = () => {
     formValues: NewTransactionsFormData,
     { resetForm }: FormikHelpers<NewTransactionsFormData>
   ) => {
+    console.log(
+      "🚀 ~ file: add-transactions-form.tsx:74 ~ AddTransactionsForm ~ formValues:",
+      formValues
+    );
     const transactionsToSave: Transaction[] = [];
 
-    // formValues.accountTransactions.forEach((formData) => {
-    //   formData.transactions.forEach((tx) => {
-    //     transactionsToSave.push({
-    //       account: formData.bankAccount?.id,
-    //       date: getDateFromString(tx.date),
-    //       description: tx.description,
-    //       category: { id: tx.category } as Category,
-    //       memo: tx.memo,
-    //       tag: tx.tag,
-    //       amount: tx.amount,
-    //     } as Transaction);
-    //   });
-    // });
+    formValues.accountTransactions.forEach((formData) => {
+      formData.transactions.forEach((tx) => {
+        transactionsToSave.push({
+          bankAccount: formData.bankAccount?.id,
+          date: getDateFromString(tx.date),
+          description: { id: tx.description?.id, name: "" } as Description,
+          category: { id: tx.category?.id } as Category,
+          memo: tx.memo,
+          tag: tx.tag,
+          amount: tx.amount,
+        } as Transaction);
+      });
+    });
 
     // dispatch(saveTransactions(transactionsToSave));
 
@@ -135,11 +106,8 @@ const AddTransactionsForm = () => {
   return (
     <Formik
       initialValues={getInitialValue()}
-      onSubmit={(values) => {
-        console.log(
-          "🚀 ~ file: add-transactions-form.tsx:167 ~ values:",
-          values
-        );
+      onSubmit={(values, handleReset) => {
+        onSubmit(values, handleReset);
       }}
       validateOnMount={false} // Do not validate on mount
       validateOnChange={false} // Do not validate on change
@@ -172,7 +140,7 @@ const AddTransactionsForm = () => {
                           key={index}
                         >
                           <div style={{ maxHeight: 500, overflow: "scroll" }}>
-                            <AccountTransactionsToBeImportedList
+                            <AccountTransactionsList
                               accountIndex={index}
                               transactions={accTransactions.transactions}
                             />

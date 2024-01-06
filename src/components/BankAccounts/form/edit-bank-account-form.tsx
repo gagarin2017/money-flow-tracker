@@ -26,7 +26,6 @@ function EditBankAccountForm({
     formValues: BankAccount,
     { resetForm }: FormikHelpers<BankAccount>
   ) => {
-    console.log("form submit");
     if (
       bankAccount.accountName !== formValues.accountName ||
       bankAccount.bankLogo !== formValues.bankLogo
@@ -37,8 +36,6 @@ function EditBankAccountForm({
       bankAccountToSave.bankLogo = formValues.bankLogo;
       bankAccountToSave.bankName =
         bankLogoMap.get(formValues.bankLogo)?.name || "Bank";
-
-      console.log("bank acc to  be saved: ", bankAccountToSave);
 
       editBankAccount(bankAccountToSave);
     }

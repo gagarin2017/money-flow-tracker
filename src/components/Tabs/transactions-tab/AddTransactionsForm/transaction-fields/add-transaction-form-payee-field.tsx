@@ -1,76 +1,42 @@
 import { Select } from "antd";
 import { useField } from "formik";
-import Payee from "../../ImportTransactionsForm/model/payee";
+import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
 
 interface AddTransactionsFormPayeeFieldProps {
   payeeFieldName: string;
   categoryFieldName: string;
   tagFieldName: string;
+  amountFieldName: string;
 }
-
-const DUMMY_PAYEES: Payee[] = [
-  {
-    id: 1,
-    name: "ElectricIreland",
-    category: {
-      id: 2,
-      name: "Some category",
-      parentCategory: {
-        id: 3,
-        name: "Parent category",
-        subCategories: [],
-        _links: {
-          self: {
-            href: "http://localhost:8080/api/categories/3",
-          },
-          allCategories: {
-            href: "http://localhost:8080/api/categories/",
-          },
-        },
-      },
-      subCategories: [],
-      _links: {
-        self: {
-          href: "http://localhost:8080/api/categories/2",
-        },
-        allCategories: {
-          href: "http://localhost:8080/api/categories/",
-        },
-      },
-    },
-    tag: {
-      id: 2,
-      name: "Some tag",
-      _links: {
-        self: {
-          href: "http://localhost:8080/api/tags/2",
-        },
-        allTags: {
-          href: "http://localhost:8080/api/tags/",
-        },
-      },
-    },
-  },
-];
 
 function AddTransactionsFormPayeeField({
   payeeFieldName,
   categoryFieldName,
   tagFieldName,
+  amountFieldName,
 }: AddTransactionsFormPayeeFieldProps) {
-  const [, , payeeHelper] = useField(payeeFieldName);
+  const { state } = useImportTransactionsContext();
+
+  const { payees } = state;
+
+  const [payeeField, , payeeHelper] = useField(payeeFieldName);
   const [, , categoryHelper] = useField(categoryFieldName);
   const [, , tagHelper] = useField(tagFieldName);
+  const [, , amountHelper] = useField(amountFieldName);
 
-  const onChange = (value: string) => {
+  const onChange = (value: number) => {
     payeeHelper.setValue(value);
 
+    const selectedPayee = payees.find((payee) => payee.id === value);
+
     if (value) {
-      categoryHelper.setValue(DUMMY_PAYEES[0].category);
-      tagHelper.setValue(DUMMY_PAYEES[0].tag);
+      categoryHelper.setValue(selectedPayee?.category);
+      tagHelper.setValue(selectedPayee?.tag);
+      amountHelper.setValue(selectedPayee?.amount);
     } else {
       categoryHelper.setValue(undefined);
       tagHelper.setValue(undefined);
+      amountHelper.setValue(undefined);
     }
   };
 
@@ -79,23 +45,20 @@ function AddTransactionsFormPayeeField({
     option?: { label: string; value: number }
   ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
-  const getOptions = () => {
-    return DUMMY_PAYEES.map((payee) => ({
-      value: payee.id,
-      label: payee.name,
-    }));
-  };
-
   return (
     <Select
       showSearch
-      allowClear
       style={{ width: 170 }}
-      placeholder="Category"
+      placeholder="Payee"
       optionFilterProp="children"
       onChange={onChange}
       filterOption={filterOption}
-      options={getOptions()}
+      allowClear
+      options={payees.map((item) => ({
+        label: item.name || "<empty>",
+        value: item.id,
+      }))}
+      value={payeeField.value?.name}
     />
   );
 }

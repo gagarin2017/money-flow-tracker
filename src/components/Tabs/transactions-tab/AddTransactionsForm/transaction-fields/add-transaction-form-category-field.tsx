@@ -1,6 +1,7 @@
 import { TreeSelect } from "antd";
 import { useField } from "formik";
 import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
+import { findCategoryById } from "../../../../../utils/category-helper";
 
 interface AddTransactionsFormTransactionCategoryFieldProps {
   fieldName: string;
@@ -13,10 +14,13 @@ const AddTransactionsFormTransactionCategoryField = ({
 }: AddTransactionsFormTransactionCategoryFieldProps) => {
   const { state } = useImportTransactionsContext();
 
+  const { categories } = state;
+
   const [field, , helper] = useField(fieldName);
 
-  const onChange = (newValue: string) => {
-    helper.setValue(newValue);
+  const onChange = (id: number) => {
+    const category = findCategoryById(categories, id);
+    helper.setValue(category);
   };
 
   return (
@@ -31,12 +35,12 @@ const AddTransactionsFormTransactionCategoryField = ({
       filterTreeNode
       showSearch
       style={{ width: "100%" }}
-      value={field.value?.name}
       dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
       placeholder="Category"
       allowClear
       onChange={onChange}
-      treeData={state.categories}
+      treeData={categories}
+      value={field.value?.name}
     />
   );
 };

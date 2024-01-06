@@ -1,4 +1,4 @@
-import { Input, InputNumber } from "antd";
+import { InputNumber } from "antd";
 import { useField } from "formik";
 import { useState } from "react";
 
@@ -20,15 +20,17 @@ function AddTransactionsFormAmountField({
   };
 
   const onBlur = () => {
-    const formattedValue = (amount / 100).toFixed(2);
-    const withZeros = formattedValue.includes(".")
-      ? formattedValue
-      : formattedValue + ".00";
-    helper.setValue(withZeros);
-    // console.log(
-    //   "🚀 ~ file: add-transaction-form-amount-field.tsx:28 ~ onBlur ~ withZeros:",
-    //   withZeros
-    // );
+    if (amount && amount !== 0) {
+      const formattedValue = (amount / 100).toFixed(2);
+      const withZeros = formattedValue.includes(".")
+        ? formattedValue
+        : formattedValue + ".00";
+      helper.setValue(withZeros);
+      // console.log(
+      //   "🚀 ~ file: add-transaction-form-amount-field.tsx:28 ~ onBlur ~ withZeros:",
+      //   withZeros
+      // );
+    }
   };
 
   return (

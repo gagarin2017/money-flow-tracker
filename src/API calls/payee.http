@@ -1,0 +1,8 @@
+POST http://localhost:8080/api/payees/
+content-type: application/json
+
+{"name":"SuperFresh","category":{"id": 32},"description":{"id":35}, "tag":{"id":35},"amount":"10.00"}
+
+###
+
+GET http://localhost:8080/api/payees/

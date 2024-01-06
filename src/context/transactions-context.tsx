@@ -7,7 +7,7 @@ import {
 } from "../components/services/transactions-api";
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { AccountTransaction } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
-import { transformParsedTransactions } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-utils";
+import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
 import { isSpringBoot } from "../components/services/api-common";
 
 export interface TransactionsData {

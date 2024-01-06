@@ -1,16 +1,15 @@
 import { Button, Popconfirm, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useBankAccountsContext } from "../../../context/bank-accounts-context";
 import { Category } from "../../../model/category";
-import { Transaction } from "../../../model/transaction";
 import { Description } from "../../../model/description";
 import { Tag as TxTag } from "../../../model/tag";
-import { getCategoryAsString } from "../../../utils/transactions-helper";
+import { Transaction } from "../../../model/transaction";
 import { getAmountAsFormatedString } from "../../../utils/currency-helper";
 import {
   DATE_FORMAT_DD_MM_YYYY,
   getStringFromDateWFormatter,
 } from "../../../utils/date-helper";
+import { getCategoryAsString } from "../../../utils/transactions-helper";
 
 // The representation of the transaction (we might not want to include all transaction fields to be displayed on the UI)
 interface DataType {

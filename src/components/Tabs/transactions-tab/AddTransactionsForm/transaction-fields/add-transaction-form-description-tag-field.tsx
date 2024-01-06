@@ -4,16 +4,28 @@ import { useImportTransactionsContext } from "../../../../../context/import-tran
 import { useField } from "formik";
 interface AddTransactionsFormTransactionDescriptionAndTagFieldProps {
   fieldName: string;
+  isTagField: boolean;
 }
 
 const AddTransactionsFormTransactionDescriptionAndTagField = ({
   fieldName,
+  isTagField,
 }: AddTransactionsFormTransactionDescriptionAndTagFieldProps) => {
   const [field, , helper] = useField(fieldName);
   const { state } = useImportTransactionsContext();
 
-  const onChange = (value: string, option: any) => {
-    helper.setValue(value);
+  const { descriptions, tags } = state;
+
+  const onChange = (value: number, option: any) => {
+    if (isTagField) {
+      const selectedTag = tags.find((tag) => tag.id === value);
+      helper.setValue(selectedTag);
+    } else {
+      const selectedDescription = descriptions.find(
+        (desc) => desc.id === value
+      );
+      helper.setValue(selectedDescription);
+    }
   };
 
   const filterOption = (
@@ -21,19 +33,33 @@ const AddTransactionsFormTransactionDescriptionAndTagField = ({
     option?: { label: string; value: number }
   ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
+  let options: any = [];
+  let placeHolder = "";
+
+  if (isTagField) {
+    placeHolder = "Tag";
+    options = tags.map((item) => ({
+      label: item.name || "<empty>",
+      value: item.id,
+    }));
+  } else {
+    placeHolder = "Description";
+    options = descriptions.map((item) => ({
+      label: item.name || "<empty>",
+      value: item.id,
+    }));
+  }
+
   return (
     <Select
       showSearch
       style={{ width: 170 }}
-      placeholder="Tag"
+      placeholder={placeHolder}
       optionFilterProp="children"
       onChange={onChange}
       filterOption={filterOption}
       allowClear
-      options={state.tags.map((item) => ({
-        label: item.name || "<empty>",
-        value: item.id,
-      }))}
+      options={options}
       value={field.value?.name}
     />
   );

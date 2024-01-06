@@ -1,6 +1,6 @@
 import { Col, Row } from "antd";
-import AccountTransactionToBeImported from "./account-transaction";
-import { FormTransaction } from "./add-transactions-utils";
+import AccountTransaction from "./account-transaction";
+import { FormTransaction } from "../add-transactions-utils";
 
 export const ROW_WIDTH = 1410;
 
@@ -35,21 +35,21 @@ const HEADER_ROW = (
   </Row>
 );
 
-interface AccountTransactionsToBeImportedProps {
+interface AccountTransactionsListProps {
   transactions: FormTransaction[];
   accountIndex: number;
 }
 
-function AccountTransactionsToBeImportedList({
+function AccountTransactionsList({
   accountIndex,
   transactions,
-}: AccountTransactionsToBeImportedProps) {
+}: AccountTransactionsListProps) {
   return (
     <>
       {HEADER_ROW}
       {transactions.map((transaction, txIndex) => {
         return (
-          <AccountTransactionToBeImported
+          <AccountTransaction
             key={accountIndex + txIndex}
             transaction={transaction}
             accountIndex={accountIndex}
@@ -61,4 +61,4 @@ function AccountTransactionsToBeImportedList({
   );
 }
 
-export default AccountTransactionsToBeImportedList;
+export default AccountTransactionsList;

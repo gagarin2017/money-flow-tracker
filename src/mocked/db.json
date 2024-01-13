@@ -343,5 +343,214 @@
         }
       ]
     }
+  ],
+  "categories": [
+    {
+      "id": 26,
+      "name": "Fees & Charges",
+      "subCategories": [
+        {
+          "id": 162,
+          "name": "Bank Fee",
+          "parentCategory": {
+            "id": 26,
+            "name": "Fees & Charges",
+            "subCategories": [],
+            "_links": {
+              "self": {
+                "href": "http://localhost:8080/api/categories/26"
+              },
+              "allCategories": {
+                "href": "http://localhost:8080/api/categories/"
+              }
+            }
+          },
+          "subCategories": [],
+          "_links": {
+            "self": {
+              "href": "http://localhost:8080/api/categories/162"
+            },
+            "allCategories": {
+              "href": "http://localhost:8080/api/categories/"
+            }
+          }
+        },
+        {
+          "id": 141,
+          "name": "ATM Fee",
+          "parentCategory": {
+            "id": 26,
+            "name": "Fees & Charges",
+            "subCategories": [],
+            "_links": {
+              "self": {
+                "href": "http://localhost:8080/api/categories/26"
+              },
+              "allCategories": {
+                "href": "http://localhost:8080/api/categories/"
+              }
+            }
+          },
+          "subCategories": [],
+          "_links": {
+            "self": {
+              "href": "http://localhost:8080/api/categories/141"
+            },
+            "allCategories": {
+              "href": "http://localhost:8080/api/categories/"
+            }
+          }
+        },
+        {
+          "id": 27,
+          "name": "Service Fee",
+          "parentCategory": {
+            "id": 26,
+            "name": "Fees & Charges",
+            "subCategories": [],
+            "_links": {
+              "self": {
+                "href": "http://localhost:8080/api/categories/26"
+              },
+              "allCategories": {
+                "href": "http://localhost:8080/api/categories/"
+              }
+            }
+          },
+          "subCategories": [],
+          "_links": {
+            "self": {
+              "href": "http://localhost:8080/api/categories/27"
+            },
+            "allCategories": {
+              "href": "http://localhost:8080/api/categories/"
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": {
+          "href": "http://localhost:8080/api/categories/26"
+        },
+        "allCategories": {
+          "href": "http://localhost:8080/api/categories/"
+        }
+      }
+    },
+    {
+      "id": 34,
+      "name": "Personal Care",
+      "subCategories": [
+        {
+          "id": 35,
+          "name": "Hair",
+          "parentCategory": {
+            "id": 34,
+            "name": "Personal Care",
+            "subCategories": [],
+            "_links": {
+              "self": {
+                "href": "http://localhost:8080/api/categories/34"
+              },
+              "allCategories": {
+                "href": "http://localhost:8080/api/categories/"
+              }
+            }
+          },
+          "subCategories": [],
+          "_links": {
+            "self": {
+              "href": "http://localhost:8080/api/categories/35"
+            },
+            "allCategories": {
+              "href": "http://localhost:8080/api/categories/"
+            }
+          }
+        },
+        {
+          "id": 163,
+          "name": "Haircut",
+          "parentCategory": {
+            "id": 34,
+            "name": "Personal Care",
+            "subCategories": [],
+            "_links": {
+              "self": {
+                "href": "http://localhost:8080/api/categories/34"
+              },
+              "allCategories": {
+                "href": "http://localhost:8080/api/categories/"
+              }
+            }
+          },
+          "subCategories": [],
+          "_links": {
+            "self": {
+              "href": "http://localhost:8080/api/categories/163"
+            },
+            "allCategories": {
+              "href": "http://localhost:8080/api/categories/"
+            }
+          }
+        }
+      ],
+      "_links": {
+        "self": {
+          "href": "http://localhost:8080/api/categories/34"
+        },
+        "allCategories": {
+          "href": "http://localhost:8080/api/categories/"
+        }
+      }
+    },
+    {
+      "id": 37,
+      "name": "Income",
+      "subCategories": [],
+      "_links": {
+        "self": {
+          "href": "http://localhost:8080/api/categories/1"
+        },
+        "allCategories": {
+          "href": "http://localhost:8080/api/categories/"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "id": 11,
+      "name": "My Tag"
+    }
+  ],
+  "payees": [
+    {
+      "id": 407,
+      "name": "bbb",
+      "category": {
+        "id": 37,
+        "name": "",
+        "subCategories": []
+      },
+      "tag": {
+        "id": 11,
+        "name": ""
+      },
+      "amount": "0.05"
+    },
+    {
+      "id": 297,
+      "name": "Super Fresh",
+      "category": {
+        "id": 27,
+        "name": "",
+        "subCategories": []
+      },
+      "tag": {
+        "id": 11,
+        "name": ""
+      },
+      "amount": "65.98"
+    }
   ]
 }

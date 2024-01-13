@@ -1,7 +1,10 @@
+import { Transaction } from "../../model/transaction";
 import { FileParserResults } from "../Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import {
   deserializeFilteredTransactions,
+  deserializeTransactions,
   serializeFileTransactions,
+  serializeTransaction,
 } from "./APIResources/transaction-resource";
 import { BASE_URL } from "./api-common";
 import { Method } from "./api-methods";
@@ -54,4 +57,47 @@ export const filterTransactionsAPI = async (
     deserializeFilteredTransactions(receivedTransactions);
 
   return result;
+};
+
+export const sendTransactionsAPI = async (
+  transactions: Transaction[],
+  url: string | undefined
+) => {
+  const defaultUrl: string = BASE_URL.concat("/")
+    .concat(TRANSACTIONS_FIELD)
+    .concat("/");
+  const transactionsUrl = url ? url : defaultUrl;
+  const transactionsToSend = transactions.map((tx) => serializeTransaction(tx));
+  const response = await fetch(transactionsUrl, {
+    method: Method.POST,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(transactionsToSend),
+  });
+
+  if (!response.ok) {
+    throw new Error("Transactions API: Sending of data failed");
+  }
+
+  const receivedTransactions = await response.json();
+  const deserializedTransactions: Transaction[] | undefined =
+    deserializeTransactions(receivedTransactions._embedded.transactions);
+
+  return deserializedTransactions;
+};
+
+export const deleteTransactionAPI = async (transactionId: number) => {
+  const transactionsUrl: string = BASE_URL.concat("/")
+    .concat(TRANSACTIONS_FIELD)
+    .concat("/")
+    .concat(transactionId.toString());
+
+  const response = await fetch(transactionsUrl, {
+    method: Method.DELETE,
+  });
+
+  if (!response.ok) {
+    throw new Error("Transactions API: Deleting of data failed");
+  }
 };

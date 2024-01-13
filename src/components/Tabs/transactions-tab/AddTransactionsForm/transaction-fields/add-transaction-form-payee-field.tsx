@@ -5,6 +5,7 @@ import { useImportTransactionsContext } from "../../../../../context/import-tran
 interface AddTransactionsFormPayeeFieldProps {
   payeeFieldName: string;
   categoryFieldName: string;
+  descriptionFieldName: string;
   tagFieldName: string;
   amountFieldName: string;
 }
@@ -12,6 +13,7 @@ interface AddTransactionsFormPayeeFieldProps {
 function AddTransactionsFormPayeeField({
   payeeFieldName,
   categoryFieldName,
+  descriptionFieldName,
   tagFieldName,
   amountFieldName,
 }: AddTransactionsFormPayeeFieldProps) {
@@ -21,6 +23,7 @@ function AddTransactionsFormPayeeField({
 
   const [payeeField, , payeeHelper] = useField(payeeFieldName);
   const [, , categoryHelper] = useField(categoryFieldName);
+  const [, , descriptionyHelper] = useField(descriptionFieldName);
   const [, , tagHelper] = useField(tagFieldName);
   const [, , amountHelper] = useField(amountFieldName);
 
@@ -31,10 +34,12 @@ function AddTransactionsFormPayeeField({
 
     if (value) {
       categoryHelper.setValue(selectedPayee?.category);
+      descriptionyHelper.setValue(selectedPayee?.description);
       tagHelper.setValue(selectedPayee?.tag);
       amountHelper.setValue(selectedPayee?.amount);
     } else {
       categoryHelper.setValue(undefined);
+      descriptionyHelper.setValue(undefined);
       tagHelper.setValue(undefined);
       amountHelper.setValue(undefined);
     }

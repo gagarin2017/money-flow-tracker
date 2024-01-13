@@ -6,8 +6,17 @@ import {
 } from "../../../../../context/import-transactions-context";
 import { getCategoryAsString } from "../../../../../utils/transactions-helper";
 import Payee from "../model/payee";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import { getAmountAsFormatedString } from "../../../../../utils/currency-helper";
+
 function PayeeList() {
   const { state, dispatch } = useImportTransactionsContext();
+
+  const { payees } = state;
+
+  const sortedPayeesByName = [...payees].sort((a, b) =>
+    a.name > b.name ? 1 : -1
+  );
 
   const columns: ColumnsType<Payee> = [
     {
@@ -52,7 +61,7 @@ function PayeeList() {
       dataIndex: "amount",
       key: "amount",
       render: (_: any, record: Payee) => {
-        return record.amount;
+        return record.amount && getAmountAsFormatedString(record.amount);
       },
     },
     {
@@ -61,9 +70,10 @@ function PayeeList() {
       render: (_, record: Payee) => (
         <Space size="middle">
           <Popconfirm
-            title="Delete this transaction?"
+            title="Delete this payee?"
             onConfirm={() => handlePayeeDelete(record.id)}
             onCancel={() => {}}
+            icon={<QuestionCircleOutlined style={{ color: "red" }} />}
             okText="Yes"
             cancelText="No"
           >
@@ -81,7 +91,7 @@ function PayeeList() {
     });
   };
 
-  return <Table columns={columns} dataSource={state.payees} />;
+  return <Table columns={columns} dataSource={sortedPayeesByName} />;
 }
 
 export default PayeeList;

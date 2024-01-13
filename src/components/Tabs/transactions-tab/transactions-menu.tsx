@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Dropdown, MenuProps, Space } from "antd";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
@@ -8,6 +8,20 @@ import ImportTransactionsForm from "./ImportTransactionsForm/import-transactions
 import ManagePayeesModal from "./AddTransactionsForm/manage-payees/manage-payees-modal";
 import { isSpringBoot } from "../../services/api-common";
 import { fetchPayeesCategoriesTags } from "./add-transactions-utils";
+import { DownOutlined, MenuOutlined, LineOutlined } from "@ant-design/icons";
+
+const importButtonOptions: MenuProps["items"] = [
+  {
+    key: "1",
+    label: "Multiple transactions from file(-s)",
+    icon: <MenuOutlined />,
+  },
+  {
+    key: "2",
+    label: "Single transaction",
+    icon: <LineOutlined />,
+  },
+];
 
 function TransactionsMenu() {
   const { state, dispatch } = useImportTransactionsContext();
@@ -28,9 +42,33 @@ function TransactionsMenu() {
     fetchPayeesCategoriesTags(isSpringBoot, dispatch);
   };
 
+  const onClick: MenuProps["onClick"] = ({ key }) => {
+    if (key === "1") {
+      handleOpenCloseOfImportTransactionsForm();
+    } else if (key === "2") {
+      alert("not implemented yet!");
+    }
+  };
+
   return (
     <>
-      <Button onClick={handleOpenCloseOfImportTransactionsForm}>Import</Button>
+      <Dropdown
+        menu={{ items: importButtonOptions, onClick }}
+        placement="topLeft"
+        arrow
+        trigger={["click"]}
+      >
+        <a onClick={(e) => e.preventDefault()}>
+          <Button>
+            <Space>
+              Import
+              <DownOutlined />
+            </Space>
+          </Button>
+        </a>
+      </Dropdown>
+      {/* <Button onClick={handleOpenCloseOfImportTransactionsForm}>Import</Button> */}
+
       <Button onClick={handleOpenCloseOfManagePayeesModal}>
         Manage Payees
       </Button>

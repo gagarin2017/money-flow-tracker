@@ -76,8 +76,6 @@ const ImportTransactionsForm = () => {
     );
 
     if (parserResults.length > 0) {
-      console.log("transactionsToBeImported", parserResults);
-
       dispatch({
         type: ImportTransactionsActionType.ADD_NEW_TXS,
         payload: { bankAccounts, parserResults },

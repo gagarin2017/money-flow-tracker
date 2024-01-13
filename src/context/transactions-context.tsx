@@ -64,8 +64,6 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
   };
 
   const fetchTransactionsByBankAccountId = async (bankAccountId: number) => {
-    console.log("fetching transactions for the account id ", bankAccountId);
-
     setLoading(true);
 
     if (bankAccountId < 0) {

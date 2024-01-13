@@ -2,35 +2,35 @@ import { Input } from "antd";
 import { useField } from "formik";
 import { useState } from "react";
 
-interface AddTransactionsFormDescriptionFieldProps {
+interface AddTransactionsFormTransactionMemoFieldProps {
   fieldName: string;
 }
 
-function AddTransactionsFormDescriptionField({
+function AddTransactionsFormTransactionMemoField({
   fieldName,
-}: AddTransactionsFormDescriptionFieldProps) {
+}: AddTransactionsFormTransactionMemoFieldProps) {
   const [field, , helper] = useField(fieldName);
 
-  const [description, setDerscription] = useState<string>(field.value);
+  const [memo, setMemo] = useState<string>(field.value);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value: inputValue } = e.target;
-    setDerscription(inputValue);
+    setMemo(inputValue);
   };
 
   const onBlur = () => {
-    helper.setValue(description);
+    helper.setValue(memo);
   };
 
   return (
     <Input
       onChange={onChange}
-      value={description}
-      placeholder="Description"
+      value={memo}
+      placeholder="Memo"
       onBlur={onBlur}
       // maxLength={16}
     />
   );
 }
 
-export default AddTransactionsFormDescriptionField;
+export default AddTransactionsFormTransactionMemoField;

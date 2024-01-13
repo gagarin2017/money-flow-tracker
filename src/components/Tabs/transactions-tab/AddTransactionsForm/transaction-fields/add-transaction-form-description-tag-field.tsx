@@ -12,6 +12,7 @@ const AddTransactionsFormTransactionDescriptionAndTagField = ({
   isTagField,
 }: AddTransactionsFormTransactionDescriptionAndTagFieldProps) => {
   const [field, , helper] = useField(fieldName);
+
   const { state } = useImportTransactionsContext();
 
   const { descriptions, tags } = state;

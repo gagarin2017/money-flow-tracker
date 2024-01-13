@@ -118,7 +118,6 @@ function TransactionsTable({
       key: "action",
       render: (_: any, record: Transaction) => (
         <Space size="middle">
-          <Button type="link">{`Edit tx id ${record.id}`}</Button>
           <Popconfirm
             title="Delete this transaction?"
             onConfirm={() => handleTransactionDelete(record.id)}

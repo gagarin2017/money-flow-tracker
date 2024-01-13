@@ -38,16 +38,6 @@ export const EMPTY_FORM_TRANSACTION = {
   amount: undefined,
 } as FormTransaction;
 
-export const createAutoCompleteDescTagDataSource = (
-  savedValuesList: Tag[] | Description[]
-): DataSourceItemType[] => {
-  return [];
-
-  // return savedValuesList.map((item) => {
-  //   return { key: item.id, value: item.name };
-  // });
-};
-
 export const transformParsedTransactions = (
   parsedResults: FileParserResults[],
   activeAccounts: BankAccount[]
@@ -83,15 +73,13 @@ function transformTransactionsToTableTransactions(
 ): FormTransaction[] {
   const result: FormTransaction[] = transactionsToBeImported.map(
     (txToImport: Transaction) => {
-      // console.log("🚀 ~ file: add-transactions-utils.ts:78 ~ txToImport:", txToImport)
       const date = getStringFromDate(txToImport.date);
       return {
         id: -date.length * Math.random() * 1234,
         date: date,
-        descriptionName: txToImport.description.name,
+        memo: txToImport.description.name,
         amount: txToImport.amount,
       } as FormTransaction;
-      // return {} as FormTransaction
     }
   );
   return result;
@@ -101,8 +89,6 @@ export const fetchPayeesCategoriesTags = async (
   isSpringBoot: boolean,
   dispatch: ({}: any) => void
 ) => {
-  console.log("Fetching stuff when Manage Payees modal clicked ... ");
-
   try {
     dispatch({ type: ImportTransactionsActionType.FETCH_START });
 
@@ -132,7 +118,6 @@ export const fetchPayeesCategoriesTags = async (
     const payees = isSpringBoot
       ? payeesResponse._embedded.payees
       : payeesResponse;
-    console.log("🚀 ~ file: add-transactions-utils.ts:127 ~ payees:", payees);
 
     dispatch({
       type: ImportTransactionsActionType.SET_CATEGORIES,

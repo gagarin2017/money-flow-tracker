@@ -9,6 +9,7 @@ import ManagePayeesModal from "./AddTransactionsForm/manage-payees/manage-payees
 import { isSpringBoot } from "../../services/api-common";
 import { fetchPayeesCategoriesTags } from "./add-transactions-utils";
 import { DownOutlined, MenuOutlined, LineOutlined } from "@ant-design/icons";
+import ImportSingleTransactionForm from "./ImportTransactionsForm/import-single-transaction-form";
 
 const importButtonOptions: MenuProps["items"] = [
   {
@@ -33,6 +34,13 @@ function TransactionsMenu() {
     });
   };
 
+  const handleOpenCloseOfImportSingleTransactionsForm = () => {
+    dispatch({
+      type: ImportTransactionsActionType.IMPORT_SINGLE_TXS_FORM_VISIBLE,
+      payload: !state.isImportTransactionsFormVisible,
+    });
+  };
+
   const handleOpenCloseOfManagePayeesModal = () => {
     dispatch({
       type: ImportTransactionsActionType.MANAGE_PAYEE_MODAL_VISIBLE,
@@ -46,7 +54,7 @@ function TransactionsMenu() {
     if (key === "1") {
       handleOpenCloseOfImportTransactionsForm();
     } else if (key === "2") {
-      alert("not implemented yet!");
+      handleOpenCloseOfImportSingleTransactionsForm();
     }
   };
 
@@ -67,7 +75,6 @@ function TransactionsMenu() {
           </Button>
         </a>
       </Dropdown>
-      {/* <Button onClick={handleOpenCloseOfImportTransactionsForm}>Import</Button> */}
 
       <Button onClick={handleOpenCloseOfManagePayeesModal}>
         Manage Payees
@@ -76,7 +83,10 @@ function TransactionsMenu() {
       {state.newTransactions && state.newTransactions.length > 0 && (
         <AddTransactionsForm />
       )}
-      <ManagePayeesModal />
+      {state.isImportSingleTransactionsFormVisible && (
+        <ImportSingleTransactionForm />
+      )}
+      {state.isManagePayeesModalVisible && <ManagePayeesModal />}
     </>
   );
 }

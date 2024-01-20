@@ -1,4 +1,4 @@
-import { Collapse } from "antd";
+import { Collapse, CollapseProps } from "antd";
 import { FieldArray, Form, Formik, FormikHelpers } from "formik";
 import BankAccount from "../../../../model/bank-account";
 import { Transaction } from "../../../../model/transaction";
@@ -23,6 +23,7 @@ import { isSpringBoot } from "../../../services/api-common";
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
 import { getDateFromString } from "../../../../utils/date-helper";
+import { useTransactionsContext } from "../../../../context/transactions-context";
 
 const { Panel } = Collapse;
 
@@ -31,12 +32,13 @@ export interface AccountTransaction {
   transactions: FormTransaction[];
 }
 
-interface NewTransactionsFormData {
+export interface NewTransactionsFormData {
   accountTransactions: AccountTransaction[];
 }
 
 const AddTransactionsForm = () => {
   const { state, dispatch } = useImportTransactionsContext();
+  const { isLoading, saveTransactions } = useTransactionsContext();
 
   useEffect(() => {
     fetchPayeesCategoriesTags(isSpringBoot, dispatch);
@@ -94,7 +96,7 @@ const AddTransactionsForm = () => {
       });
     });
 
-    // dispatch(saveTransactions(transactionsToSave));
+    saveTransactions(transactionsToSave);
 
     resetForm();
     handleFormClose();
@@ -102,6 +104,29 @@ const AddTransactionsForm = () => {
 
   const areThereAnyTransactionsToImport =
     state.newTransactions && state.newTransactions.length === 0;
+
+  const accountTransactionSection = (values: NewTransactionsFormData) => {
+    const items: CollapseProps["items"] = values.accountTransactions.map(
+      (accTransactions: AccountTransaction, index: number) => ({
+        key: index,
+        label: (
+          <div
+            style={{ fontWeight: "bold" }}
+          >{`${accTransactions.bankAccount?.bankName} - ${accTransactions.transactions.length} transactions`}</div>
+        ),
+        children: (
+          <div style={{ maxHeight: 500, overflow: "scroll" }}>
+            <AccountTransactionsList
+              accountIndex={index}
+              transactions={accTransactions.transactions}
+            />
+          </div>
+        ),
+      })
+    );
+
+    return <Collapse items={items} defaultActiveKey={["0"]} />;
+  };
 
   return (
     <Formik
@@ -130,26 +155,7 @@ const AddTransactionsForm = () => {
               <ImportTransactionsEmptyList />
             ) : (
               <FieldArray name="accountTransactions">
-                {() => (
-                  <Collapse accordion defaultActiveKey={["0"]}>
-                    {values.accountTransactions.map(
-                      (accTransactions, index) => (
-                        <Panel
-                          header={`${accTransactions.bankAccount?.bankName} - ${accTransactions.transactions.length} transactions`}
-                          style={{ fontWeight: "bold" }}
-                          key={index}
-                        >
-                          <div style={{ maxHeight: 500, overflow: "scroll" }}>
-                            <AccountTransactionsList
-                              accountIndex={index}
-                              transactions={accTransactions.transactions}
-                            />
-                          </div>
-                        </Panel>
-                      )
-                    )}
-                  </Collapse>
-                )}
+                {() => <>{accountTransactionSection(values)}</>}
               </FieldArray>
             )}
           </Form>

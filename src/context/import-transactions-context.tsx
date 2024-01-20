@@ -14,6 +14,7 @@ export const enum ImportTransactionsActionType {
   FETCH_START = "StartFetchingData",
   ADD_ERROR = "FetchingErrors",
   IMPORT_TXS_FORM_VISIBLE = "ImportTransactionsFormVisible",
+  IMPORT_SINGLE_TXS_FORM_VISIBLE = "ImportSingleTransactionsFormVisible",
   ADD_TXS_FORM_VISIBLE = "AddTransactionsFormModalVisible",
   MANAGE_PAYEE_MODAL_VISIBLE = "ManagePayeesModalVisible",
   ADD_NEW_TXS = "AddNewTransactions",
@@ -28,6 +29,7 @@ export const enum ImportTransactionsActionType {
 // Define the state type
 export interface ImportTransactionsState {
   isImportTransactionsFormVisible: boolean;
+  isImportSingleTransactionsFormVisible: boolean;
   isAddTransactionsFormModalVisible: boolean;
   isManagePayeesModalVisible: boolean;
   newTransactions: AccountTransaction[];
@@ -51,6 +53,10 @@ type ImportTransactionsAction =
     }
   | {
       type: ImportTransactionsActionType.IMPORT_TXS_FORM_VISIBLE;
+      payload: boolean;
+    }
+  | {
+      type: ImportTransactionsActionType.IMPORT_SINGLE_TXS_FORM_VISIBLE;
       payload: boolean;
     }
   | {
@@ -113,6 +119,11 @@ const newTransactionsReducer = (
       return { ...state, isLoading: true, errors: [] };
     case ImportTransactionsActionType.IMPORT_TXS_FORM_VISIBLE:
       return { ...state, isImportTransactionsFormVisible: action.payload };
+    case ImportTransactionsActionType.IMPORT_SINGLE_TXS_FORM_VISIBLE:
+      return {
+        ...state,
+        isImportSingleTransactionsFormVisible: action.payload,
+      };
     case ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE:
       return { ...state, isAddTransactionsFormModalVisible: action.payload };
     case ImportTransactionsActionType.MANAGE_PAYEE_MODAL_VISIBLE:
@@ -189,6 +200,7 @@ function ImportTransactionsProvider({
   children: React.ReactNode;
 }) {
   const [state, dispatch] = useReducer(newTransactionsReducer, {
+    isImportSingleTransactionsFormVisible: false,
     isImportTransactionsFormVisible: false,
     isAddTransactionsFormModalVisible: false,
     isManagePayeesModalVisible: false,

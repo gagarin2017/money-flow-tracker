@@ -10,7 +10,11 @@ const style: React.CSSProperties = {
 };
 
 const HEADER_ROW = (
-  <Row gutter={[2, 4]} justify={"center"} style={{ width: ROW_WIDTH }}>
+  <Row
+    gutter={[2, 4]}
+    justify={"center"}
+    style={{ width: ROW_WIDTH, fontWeight: "bold" }}
+  >
     <Col className="gutter-row" span={2} key={"Date"}>
       <div style={style}>Date</div>
     </Col>

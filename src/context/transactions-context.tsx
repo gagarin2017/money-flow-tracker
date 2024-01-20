@@ -4,11 +4,17 @@ import { Transaction } from "../model/transaction";
 import {
   fetchAccountTransactionsAPI,
   filterTransactionsAPI,
+  sendTransactionsAPI,
 } from "../components/services/transactions-api";
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { AccountTransaction } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
 import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
 import { isSpringBoot } from "../components/services/api-common";
+import Error from "../model/error";
+import { notification } from "antd";
+
+const description =
+  "Request was probably sent, but no response on the other side... Are you calling to the right door?";
 
 export interface TransactionsData {
   transactions: Transaction[];
@@ -20,6 +26,7 @@ export interface TransactionsData {
     transactionsToBeImported: FileParserResults[],
     activeBankAccounts: BankAccount[]
   ) => void;
+  saveTransactions: (transactions: Transaction[]) => void;
 }
 
 const TransactionsContext = createContext<TransactionsData>({
@@ -32,6 +39,7 @@ const TransactionsContext = createContext<TransactionsData>({
     transactionsToBeImported: FileParserResults[],
     activeBankAccounts: BankAccount[]
   ) => {},
+  saveTransactions: (transactions: Transaction[]) => {},
 });
 
 function TransactionsProvider({ children }: { children: React.ReactNode }) {
@@ -40,6 +48,7 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
   const [importedTransactions, setImportedTransactions] = useState<
     AccountTransaction[]
   >([]);
+  const [errors, setErrors] = useState<Error[]>([]);
 
   const fetchTransactionsByBankAccount = async (account: BankAccount) => {
     fetchTransactionsByBankAccountId(account.id);
@@ -90,6 +99,34 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const saveTransactions = async (transactions: Transaction[]) => {
+    setLoading(true);
+
+    try {
+      const savedTransactons: Transaction[] | undefined =
+        await sendTransactionsAPI(transactions, undefined);
+
+      if (savedTransactons) {
+        setTransactions(savedTransactons);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("error occurred: ", error);
+      const theError: Error = {
+        type: "error",
+        message: "Failed to send Transactions",
+        description,
+      };
+
+      console.log(theError);
+
+      const newErrors = [...errors, theError];
+
+      setErrors(newErrors);
+    }
+  };
+
   const valueToShare = {
     transactions,
     isLoading,
@@ -97,6 +134,7 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     fetchTransactionsByBankAccount,
     fetchTransactionsByBankAccountId,
     fetchTransactionsToBeImported,
+    saveTransactions,
   } as TransactionsData;
 
   return (

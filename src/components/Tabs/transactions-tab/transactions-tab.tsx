@@ -8,7 +8,7 @@ import { Col, Row, Space } from "antd";
 import { ImportTransactionsProvider } from "../../../context/import-transactions-context";
 
 function TransactionsTab() {
-  const { selectedBankAccountId } = useBankAccountsContext();
+  const { selectedBankAccountId, fetchBankAccounts } = useBankAccountsContext();
   const {
     transactions,
     isLoading,
@@ -20,8 +20,11 @@ function TransactionsTab() {
     fetchTransactionsByBankAccountId(selectedBankAccountId);
   }, [selectedBankAccountId]);
 
-  const handleTransactionDeletion = (id: number) => {
+  const handleTransactionDeletion = async (id: number) => {
     deleteTransaction(id);
+
+    // refresh bank accounts and their balances
+    await fetchBankAccounts();
   };
 
   return (

@@ -8,7 +8,7 @@ interface FormsModalProps {
   children: React.ReactNode;
   customWidth: number;
   isLoading: boolean;
-  okText: string | undefined;
+  okText?: string | undefined;
 }
 
 const FormsModal = ({

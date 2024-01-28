@@ -1,17 +1,18 @@
+import { notification } from "antd";
 import { createContext, useContext, useState } from "react";
-import BankAccount from "../model/bank-account";
-import { Transaction } from "../model/transaction";
-import {
-  fetchAccountTransactionsAPI,
-  filterTransactionsAPI,
-  sendTransactionsAPI,
-} from "../components/services/transactions-api";
-import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { AccountTransaction } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
+import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
 import { isSpringBoot } from "../components/services/api-common";
+import {
+  deleteTransactionAPI,
+  fetchAccountTransactionsAPI,
+  filterTransactionsAPI,
+  saveTransactionsAPI,
+} from "../components/services/transactions-api";
+import BankAccount from "../model/bank-account";
 import Error from "../model/error";
-import { notification } from "antd";
+import { Transaction } from "../model/transaction";
 
 const description =
   "Request was probably sent, but no response on the other side... Are you calling to the right door?";
@@ -27,6 +28,7 @@ export interface TransactionsData {
     activeBankAccounts: BankAccount[]
   ) => void;
   saveTransactions: (transactions: Transaction[]) => void;
+  deleteTransaction: (id: number) => void;
 }
 
 const TransactionsContext = createContext<TransactionsData>({
@@ -40,6 +42,7 @@ const TransactionsContext = createContext<TransactionsData>({
     activeBankAccounts: BankAccount[]
   ) => {},
   saveTransactions: (transactions: Transaction[]) => {},
+  deleteTransaction: (id: number) => {},
 });
 
 function TransactionsProvider({ children }: { children: React.ReactNode }) {
@@ -84,12 +87,14 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
 
       // DEV ONLY! 1 second pause
       // Fix for production
-      const transactions = isSpringBoot ? data._embedded.transactions : data;
+      const fetchedTransactions = isSpringBoot
+        ? data._embedded.transactions
+        : data;
 
       // DEV ONLY! 1 second pause
       // await pause(5000);
 
-      setTransactions(transactions);
+      setTransactions(fetchedTransactions);
       setLoading(false);
     } catch (error) {
       console.error(
@@ -99,15 +104,16 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const saveTransactions = async (transactions: Transaction[]) => {
+  const saveTransactions = async (transactionsToSave: Transaction[]) => {
     setLoading(true);
 
     try {
       const savedTransactons: Transaction[] | undefined =
-        await sendTransactionsAPI(transactions, undefined);
+        await saveTransactionsAPI(transactionsToSave, undefined);
 
       if (savedTransactons) {
-        setTransactions(savedTransactons);
+        const newState = [...savedTransactons, ...transactions];
+        setTransactions(newState);
       }
       setLoading(false);
     } catch (error) {
@@ -127,6 +133,29 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const deleteTransaction = async (transactionId: number) => {
+    setLoading(true);
+
+    try {
+      await deleteTransactionAPI(transactionId);
+
+      const newState = [...transactions].filter(
+        (tx) => tx.id !== transactionId
+      );
+      setTransactions(newState);
+      setLoading(false);
+    } catch (error) {
+      console.log("Error occurred while deleting the transaction: ", error);
+      const theError = {
+        message: "Failed to delete Transaction",
+        description,
+      };
+
+      notification.error({ ...theError, duration: 0 });
+      // dispatch(errorActions.addError({ ...theError, type: "error" }));
+    }
+  };
+
   const valueToShare = {
     transactions,
     isLoading,
@@ -135,6 +164,7 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     fetchTransactionsByBankAccountId,
     fetchTransactionsToBeImported,
     saveTransactions,
+    deleteTransaction,
   } as TransactionsData;
 
   return (

@@ -1,6 +1,8 @@
 import { Col, Row } from "antd";
 import AccountTransaction from "./account-transaction";
 import { FormTransaction } from "../add-transactions-utils";
+import { FormikErrors, FormikTouched } from "formik";
+import { NewTransactionsFormData } from "./add-transactions-form";
 
 export const ROW_WIDTH = 1410;
 
@@ -45,11 +47,17 @@ const HEADER_ROW = (
 interface AccountTransactionsListProps {
   transactions: FormTransaction[];
   accountIndex: number;
+  isDateEditable?: boolean;
+  errors: FormikErrors<NewTransactionsFormData>;
+  touched: FormikTouched<NewTransactionsFormData>;
 }
 
 function AccountTransactionsList({
   accountIndex,
   transactions,
+  isDateEditable,
+  errors,
+  touched,
 }: AccountTransactionsListProps) {
   return (
     <>
@@ -61,6 +69,9 @@ function AccountTransactionsList({
             transaction={transaction}
             accountIndex={accountIndex}
             txIndex={txIndex}
+            isDateEditable={isDateEditable}
+            errors={errors}
+            touched={touched}
           />
         );
       })}

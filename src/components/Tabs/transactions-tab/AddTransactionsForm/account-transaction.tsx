@@ -4,20 +4,31 @@ import { ROW_WIDTH } from "./account-transaction-list";
 import AddTransactionsFormAmountField from "./transaction-fields/add-transaction-form-amount-field";
 import AddTransactionsFormTransactionCategoryField from "./transaction-fields/add-transaction-form-category-field";
 import AddTransactionsFormTransactionDescriptionAndTagField from "./transaction-fields/add-transaction-form-description-tag-field";
-import AddTransactionsFormPayeeField from "./transaction-fields/add-transaction-form-payee-field";
 import AddTransactionsFormTransactionMemoField from "./transaction-fields/add-transaction-form-memo-field";
+import AddTransactionsFormPayeeField from "./transaction-fields/add-transaction-form-payee-field";
+import AddTransactionFormDateField from "./transaction-fields/add-transaction-form-date-field";
+import { FormikErrors, FormikTouched } from "formik";
+import { NewTransactionsFormData } from "./add-transactions-form";
+import ErrorMessage from "./transaction-fields/error-message";
 
 interface AccountTransactionProps {
   transaction: FormTransaction;
   accountIndex: number;
   txIndex: number;
+  isDateEditable?: boolean;
+  errors: FormikErrors<NewTransactionsFormData>;
+  touched: FormikTouched<NewTransactionsFormData>;
 }
 
 function AccountTransaction({
   accountIndex,
   txIndex,
   transaction,
+  isDateEditable,
+  errors,
+  touched,
 }: AccountTransactionProps) {
+
   return (
     <Row
       gutter={[2, 4]}
@@ -26,7 +37,13 @@ function AccountTransaction({
       style={{ width: ROW_WIDTH, paddingTop: 5 }}
     >
       <Col className="gutter-row" span={2}>
-        {transaction.date}
+        {isDateEditable ? (
+          <AddTransactionFormDateField
+            fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.date`}
+          />
+        ) : (
+          transaction.date
+        )}
       </Col>
       <Col className="gutter-row" span={3}>
         <AddTransactionsFormPayeeField
@@ -52,6 +69,10 @@ function AccountTransaction({
         <AddTransactionsFormTransactionCategoryField
           fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
         />
+        <ErrorMessage
+          key={`${transaction.id}category`}
+          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
+        />
       </Col>
       <Col className="gutter-row" span={3}>
         <AddTransactionsFormTransactionDescriptionAndTagField
@@ -62,6 +83,10 @@ function AccountTransaction({
       <Col className="gutter-row" span={2}>
         <AddTransactionsFormAmountField
           fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
+        />
+        <ErrorMessage
+          key={`${transaction.id}amount`}
+          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
         />
       </Col>
       <Col className="gutter-row" span={2}>

@@ -9,18 +9,23 @@ import {
   DATE_FORMAT_DD_MM_YYYY,
   getStringFromDateWFormatter,
 } from "../../../utils/date-helper";
-import { getCategoryAsString } from "../../../utils/transactions-helper";
+import {
+  TransactionSorterByDate,
+  getCategoryAsString,
+} from "../../../utils/transactions-helper";
+import BankAccount from "../../../model/bank-account";
 
 // The representation of the transaction (we might not want to include all transaction fields to be displayed on the UI)
 interface DataType {
   key: number;
   id: number;
+  bankAccount: BankAccount;
   date: Date;
   category: Category;
   description: Description;
   memo: string;
   tag: TxTag;
-  reconsiled: boolean;
+  reconsiled?: boolean;
   amount: number;
   runningBalance: number;
 }
@@ -28,11 +33,13 @@ interface DataType {
 interface TransactionsTableProps {
   transactions: Transaction[];
   isLoading: boolean;
+  handleTransactionDeletion: (id: number) => void;
 }
 
 function TransactionsTable({
   transactions,
   isLoading,
+  handleTransactionDeletion,
 }: TransactionsTableProps) {
   const columns: ColumnsType<DataType> = [
     {
@@ -55,7 +62,7 @@ function TransactionsTable({
       dataIndex: "description",
       key: "description",
       render: (_: any, record: Transaction) => {
-        return record.description.name;
+        return record.description?.name || undefined;
       },
     },
     {
@@ -68,7 +75,7 @@ function TransactionsTable({
       dataIndex: "tag",
       key: "tag",
       render: (_: any, record: Transaction) => {
-        return record.tag.name;
+        return record.tag?.name || undefined;
       },
     },
     {
@@ -133,7 +140,7 @@ function TransactionsTable({
   ];
 
   const handleTransactionDelete = (transactionId: number) => {
-    console.log("Deleting transaction", transactionId);
+    handleTransactionDeletion(transactionId);
   };
 
   const data: DataType[] = transactions.map((tx) => ({ ...tx, key: tx.id }));

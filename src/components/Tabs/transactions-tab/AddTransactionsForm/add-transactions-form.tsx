@@ -1,31 +1,35 @@
 import { Collapse, CollapseProps } from "antd";
-import { FieldArray, Form, Formik, FormikHelpers } from "formik";
+import {
+  FieldArray,
+  Form,
+  Formik,
+  FormikErrors,
+  FormikHelpers,
+  FormikTouched,
+} from "formik";
 import BankAccount from "../../../../model/bank-account";
 import { Transaction } from "../../../../model/transaction";
 
+import { useEffect } from "react";
+import * as Yup from "yup";
 import FormsModal from "../../../../UI/forms-modal";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
+import { useTransactionsContext } from "../../../../context/transactions-context";
+import { Category } from "../../../../model/category";
+import { Description } from "../../../../model/description";
+import { getDateFromString } from "../../../../utils/date-helper";
+import { isSpringBoot } from "../../../services/api-common";
 import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
-import AccountTransactionsList from "./account-transaction-list";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
   fetchPayeesCategoriesTags,
 } from "../add-transactions-utils";
-import { useEffect } from "react";
-import { fetchCategoriesAPI } from "../../../services/categories-api";
-import Error from "../../../../model/error";
-import { fetchTagsAPI } from "../../../services/tags-api";
-import { isSpringBoot } from "../../../services/api-common";
-import { Category } from "../../../../model/category";
-import { Description } from "../../../../model/description";
-import { getDateFromString } from "../../../../utils/date-helper";
-import { useTransactionsContext } from "../../../../context/transactions-context";
-
-const { Panel } = Collapse;
+import AccountTransactionsList from "./account-transaction-list";
+import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 
 export interface AccountTransaction {
   bankAccount: BankAccount | undefined;
@@ -36,9 +40,25 @@ export interface NewTransactionsFormData {
   accountTransactions: AccountTransaction[];
 }
 
+export const ACC_TRXS_VALID_SCHEMA = Yup.object().shape({
+  accountTransactions: Yup.array().of(
+    Yup.object().shape({
+      transactions: Yup.array().of(
+        Yup.object().shape({
+          category: Yup.object().shape({
+            name: Yup.string().required(),
+          }),
+          amount: Yup.number().required(),
+        })
+      ),
+    })
+  ),
+});
+
 const AddTransactionsForm = () => {
   const { state, dispatch } = useImportTransactionsContext();
   const { isLoading, saveTransactions } = useTransactionsContext();
+  const { fetchBankAccounts } = useBankAccountsContext();
 
   useEffect(() => {
     fetchPayeesCategoriesTags(isSpringBoot, dispatch);
@@ -70,6 +90,13 @@ const AddTransactionsForm = () => {
       type: ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE,
       payload: false,
     });
+    dispatch({
+      type: ImportTransactionsActionType.ADD_NEW_TXS,
+      payload: {
+        bankAccounts: [],
+        parserResults: [],
+      },
+    });
   };
 
   const onSubmit = async (
@@ -85,18 +112,23 @@ const AddTransactionsForm = () => {
     formValues.accountTransactions.forEach((formData) => {
       formData.transactions.forEach((tx) => {
         transactionsToSave.push({
-          bankAccount: formData.bankAccount?.id,
-          date: getDateFromString(tx.date),
+          id: -1,
+          bankAccount: formData.bankAccount,
+          date: tx.date && getDateFromString(tx.date),
           description: { id: tx.description?.id, name: "" } as Description,
           category: { id: tx.category?.id } as Category,
           memo: tx.memo,
           tag: tx.tag,
           amount: tx.amount,
+          runningBalance: 0,
         } as Transaction);
       });
     });
 
     saveTransactions(transactionsToSave);
+
+    // refresh accounts with the latest balances
+    await fetchBankAccounts();
 
     resetForm();
     handleFormClose();
@@ -105,7 +137,11 @@ const AddTransactionsForm = () => {
   const areThereAnyTransactionsToImport =
     state.newTransactions && state.newTransactions.length === 0;
 
-  const accountTransactionSection = (values: NewTransactionsFormData) => {
+  const accountTransactionSection = (
+    values: NewTransactionsFormData,
+    errors: FormikErrors<NewTransactionsFormData>,
+    touched: FormikTouched<NewTransactionsFormData>
+  ) => {
     const items: CollapseProps["items"] = values.accountTransactions.map(
       (accTransactions: AccountTransaction, index: number) => ({
         key: index,
@@ -119,6 +155,8 @@ const AddTransactionsForm = () => {
             <AccountTransactionsList
               accountIndex={index}
               transactions={accTransactions.transactions}
+              errors={errors}
+              touched={touched}
             />
           </div>
         ),
@@ -134,10 +172,18 @@ const AddTransactionsForm = () => {
       onSubmit={(values, handleReset) => {
         onSubmit(values, handleReset);
       }}
-      validateOnMount={false} // Do not validate on mount
       validateOnChange={false} // Do not validate on change
+      validationSchema={ACC_TRXS_VALID_SCHEMA}
+      validateOnMount={true}
     >
-      {({ values, handleSubmit, handleReset, isSubmitting }) => (
+      {({
+        values,
+        errors,
+        touched,
+        handleSubmit,
+        handleReset,
+        isSubmitting,
+      }) => (
         <FormsModal
           title={`Add new Transactions`}
           isModalVisible={state.isAddTransactionsFormModalVisible}
@@ -155,7 +201,7 @@ const AddTransactionsForm = () => {
               <ImportTransactionsEmptyList />
             ) : (
               <FieldArray name="accountTransactions">
-                {() => <>{accountTransactionSection(values)}</>}
+                {() => accountTransactionSection(values, errors, touched)}
               </FieldArray>
             )}
           </Form>

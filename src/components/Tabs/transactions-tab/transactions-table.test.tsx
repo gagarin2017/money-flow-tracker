@@ -8,6 +8,7 @@ import {
   getStringFromDateWFormatter,
 } from "../../../utils/date-helper";
 import { getAmountAsFormatedString } from "../../../utils/currency-helper";
+import BankAccount from "../../../model/bank-account";
 
 setMatchMedia();
 
@@ -21,6 +22,7 @@ const inputTransactions: Transaction[] = [
   {
     id: 3933,
     date: currentDate,
+    bankAccount: {} as BankAccount,
     description: {
       id: 3,
       name: "Some works in the bathroom",
@@ -91,7 +93,11 @@ const inputTransactions: Transaction[] = [
 ];
 const renderComponent = () => {
   render(
-    <TransactionsTable transactions={inputTransactions} isLoading={false} />
+    <TransactionsTable
+      transactions={inputTransactions}
+      isLoading={false}
+      handleTransactionDeletion={() => {}}
+    />
   );
 };
 

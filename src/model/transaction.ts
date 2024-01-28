@@ -1,10 +1,11 @@
+import BankAccount from "./bank-account";
 import { Category } from "./category";
 import { Description } from "./description";
 import { Tag } from "./tag";
 
 export interface Transaction {
   id: number;
-  bankAccount?: number;
+  bankAccount: BankAccount;
   date: Date;
   category: Category;
   categoryName?: string;
@@ -12,7 +13,7 @@ export interface Transaction {
   descriptionName?: string;
   memo: string;
   tag: Tag;
-  reconsiled: boolean;
+  reconsiled?: boolean;
   // balance from the transactions file (csv, txt)
   balance?: number;
   type?: string;

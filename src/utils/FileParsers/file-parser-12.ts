@@ -65,7 +65,7 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
       if (amount) {
         transactions.push({
           date: txDate,
-          bankAccount: accountId,
+          bankAccount: { id: accountId },
           description: row[DESC_COLUMN_INDEX],
           balance: parseFloat(row[BALANCE_COLUMN_INDEX].replace(/,/g, "")),
           amount,

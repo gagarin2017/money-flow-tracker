@@ -9,12 +9,20 @@ import { ImportTransactionsProvider } from "../../../context/import-transactions
 
 function TransactionsTab() {
   const { selectedBankAccountId } = useBankAccountsContext();
-  const { transactions, isLoading, fetchTransactionsByBankAccountId } =
-    useTransactionsContext();
+  const {
+    transactions,
+    isLoading,
+    fetchTransactionsByBankAccountId,
+    deleteTransaction,
+  } = useTransactionsContext();
 
   useEffect(() => {
     fetchTransactionsByBankAccountId(selectedBankAccountId);
   }, [selectedBankAccountId]);
+
+  const handleTransactionDeletion = (id: number) => {
+    deleteTransaction(id);
+  };
 
   return (
     <>
@@ -31,6 +39,7 @@ function TransactionsTab() {
           <TransactionsTable
             transactions={transactions}
             isLoading={isLoading}
+            handleTransactionDeletion={handleTransactionDeletion}
           />
         </Col>
       </Row>

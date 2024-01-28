@@ -129,14 +129,10 @@ const newTransactionsReducer = (
     case ImportTransactionsActionType.MANAGE_PAYEE_MODAL_VISIBLE:
       return { ...state, isManagePayeesModalVisible: action.payload };
     case ImportTransactionsActionType.ADD_NEW_PAYEE:
-      // call saver method here
       savePayee(action.payload);
-      console.log("new payee added: ", action.payload);
       return { ...state, payees: [...state.payees, action.payload] };
     case ImportTransactionsActionType.DELETE_PAYEE:
-      // call remove method here
       deletePayee(action.payload);
-      console.log("payee deleted: ", action.payload);
       const updatedCategories = state.payees.filter(
         (payee) => payee.id !== action.payload
       );

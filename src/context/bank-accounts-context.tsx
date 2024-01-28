@@ -4,7 +4,7 @@ import {
   editBankAccountsAPI,
   fetchBankAccountsAPI,
 } from "../components/services/bank-account-api";
-import { sortBankAccountsByBankName } from "../utils/bank-account-helper";
+import { sortBankAccountsByBankNameAccName } from "../utils/bank-account-helper";
 import { isSpringBoot } from "../components/services/api-common";
 
 export interface BankAccountsData {
@@ -40,8 +40,10 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
       const data = isSpringBoot ? rawData._embedded.bankAccounts : rawData;
 
       if (data && data.length > 0) {
-        const sortedBankAccounts = sortBankAccountsByBankName(data);
-        setSelectedBankAccountId(sortedBankAccounts[0].id);
+        const sortedBankAccounts = sortBankAccountsByBankNameAccName(data);
+
+        selectedBankAccountId === -1 &&
+          setSelectedBankAccountId(sortedBankAccounts[0].id);
         setBankAccounts(sortedBankAccounts);
       }
       setLoading(false);
@@ -64,7 +66,9 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
         }
       );
 
-      setBankAccounts(sortBankAccountsByBankName(updatedBankAccountsList));
+      setBankAccounts(
+        sortBankAccountsByBankNameAccName(updatedBankAccountsList)
+      );
     } catch (error) {
       console.error("Error updating bank account:", error);
     }

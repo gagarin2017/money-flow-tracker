@@ -1,11 +1,30 @@
-import { FieldArray, Formik, FormikHelpers } from "formik";
-import MinimalisticModal from "../../../../UI/minimalistic-modal";
+import { Alert, Space } from "antd";
+import {
+  FieldArray,
+  Formik,
+  FormikErrors,
+  FormikHelpers,
+  FormikTouched,
+} from "formik";
+import { useEffect } from "react";
+import FormsModal from "../../../../UI/forms-modal";
+import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
-import BankAccount from "../../../../model/bank-account";
+import { useTransactionsContext } from "../../../../context/transactions-context";
+import { Category } from "../../../../model/category";
+import { Transaction } from "../../../../model/transaction";
 import {
+  DATE_FORMAT_DD_MM_YYYY,
+  getDateFromStringWFormatter,
+} from "../../../../utils/date-helper";
+import BankAccountTitle from "../../../BankAccounts/bank-account-title";
+import { isSpringBoot } from "../../../services/api-common";
+import AccountTransactionsList from "../AddTransactionsForm/account-transaction-list";
+import {
+  ACC_TRXS_VALID_SCHEMA,
   AccountTransaction,
   NewTransactionsFormData,
 } from "../AddTransactionsForm/add-transactions-form";
@@ -13,24 +32,14 @@ import {
   EMPTY_FORM_TRANSACTION,
   fetchPayeesCategoriesTags,
 } from "../add-transactions-utils";
-import { Alert, Collapse, CollapseProps, Space } from "antd";
-import { Panel } from "rc-collapse";
-import AccountTransactionsList from "../AddTransactionsForm/account-transaction-list";
-import { useTransactionsContext } from "../../../../context/transactions-context";
-import { useEffect } from "react";
-import { isSpringBoot } from "../../../services/api-common";
-import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
-import BankAccountTitle from "../../../BankAccounts/bank-account-title";
+
+const CUSTOM_WIDTH = 1400;
 
 function ImportSingleTransactionForm() {
   const { state, dispatch } = useImportTransactionsContext();
   const { isLoading, saveTransactions } = useTransactionsContext();
-  const { bankAccounts, selectedBankAccountId } = useBankAccountsContext();
-  console.log(
-    "🚀 ~ ImportSingleTransactionForm ~ selectedBankAccountId:",
-    selectedBankAccountId
-  );
-  console.log("🚀 ~ ImportSingleTransactionForm ~ bankAccounts:", bankAccounts);
+  const { bankAccounts, selectedBankAccountId, fetchBankAccounts } =
+    useBankAccountsContext();
 
   useEffect(() => {
     fetchPayeesCategoriesTags(isSpringBoot, dispatch);
@@ -41,24 +50,14 @@ function ImportSingleTransactionForm() {
   );
 
   const getInitialValues = () => {
-    let initialForm = {} as NewTransactionsFormData;
-
-    if (state.newTransactions && state.newTransactions.length > 0) {
-      initialForm = {
-        accountTransactions: state.newTransactions,
-      };
-    } else {
-      initialForm = {
-        accountTransactions: [
-          {
-            bankAccount,
-            transactions: [EMPTY_FORM_TRANSACTION],
-          },
-        ],
-      };
-    }
-
-    return initialForm;
+    return {
+      accountTransactions: [
+        {
+          bankAccount,
+          transactions: [EMPTY_FORM_TRANSACTION],
+        },
+      ],
+    };
   };
 
   const handleFormClose = () => {
@@ -72,54 +71,93 @@ function ImportSingleTransactionForm() {
     formValues: NewTransactionsFormData,
     { resetForm }: FormikHelpers<NewTransactionsFormData>
   ) => {
+    const transactionsToSave: Transaction[] = [];
+
+    formValues.accountTransactions.forEach((formData) => {
+      formData.transactions.forEach((tx) => {
+        transactionsToSave.push({
+          id: -1,
+          bankAccount: formData.bankAccount,
+          date:
+            tx.date &&
+            getDateFromStringWFormatter(tx.date, DATE_FORMAT_DD_MM_YYYY),
+          description: tx.description,
+          category: {
+            id: tx.category?.id,
+            name: tx.category?.name,
+            subCategories: tx.category?.subCategories,
+          } as Category,
+          memo: tx.memo,
+          tag: tx.tag,
+          amount: tx.amount,
+          runningBalance: 0,
+        } as Transaction);
+      });
+    });
+
+    saveTransactions(transactionsToSave);
+
+    // refresh accounts with the latest balances
+    await fetchBankAccounts();
+
     resetForm();
+    handleFormClose();
   };
 
-  const accountTransactionSection = (values: NewTransactionsFormData) => {
-    const items: CollapseProps["items"] = values.accountTransactions.map(
-      (accTransactions: AccountTransaction, index: number) => ({
-        key: index,
-        label: (
-          <BankAccountTitle
-            bankAccount={accTransactions.bankAccount}
-            numberOfTransactions={accTransactions.transactions.length}
-          />
-        ),
-        children: (
-          <div style={{ maxHeight: 500, overflow: "scroll" }}>
-            <AccountTransactionsList
-              accountIndex={index}
-              transactions={accTransactions.transactions}
-            />
-          </div>
-        ),
-      })
+  const accountTransactionSection = (
+    values: NewTransactionsFormData,
+    errors: FormikErrors<NewTransactionsFormData>,
+    touched: FormikTouched<NewTransactionsFormData>
+  ) => {
+    return values.accountTransactions.map(
+      (accTransactions: AccountTransaction, index: number) => (
+        <AccountTransactionsList
+          key={index}
+          accountIndex={index}
+          transactions={accTransactions.transactions}
+          isDateEditable
+          errors={errors}
+          touched={touched}
+        />
+      )
     );
-
-    return <Collapse items={items} defaultActiveKey={["0"]} />;
   };
 
   return (
     <Formik
       initialValues={getInitialValues()}
-      onSubmit={(values, handleReset) => {
+      onSubmit={(
+        values: NewTransactionsFormData,
+        handleReset: FormikHelpers<NewTransactionsFormData>
+      ) => {
         onSubmit(values, handleReset);
       }}
+      validationSchema={ACC_TRXS_VALID_SCHEMA}
+      validateOnMount={true}
     >
-      {({ values, handleSubmit, handleReset, isSubmitting }) => (
-        <MinimalisticModal
+      {({
+        values,
+        errors,
+        touched,
+        handleSubmit,
+        handleReset,
+        isSubmitting,
+      }) => (
+        <FormsModal
           title={"Import transactions"}
           isModalVisible={state.isImportSingleTransactionsFormVisible}
           handleCancel={() => {
             handleReset();
             handleFormClose();
           }}
-          customWidth={1500}
+          customWidth={CUSTOM_WIDTH}
+          handleOk={handleSubmit}
+          isLoading={isLoading}
         >
           <Alert
             message={
               <Space>
-                {"New transactions for the bank account "}{" "}
+                {"New transactions for "}
                 <BankAccountTitle bankAccount={bankAccount} />
               </Space>
             }
@@ -128,9 +166,9 @@ function ImportSingleTransactionForm() {
             style={{ marginBottom: 10 }}
           />
           <FieldArray name="accountTransactions">
-            {() => <>{accountTransactionSection(values)}</>}
+            {() => <>{accountTransactionSection(values, errors, touched)}</>}
           </FieldArray>
-        </MinimalisticModal>
+        </FormsModal>
       )}
     </Formik>
   );

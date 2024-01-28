@@ -27,6 +27,7 @@ function AddTransactionsFormAmountField({
         : formattedValue + ".00";
       helper.setValue(withZeros);
     }
+    helper.setTouched(true);
   };
 
   return (

@@ -1,4 +1,4 @@
-import { Select } from "antd";
+import { Select, Space } from "antd";
 import { useField } from "formik";
 import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
 
@@ -27,16 +27,24 @@ function AddTransactionsFormPayeeField({
   const [, , tagHelper] = useField(tagFieldName);
   const [, , amountHelper] = useField(amountFieldName);
 
+  const onClear = () => {
+    categoryHelper.setValue(undefined);
+    descriptionyHelper.setValue(undefined);
+    tagHelper.setValue(undefined);
+    amountHelper.setValue(undefined);
+    payeeHelper.setTouched(true);
+  };
+
   const onChange = (value: number) => {
-    payeeHelper.setValue(value);
-
     const selectedPayee = payees.find((payee) => payee.id === value);
+    payeeHelper.setValue(selectedPayee);
 
-    if (value) {
+    if (selectedPayee) {
       categoryHelper.setValue(selectedPayee?.category);
       descriptionyHelper.setValue(selectedPayee?.description);
       tagHelper.setValue(selectedPayee?.tag);
       amountHelper.setValue(selectedPayee?.amount);
+      payeeHelper.setTouched(true);
     } else {
       categoryHelper.setValue(undefined);
       descriptionyHelper.setValue(undefined);
@@ -51,20 +59,23 @@ function AddTransactionsFormPayeeField({
   ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
   return (
-    <Select
-      showSearch
-      style={{ width: 170 }}
-      placeholder="Payee"
-      optionFilterProp="children"
-      onChange={onChange}
-      filterOption={filterOption}
-      allowClear
-      options={payees.map((item) => ({
-        label: item.name || "<empty>",
-        value: item.id,
-      }))}
-      value={payeeField.value?.name}
-    />
+    <Space direction="vertical">
+      <Select
+        showSearch
+        style={{ width: 170 }}
+        placeholder="Payee"
+        optionFilterProp="children"
+        onChange={onChange}
+        filterOption={filterOption}
+        onClear={onClear}
+        allowClear
+        options={payees.map((item) => ({
+          label: item.name || "<empty>",
+          value: item.id,
+        }))}
+        value={payeeField.value?.name}
+      />
+    </Space>
   );
 }
 

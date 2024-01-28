@@ -23,6 +23,10 @@ const AddTransactionsFormTransactionCategoryField = ({
     helper.setValue(category);
   };
 
+  const onBlur = () => {
+    helper.setTouched(true);
+  };
+
   return (
     <TreeSelect
       fieldNames={{
@@ -39,6 +43,7 @@ const AddTransactionsFormTransactionCategoryField = ({
       placeholder="Category"
       allowClear
       onChange={onChange}
+      onBlur={onBlur}
       treeData={categories}
       value={field.value?.name}
     />

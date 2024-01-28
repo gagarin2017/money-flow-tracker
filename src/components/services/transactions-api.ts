@@ -59,7 +59,7 @@ export const filterTransactionsAPI = async (
   return result;
 };
 
-export const sendTransactionsAPI = async (
+export const saveTransactionsAPI = async (
   transactions: Transaction[],
   url: string | undefined
 ) => {

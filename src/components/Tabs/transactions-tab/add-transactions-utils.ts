@@ -1,26 +1,29 @@
-import { DataSourceItemType } from "antd/lib/auto-complete";
 import moment from "moment";
 import { ImportTransactionsActionType } from "../../../context/import-transactions-context";
 import BankAccount from "../../../model/bank-account";
+import { Category } from "../../../model/category";
 import { Description } from "../../../model/description";
 import Error from "../../../model/error";
 import { Tag } from "../../../model/tag";
 import { Transaction } from "../../../model/transaction";
-import { getStringFromDate } from "../../../utils/date-helper";
+import {
+  DATE_FORMAT_DD_MM_YYYY,
+  getStringFromDate,
+  getStringFromDateWFormatter,
+} from "../../../utils/date-helper";
 import { fetchCategoriesAPI } from "../../services/categories-api";
+import { fetchDescriptionsAPI } from "../../services/descriptions-api";
+import { fetchPayeesAPI } from "../../services/payee-api";
 import { fetchTagsAPI } from "../../services/tags-api";
 import { AccountTransaction } from "./AddTransactionsForm/add-transactions-form";
-import { FileParserResults } from "./ImportTransactionsForm/model/file-parser-results";
-import { fetchPayeesAPI } from "../../services/payee-api";
-import { fetchDescriptionsAPI } from "../../services/descriptions-api";
-import { Category } from "../../../model/category";
 import Payee from "./AddTransactionsForm/model/payee";
+import { FileParserResults } from "./ImportTransactionsForm/model/file-parser-results";
 
 export interface FormTransaction {
   id: number | undefined;
-  date: string;
+  date: string | undefined;
   payee?: Payee;
-  category?: Category;
+  category: Category | undefined;
   description?: Description;
   memo?: string;
   tag?: Tag;
@@ -29,7 +32,7 @@ export interface FormTransaction {
 
 export const EMPTY_FORM_TRANSACTION = {
   id: Math.random() * moment().toISOString().length,
-  date: moment().toISOString(),
+  date: getStringFromDateWFormatter(moment().toDate(), DATE_FORMAT_DD_MM_YYYY),
   payee: undefined,
   category: undefined,
   description: undefined,
@@ -79,6 +82,7 @@ function transformTransactionsToTableTransactions(
         date: date,
         memo: txToImport.description.name,
         amount: txToImport.amount,
+        category: undefined,
       } as FormTransaction;
     }
   );

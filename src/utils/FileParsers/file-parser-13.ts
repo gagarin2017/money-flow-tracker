@@ -60,8 +60,8 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
     }
     return {
       date: txDate,
-      bankAccount: +accountId,
-      description: {name: row[DESC_COLUMN_INDEX]} as Description,
+      bankAccount: { id: +accountId },
+      description: { name: row[DESC_COLUMN_INDEX] } as Description,
       amount,
     } as Transaction;
   });

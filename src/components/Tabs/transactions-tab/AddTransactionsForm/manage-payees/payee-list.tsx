@@ -14,9 +14,10 @@ function PayeeList() {
 
   const { payees } = state;
 
-  const sortedPayeesByName = [...payees].sort((a, b) =>
-    a.name > b.name ? 1 : -1
-  );
+  const sortedPayeesByName =
+    payees && payees.length > 0
+      ? [...payees].sort((a, b) => (a.name > b.name ? 1 : -1))
+      : [];
 
   const columns: ColumnsType<Payee> = [
     {

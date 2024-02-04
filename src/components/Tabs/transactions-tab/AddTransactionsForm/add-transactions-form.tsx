@@ -60,9 +60,9 @@ const AddTransactionsForm = () => {
   const { isLoading, saveTransactions } = useTransactionsContext();
   const { fetchBankAccounts } = useBankAccountsContext();
 
-  useEffect(() => {
-    fetchPayeesCategoriesTags(isSpringBoot, dispatch);
-  }, []);
+  // useEffect(() => {
+  //   fetchPayeesCategoriesTags(isSpringBoot, dispatch);
+  // }, []);
 
   const getInitialValue = () => {
     let initialForm = {} as NewTransactionsFormData;
@@ -103,10 +103,6 @@ const AddTransactionsForm = () => {
     formValues: NewTransactionsFormData,
     { resetForm }: FormikHelpers<NewTransactionsFormData>
   ) => {
-    console.log(
-      "🚀 ~ file: add-transactions-form.tsx:74 ~ AddTransactionsForm ~ formValues:",
-      formValues
-    );
     const transactionsToSave: Transaction[] = [];
 
     formValues.accountTransactions.forEach((formData) => {

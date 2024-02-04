@@ -9,6 +9,11 @@ import { Tag } from "../model/tag";
 import Payee from "../components/Tabs/transactions-tab/AddTransactionsForm/model/payee";
 import { deletePayeeAPI, savePayeeAPI } from "../components/services/payee-api";
 import { Description } from "../model/description";
+import { ManagedProperty } from "../components/Tabs/transactions-tab/AddTransactionsForm/manage-payee-cat-desc-tag-form";
+import {
+  deleteCategoryAPI,
+  saveCategoryAPI,
+} from "../components/services/categories-api";
 
 export const enum ImportTransactionsActionType {
   FETCH_START = "StartFetchingData",
@@ -16,10 +21,14 @@ export const enum ImportTransactionsActionType {
   IMPORT_TXS_FORM_VISIBLE = "ImportTransactionsFormVisible",
   IMPORT_SINGLE_TXS_FORM_VISIBLE = "ImportSingleTransactionsFormVisible",
   ADD_TXS_FORM_VISIBLE = "AddTransactionsFormModalVisible",
-  MANAGE_PAYEE_MODAL_VISIBLE = "ManagePayeesModalVisible",
+  MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE = "ManagePayeeCatDescTagForm",
   ADD_NEW_TXS = "AddNewTransactions",
-  ADD_NEW_PAYEE = "AddNewPayee",
+  SAVE_PAYEE = "SavePayee",
+  SAVE_CATEGORY = "SaveCategory",
   DELETE_PAYEE = "DeletePayee",
+  DELETE_CATEGORY = "DeleteCategory",
+  DELETE_DESCRIPTION = "DeleteDescription",
+  DELETE_TAG = "DeleteTag",
   SET_CATEGORIES = "SetCategories",
   SET_DESCRIPTIONS = "SetDescriptions",
   SET_TAGS = "SetTags",
@@ -31,9 +40,8 @@ export interface ImportTransactionsState {
   isImportTransactionsFormVisible: boolean;
   isImportSingleTransactionsFormVisible: boolean;
   isAddTransactionsFormModalVisible: boolean;
-  isManagePayeesModalVisible: boolean;
+  isManagePayeeCatDescTagFormVisible: boolean;
   newTransactions: AccountTransaction[];
-  // newPayee: Payee;
   isLoading: boolean;
   errors: Error[];
   categories: Category[];
@@ -64,7 +72,7 @@ type ImportTransactionsAction =
       payload: boolean;
     }
   | {
-      type: ImportTransactionsActionType.MANAGE_PAYEE_MODAL_VISIBLE;
+      type: ImportTransactionsActionType.MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE;
       payload: boolean;
     }
   | {
@@ -91,11 +99,36 @@ type ImportTransactionsAction =
       };
     }
   | {
-      type: ImportTransactionsActionType.ADD_NEW_PAYEE;
-      payload: Payee;
+      type: ImportTransactionsActionType.SAVE_PAYEE;
+      payload: {
+        name: ManagedProperty;
+        payee?: Payee;
+        category?: Category;
+        description?: Description;
+        tag?: Tag;
+      };
+    }
+  | {
+      type: ImportTransactionsActionType.SAVE_CATEGORY;
+      payload: {
+        name: ManagedProperty;
+        category: Category;
+      };
     }
   | {
       type: ImportTransactionsActionType.DELETE_PAYEE;
+      payload: number;
+    }
+  | {
+      type: ImportTransactionsActionType.DELETE_CATEGORY;
+      payload: number;
+    }
+  | {
+      type: ImportTransactionsActionType.DELETE_DESCRIPTION;
+      payload: number;
+    }
+  | {
+      type: ImportTransactionsActionType.DELETE_TAG;
       payload: number;
     };
 
@@ -126,17 +159,49 @@ const newTransactionsReducer = (
       };
     case ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE:
       return { ...state, isAddTransactionsFormModalVisible: action.payload };
-    case ImportTransactionsActionType.MANAGE_PAYEE_MODAL_VISIBLE:
-      return { ...state, isManagePayeesModalVisible: action.payload };
-    case ImportTransactionsActionType.ADD_NEW_PAYEE:
-      savePayee(action.payload);
-      return { ...state, payees: [...state.payees, action.payload] };
+    case ImportTransactionsActionType.MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE:
+      return { ...state, isManagePayeeCatDescTagFormVisible: action.payload };
+    case ImportTransactionsActionType.SAVE_PAYEE:
+      action.payload.payee && savePayee(action.payload.payee);
+      return {
+        ...state,
+        payees: action.payload.payee
+          ? [...state.payees, action.payload.payee]
+          : [],
+      };
+    case ImportTransactionsActionType.SAVE_CATEGORY:
+      console.log("action.payload: ", action.payload);
+      action.payload.category && saveCategory(action.payload.category);
+      return {
+        ...state,
+        categories: action.payload.category
+          ? [...state.categories, action.payload.category]
+          : [],
+      };
     case ImportTransactionsActionType.DELETE_PAYEE:
       deletePayee(action.payload);
-      const updatedCategories = state.payees.filter(
+      const updatedPayees = state.payees.filter(
         (payee) => payee.id !== action.payload
       );
-      return { ...state, payees: updatedCategories };
+      return { ...state, payees: updatedPayees };
+    case ImportTransactionsActionType.DELETE_CATEGORY:
+      deleteCategory(action.payload);
+      const updatedCategories = state.categories.filter(
+        (category) => category.id !== action.payload
+      );
+      return { ...state, categories: updatedCategories };
+    case ImportTransactionsActionType.DELETE_DESCRIPTION:
+      deleteDescription(action.payload);
+      const updatedDescriptions = state.descriptions.filter(
+        (payee) => payee.id !== action.payload
+      );
+      return { ...state, descriptions: updatedDescriptions };
+    case ImportTransactionsActionType.DELETE_TAG:
+      // deletePayee(action.payload);
+      const updatedTags = state.tags.filter(
+        (payee) => payee.id !== action.payload
+      );
+      return { ...state, tags: updatedTags };
     case ImportTransactionsActionType.SET_CATEGORIES:
       return { ...state, isLoading: false, categories: action.payload };
     case ImportTransactionsActionType.SET_DESCRIPTIONS:
@@ -178,7 +243,15 @@ const savePayee = async (payee: Payee) => {
   try {
     await savePayeeAPI(payee);
   } catch (error) {
-    console.error("Error updating payee:", error);
+    console.error("Error on saving payee:", error);
+  }
+};
+
+const saveCategory = async (category: Category) => {
+  try {
+    await saveCategoryAPI(category);
+  } catch (error) {
+    console.error("Error on saving category:", error);
   }
 };
 
@@ -186,7 +259,23 @@ const deletePayee = async (payeeId: number) => {
   try {
     await deletePayeeAPI(payeeId);
   } catch (error) {
-    console.error("Error updating payee:", error);
+    console.error("Error on deleting payee:", error);
+  }
+};
+
+const deleteCategory = async (categoryId: number) => {
+  try {
+    await deleteCategoryAPI(categoryId);
+  } catch (error) {
+    console.error("Error on deleting category:", error);
+  }
+};
+
+const deleteDescription = async (descId: number) => {
+  try {
+    await deletePayeeAPI(descId);
+  } catch (error) {
+    console.error("Error deleting description:", error);
   }
 };
 
@@ -199,7 +288,7 @@ function ImportTransactionsProvider({
     isImportSingleTransactionsFormVisible: false,
     isImportTransactionsFormVisible: false,
     isAddTransactionsFormModalVisible: false,
-    isManagePayeesModalVisible: false,
+    isManagePayeeCatDescTagFormVisible: false,
     newTransactions: [],
     categories: [],
     descriptions: [],

@@ -18,6 +18,7 @@ import { fetchTagsAPI } from "../../services/tags-api";
 import { AccountTransaction } from "./AddTransactionsForm/add-transactions-form";
 import Payee from "./AddTransactionsForm/model/payee";
 import { FileParserResults } from "./ImportTransactionsForm/model/file-parser-results";
+import { NotificationInstance } from "antd/es/notification/interface";
 
 export interface FormTransaction {
   id: number | undefined;
@@ -91,7 +92,8 @@ function transformTransactionsToTableTransactions(
 
 export const fetchPayeesCategoriesTags = async (
   isSpringBoot: boolean,
-  dispatch: ({}: any) => void
+  dispatch: ({}: any) => void,
+  api: NotificationInstance
 ) => {
   try {
     dispatch({ type: ImportTransactionsActionType.FETCH_START });
@@ -120,7 +122,7 @@ export const fetchPayeesCategoriesTags = async (
     // TODO: Dev ONLY!
     // Fix it when in production
     const payees = isSpringBoot
-      ? payeesResponse._embedded.payees
+      ? payeesResponse._embedded?.payees
       : payeesResponse;
 
     dispatch({
@@ -141,13 +143,18 @@ export const fetchPayeesCategoriesTags = async (
       payload: payees,
     });
   } catch (error) {
-    dispatch({
-      type: ImportTransactionsActionType.ADD_ERROR,
-      payload: {
-        description: error,
-        message: error,
-        type: "error",
-      } as Error,
+    api.error({
+      message: `Error occurred while fetching properties`,
+      description: `${error}`,
+      duration: 0,
     });
+    // dispatch({
+    //   type: ImportTransactionsActionType.ADD_ERROR,
+    //   payload: {
+    //     description: error,
+    //     message: error,
+    //     type: "error",
+    //   } as Error,
+    // });
   }
 };

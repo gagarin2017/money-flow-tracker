@@ -1,22 +1,24 @@
-import { Col, Empty, Row } from "antd";
-import { Form, Formik, FormikHelpers } from "formik";
+import { Empty, message, notification } from "antd";
 
-import MinimalisticModal from "../../../../UI/minimalistic-modal";
+import { FormEvent, useState } from "react";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
 import { Category } from "../../../../model/category";
-import Payee from "./model/payee";
-import AddNewPayeeCard from "./manage-payees/add-new-payee-card";
-import PayeeList from "./manage-payees/payee-list";
 import { Description } from "../../../../model/description";
 import { Tag } from "../../../../model/tag";
-import { FormEvent } from "react";
-import DescriptionList from "./manage-descriptions/description-list";
-import CategoriesList from "./manage-categories/categories-list";
 import AddNewCategoryCard from "./manage-categories/add-new-category-card";
+import CategoriesList from "./manage-categories/categories-list";
 import AddNewDescriptionCard from "./manage-descriptions/add-new-description-card";
+import DescriptionList from "./manage-descriptions/description-list";
+import ManageForm from "./manage-form";
+import AddNewPayeeCard from "./manage-payees/add-new-payee-card";
+import PayeeList from "./manage-payees/payee-list";
+import Payee from "./model/payee";
+import { DirectoryTreeProps } from "antd/es/tree";
+import { useField } from "formik";
+import { findCategoryById } from "../../../../utils/category-helper";
 
 export enum ManagedProperty {
   PAYEE = "Payee",
@@ -59,7 +61,7 @@ export const ManagedPropertiesMap = new Map<
   ],
 ]);
 
-interface ManagePayeeCatDescTagFormProps {
+interface PayeeCatDescTagManagerProps {
   managedProperty: ManagedProperty;
 }
 
@@ -75,27 +77,45 @@ interface FormData {
   isSubcategory: boolean;
 }
 
-const ManagePayeeCatDescTagForm = ({
+const PayeeCatDescTagManager = ({
   managedProperty,
-}: ManagePayeeCatDescTagFormProps) => {
+}: PayeeCatDescTagManagerProps) => {
   const { state, dispatch } = useImportTransactionsContext();
 
-  const getInitialValues = () => {
-    let initialForm = {
-      name: "",
-      category: undefined,
-      isSubcategory: false,
-      description: undefined,
-      tag: undefined,
-    } as FormData;
-    return initialForm;
-  };
+  const [api, contextHolder] = message.useMessage();
 
-  const handleFormClose = () => {
-    dispatch({
-      type: ImportTransactionsActionType.MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE,
-      payload: false,
-    });
+  const [selectedCategory, setSelectedCategory] = useState<
+    Category | undefined
+  >(undefined);
+
+  const getInitialValues = () => {
+    console.log("🚀 ~ getInitialValues is Called!!!\n\n");
+    let initialForm = {} as FormData;
+
+    console.log(
+      "🚀 ~ getInitialValues ~ selectedCategory:",
+      selectedCategory?.name
+    );
+
+    if (selectedCategory) {
+      initialForm = {
+        name: selectedCategory.name,
+        isSubcategory: selectedCategory.parentCategory ? true : false,
+        category: selectedCategory.parentCategory,
+      } as FormData;
+    } else {
+      initialForm = {
+        name: "",
+        category: undefined,
+        isSubcategory: false,
+        description: undefined,
+        tag: undefined,
+      } as FormData;
+    }
+
+    console.log("🚀 ~ getInitialValues ~ initialForm:", initialForm);
+
+    return initialForm;
   };
 
   const buildPayee = (formValues: FormData) => {
@@ -122,7 +142,7 @@ const ManagePayeeCatDescTagForm = ({
 
   const buildCategory = (formValues: FormData) => {
     const categoryToBeSaved: Category = {
-      id: -1122.3 * Math.random(),
+      id: selectedCategory?.id || -1122.3 * Math.random(),
       name: formValues.name,
       subCategories: [],
       parentCategory: formValues.category,
@@ -131,10 +151,11 @@ const ManagePayeeCatDescTagForm = ({
     return categoryToBeSaved;
   };
 
-  const onSubmit = async (
-    formValues: FormData,
-    { resetForm }: FormikHelpers<FormData>
-  ) => {
+  const handleEditCategory = (category: Category) => {
+    setSelectedCategory(category);
+  };
+
+  const onSubmit = async (formValues: FormData) => {
     switch (managedProperty) {
       case ManagedProperty.PAYEE:
         dispatch({
@@ -149,6 +170,7 @@ const ManagePayeeCatDescTagForm = ({
           payload: {
             name: managedProperty,
             category: buildCategory(formValues),
+            update: selectedCategory ? true : false,
           },
         });
         // dispatch({
@@ -157,8 +179,10 @@ const ManagePayeeCatDescTagForm = ({
         // });
         break;
     }
-
-    resetForm();
+    api.open({
+      type: "success",
+      content: "The list was updated with the new data",
+    });
   };
 
   const getManagedPropsTable = () => {
@@ -166,7 +190,13 @@ const ManagePayeeCatDescTagForm = ({
       case ManagedProperty.PAYEE:
         return <PayeeList />;
       case ManagedProperty.CATEGORY:
-        return <CategoriesList />;
+        return (
+          <CategoriesList
+            handleCategoryEdit={handleEditCategory}
+            selectedCategory={selectedCategory}
+            handleCategorySelect={handleCategorySelect}
+          />
+        );
       case ManagedProperty.DESC:
         return <DescriptionList />;
       case ManagedProperty.TAG:
@@ -195,7 +225,7 @@ const ManagePayeeCatDescTagForm = ({
       case ManagedProperty.CATEGORY:
         return (
           <AddNewCategoryCard
-            name="name"
+            fieldCategoryName="name"
             isSubcategoryFieldName="isSubcategory"
             subCategoryOfFieldName="category"
             handleAddCategoryBtnClick={handleSubmit}
@@ -219,35 +249,37 @@ const ManagePayeeCatDescTagForm = ({
     }
   };
 
+  const handleCategorySelect: DirectoryTreeProps["onSelect"] = (keys, info) => {
+    console.log("Trigger Select", keys, info);
+
+    console.log("selected id: ", keys[0]);
+    console.log("state categories: ", state.categories);
+
+    const selectedCategory: Category | undefined = findCategoryById(
+      state.categories,
+      +keys[0]
+    );
+    console.log("🚀 ~ selectedCategory:", selectedCategory);
+    selectedCategory && setSelectedCategory(selectedCategory);
+  };
+
+  const theTitle = `Manage ${
+    ManagedPropertiesMap.get(managedProperty)?.multipleName
+  }`;
+
   return (
-    <Formik
-      initialValues={getInitialValues()}
-      onSubmit={(values, handleReset) => {
-        onSubmit(values, handleReset);
-      }}
-    >
-      {({ values, handleSubmit, handleReset, isSubmitting }) => (
-        <MinimalisticModal
-          title={`Manage ${
-            ManagedPropertiesMap.get(managedProperty)?.multipleName
-          }`}
-          isModalVisible={state.isManagePayeeCatDescTagFormVisible}
-          handleCancel={() => {
-            handleReset();
-            handleFormClose();
-          }}
-          customWidth={1500}
-        >
-          <Row gutter={[2, 4]} justify={"center"}>
-            <Col span={20}>{getManagedPropsTable()}</Col>
-            <Col span={4}>
-              <Form>{getFormBody(handleSubmit)}</Form>
-            </Col>
-          </Row>
-        </MinimalisticModal>
-      )}
-    </Formik>
+    <>
+      {contextHolder}
+      <ManageForm
+        initialFormValues={getInitialValues()}
+        isModalVisible={state.isManageFormVisible}
+        modalTitle={theTitle}
+        managedPropsTable={getManagedPropsTable()}
+        getFormBody={getFormBody}
+        handleOnSubmit={onSubmit}
+      />
+    </>
   );
 };
 
-export default ManagePayeeCatDescTagForm;
+export default PayeeCatDescTagManager;

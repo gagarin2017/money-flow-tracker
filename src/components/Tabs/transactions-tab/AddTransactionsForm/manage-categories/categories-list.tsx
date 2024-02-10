@@ -1,110 +1,83 @@
-import { Button, Card, Col, List, Row, Space, Tree, TreeDataNode } from "antd";
-import { DownOutlined } from "@ant-design/icons";
+import { List, notification } from "antd";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../../../context/import-transactions-context";
 import { Category } from "../../../../../model/category";
-import { useState } from "react";
+import { deleteCategoryAPI } from "../../../../services/categories-api";
+import DisplayCategoryCard from "./display-category-card";
 
-function CategoriesList() {
+interface CategoriesListProps {
+  handleCategoryEdit: (category: Category) => void;
+  selectedCategory?: Category;
+  handleCategorySelect?: (keys: any, info: any) => void;
+}
+
+function CategoriesList({
+  handleCategoryEdit,
+  selectedCategory,
+  handleCategorySelect,
+}: CategoriesListProps) {
   const { state, dispatch } = useImportTransactionsContext();
 
-  const [editEnabled, setEditEnabled] = useState<boolean>(false);
+  const [api, contextHolder] = notification.useNotification();
 
   const { categories } = state;
-  const createCategoryTree = (categories: Category[]): TreeDataNode[] => {
-    return categories.map((parentCat) => ({
-      title: parentCat.name,
-      key: parentCat.id,
-      children: createCategoryTree(parentCat.subCategories),
-    }));
+
+  const getCategoriesToDisplay = () => {
+    let result: Category[] = [];
+
+    if (selectedCategory) {
+      result.push(selectedCategory);
+    } else {
+      result = [...categories]
+        .sort((a, b) => (a.name > b.name ? 1 : -1))
+        .filter((cat) => cat.name);
+    }
+
+    return result;
   };
 
-  const createTree = (category: Category): TreeDataNode[] => {
-    return [
-      {
-        title: category.name,
-        key: category.id,
-        children: createCategoryTree(category.subCategories),
-      },
-    ];
-  };
+  const handleCategoryDelete = async (category: Category) => {
+    const response = await deleteCategoryAPI(category.id);
 
-  const sortedCategoriesByName = [...categories]
-    .sort((a, b) => (a.name > b.name ? 1 : -1))
-    .filter((cat) => cat.name);
-
-  const handleCategoryEdit = (id: number) => {
-    // setEditEnabled(true);
-    /*
-     ** Open EditCategory modal where Tree is checkable={true} then whatever is checked should be populated into add-new-category-card.tsx
-     */
-    // dispatch({
-    //   type: ImportTransactionsActionType.DELETE_CATEGORY,
-    //   payload: id,
-    // });
-  };
-
-  const handleCategoryDelete = (id: number) => {
-    dispatch({
-      type: ImportTransactionsActionType.DELETE_CATEGORY,
-      payload: id,
-    });
+    if (!response.ok) {
+      console.error("Error on deleting category:");
+      console.log(
+        `${response.status} ${response.statusText}: ${await response.text()}`
+      );
+      api.error({
+        message: `Error occurred while deleting the category: ${category.name}`,
+        description: `Unable to delete. Perhaps, its still used in transactions?`,
+        duration: 0,
+      });
+    } else {
+      dispatch({
+        type: ImportTransactionsActionType.DELETE_CATEGORY,
+        payload: category.id,
+      });
+    }
   };
 
   return (
     <List
-      style={{ maxHeight: 500, overflow: "scroll", padding: 10 }}
+      style={{
+        maxHeight: 500,
+        overflow: "scroll", // have to scroll, else the Card floats outside of the Modal if too many sub categories
+        padding: 10,
+      }}
       grid={{ gutter: 10, column: 3 }}
-      dataSource={sortedCategoriesByName}
-      renderItem={(cat) => (
+      dataSource={getCategoriesToDisplay()}
+      renderItem={(category) => (
         <List.Item>
-          <Card
-            size="small"
-            hoverable
-            style={{ backgroundColor: "lightskyblue" }}
-          >
-            <Row gutter={[2, 4]}>
-              <Col span={12}>
-                <Tree
-                  showLine
-                  switcherIcon={<DownOutlined />}
-                  // defaultExpandedKeys={["1"]}
-                  treeData={createTree(cat)}
-                  selectable={false}
-                  // checkable={editEnabled}
-                  // defaultExpandAll={true}
-                />
-              </Col>
-              <Col span={12}>
-                <Space direction="horizontal">
-                  <Button
-                    onClick={() => handleCategoryEdit(cat.id)}
-                    type="link"
-                    style={{
-                      float: "right",
-                      alignItems: "center",
-                      display: "flex",
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    onClick={() => handleCategoryDelete(cat.id)}
-                    type="link"
-                    style={{
-                      float: "right",
-                      alignItems: "center",
-                      display: "flex",
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </Space>
-              </Col>
-            </Row>
-          </Card>
+          <DisplayCategoryCard
+            isEditable={selectedCategory ? true : false}
+            category={category}
+            onEdit={handleCategoryEdit}
+            onDelete={handleCategoryDelete}
+            onSelect={handleCategorySelect}
+          />
+          {contextHolder}
         </List.Item>
       )}
     />

@@ -5,10 +5,10 @@ import {
 } from "../../../context/import-transactions-context";
 import AddTransactionsForm from "./AddTransactionsForm/add-transactions-form";
 import ImportTransactionsForm from "./ImportTransactionsForm/import-transactions-form";
-import ManagePayeeCatDescTagForm, {
+import PayeeCatDescTagManager, {
   ManagedPropertiesMap,
   ManagedProperty,
-} from "./AddTransactionsForm/manage-payee-cat-desc-tag-form";
+} from "./AddTransactionsForm/payee-cat-desc-tag-manager";
 import { isSpringBoot } from "../../services/api-common";
 import { fetchPayeesCategoriesTags } from "./add-transactions-utils";
 import { DownOutlined, MenuOutlined, LineOutlined } from "@ant-design/icons";
@@ -81,8 +81,8 @@ function TransactionsMenu() {
     setManagedProp(managedProp);
     fetchPayeesCategoriesTags(isSpringBoot, dispatch, api);
     dispatch({
-      type: ImportTransactionsActionType.MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE,
-      payload: !state.isManagePayeeCatDescTagFormVisible,
+      type: ImportTransactionsActionType.MANAGE_FORM_VISIBLE,
+      payload: !state.isManageFormVisible,
     });
   };
 
@@ -149,8 +149,8 @@ function TransactionsMenu() {
       {state.isImportSingleTransactionsFormVisible && (
         <ImportSingleTransactionForm />
       )}
-      {state.isManagePayeeCatDescTagFormVisible && managedProp && (
-        <ManagePayeeCatDescTagForm managedProperty={managedProp} />
+      {state.isManageFormVisible && managedProp && (
+        <PayeeCatDescTagManager managedProperty={managedProp} />
       )}
       {contextHolder}
     </>

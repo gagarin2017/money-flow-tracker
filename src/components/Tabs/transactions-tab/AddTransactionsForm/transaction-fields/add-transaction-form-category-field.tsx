@@ -2,6 +2,7 @@ import { TreeSelect } from "antd";
 import { useField } from "formik";
 import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
 import { findCategoryById } from "../../../../../utils/category-helper";
+import { Category } from "../../../../../model/category";
 
 interface AddTransactionsFormTransactionCategoryFieldProps {
   fieldName: string;
@@ -27,6 +28,8 @@ const AddTransactionsFormTransactionCategoryField = ({
     helper.setTouched(true);
   };
 
+  const category: Category = field.value;
+
   return (
     <TreeSelect
       fieldNames={{
@@ -45,7 +48,7 @@ const AddTransactionsFormTransactionCategoryField = ({
       onChange={onChange}
       onBlur={onBlur}
       treeData={categories}
-      value={field.value?.name}
+      value={category && category.id}
     />
   );
 };

@@ -1,19 +1,22 @@
 import { Dispatch, createContext, useContext, useReducer } from "react";
 import { AccountTransaction } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
-import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
-import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
-import BankAccount from "../model/bank-account";
-import { Category } from "../model/category";
-import Error from "../model/error";
-import { Tag } from "../model/tag";
 import Payee from "../components/Tabs/transactions-tab/AddTransactionsForm/model/payee";
-import { deletePayeeAPI, savePayeeAPI } from "../components/services/payee-api";
-import { Description } from "../model/description";
-import { ManagedProperty } from "../components/Tabs/transactions-tab/AddTransactionsForm/manage-payee-cat-desc-tag-form";
+import { ManagedProperty } from "../components/Tabs/transactions-tab/AddTransactionsForm/payee-cat-desc-tag-manager";
+import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
+import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
 import {
   deleteCategoryAPI,
   saveCategoryAPI,
+  updateCategoryAPI,
 } from "../components/services/categories-api";
+import { deletePayeeAPI, savePayeeAPI } from "../components/services/payee-api";
+import BankAccount from "../model/bank-account";
+import { Category } from "../model/category";
+import { Description } from "../model/description";
+import Error from "../model/error";
+import { Tag } from "../model/tag";
+import { NotificationInstance } from "antd/es/notification/interface";
+import { addCategory, findCategoryById } from "../utils/category-helper";
 
 export const enum ImportTransactionsActionType {
   FETCH_START = "StartFetchingData",
@@ -21,7 +24,7 @@ export const enum ImportTransactionsActionType {
   IMPORT_TXS_FORM_VISIBLE = "ImportTransactionsFormVisible",
   IMPORT_SINGLE_TXS_FORM_VISIBLE = "ImportSingleTransactionsFormVisible",
   ADD_TXS_FORM_VISIBLE = "AddTransactionsFormModalVisible",
-  MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE = "ManagePayeeCatDescTagForm",
+  MANAGE_FORM_VISIBLE = "ManagePayeeCatDescTagForm",
   ADD_NEW_TXS = "AddNewTransactions",
   SAVE_PAYEE = "SavePayee",
   SAVE_CATEGORY = "SaveCategory",
@@ -40,7 +43,7 @@ export interface ImportTransactionsState {
   isImportTransactionsFormVisible: boolean;
   isImportSingleTransactionsFormVisible: boolean;
   isAddTransactionsFormModalVisible: boolean;
-  isManagePayeeCatDescTagFormVisible: boolean;
+  isManageFormVisible: boolean;
   newTransactions: AccountTransaction[];
   isLoading: boolean;
   errors: Error[];
@@ -72,7 +75,7 @@ type ImportTransactionsAction =
       payload: boolean;
     }
   | {
-      type: ImportTransactionsActionType.MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE;
+      type: ImportTransactionsActionType.MANAGE_FORM_VISIBLE;
       payload: boolean;
     }
   | {
@@ -113,6 +116,7 @@ type ImportTransactionsAction =
       payload: {
         name: ManagedProperty;
         category: Category;
+        update: boolean;
       };
     }
   | {
@@ -159,8 +163,8 @@ const newTransactionsReducer = (
       };
     case ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE:
       return { ...state, isAddTransactionsFormModalVisible: action.payload };
-    case ImportTransactionsActionType.MANAGE_PAYEE_CAT_DESC_TAG_FORM_VISIBLE:
-      return { ...state, isManagePayeeCatDescTagFormVisible: action.payload };
+    case ImportTransactionsActionType.MANAGE_FORM_VISIBLE:
+      return { ...state, isManageFormVisible: action.payload };
     case ImportTransactionsActionType.SAVE_PAYEE:
       action.payload.payee && savePayee(action.payload.payee);
       return {
@@ -170,14 +174,24 @@ const newTransactionsReducer = (
           : [],
       };
     case ImportTransactionsActionType.SAVE_CATEGORY:
-      console.log("action.payload: ", action.payload);
-      action.payload.category && saveCategory(action.payload.category);
-      return {
+      action.payload.category && saveCategory(action.payload);
+
+      let updatedState = { ...state };
+
+      const category = action.payload.category;
+
+      const updatedCategory = [...state.categories];
+
+      addCategory(updatedCategory, category);
+
+      updatedState = {
         ...state,
         categories: action.payload.category
-          ? [...state.categories, action.payload.category]
-          : [],
+          ? updatedCategory
+          : state.categories,
       };
+
+      return updatedState;
     case ImportTransactionsActionType.DELETE_PAYEE:
       deletePayee(action.payload);
       const updatedPayees = state.payees.filter(
@@ -185,10 +199,10 @@ const newTransactionsReducer = (
       );
       return { ...state, payees: updatedPayees };
     case ImportTransactionsActionType.DELETE_CATEGORY:
-      deleteCategory(action.payload);
       const updatedCategories = state.categories.filter(
         (category) => category.id !== action.payload
       );
+
       return { ...state, categories: updatedCategories };
     case ImportTransactionsActionType.DELETE_DESCRIPTION:
       deleteDescription(action.payload);
@@ -247,9 +261,17 @@ const savePayee = async (payee: Payee) => {
   }
 };
 
-const saveCategory = async (category: Category) => {
+const saveCategory = async (payload: {
+  name: ManagedProperty;
+  category: Category;
+  update: boolean;
+}) => {
   try {
-    await saveCategoryAPI(category);
+    if (payload.update) {
+      await updateCategoryAPI(payload.category);
+    } else {
+      await saveCategoryAPI(payload.category);
+    }
   } catch (error) {
     console.error("Error on saving category:", error);
   }
@@ -260,14 +282,6 @@ const deletePayee = async (payeeId: number) => {
     await deletePayeeAPI(payeeId);
   } catch (error) {
     console.error("Error on deleting payee:", error);
-  }
-};
-
-const deleteCategory = async (categoryId: number) => {
-  try {
-    await deleteCategoryAPI(categoryId);
-  } catch (error) {
-    console.error("Error on deleting category:", error);
   }
 };
 
@@ -288,7 +302,7 @@ function ImportTransactionsProvider({
     isImportSingleTransactionsFormVisible: false,
     isImportTransactionsFormVisible: false,
     isAddTransactionsFormModalVisible: false,
-    isManagePayeeCatDescTagFormVisible: false,
+    isManageFormVisible: false,
     newTransactions: [],
     categories: [],
     descriptions: [],

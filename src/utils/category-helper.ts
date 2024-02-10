@@ -19,3 +19,29 @@ export const findCategoryById = (
 
   return undefined; // Category with the specified id not found
 };
+
+export const addCategory = (
+  categories: Category[],
+  newCategory: Category
+): Category[] => {
+  const updatedCategoryList: Category[] = [...categories];
+
+  if (newCategory) {
+    if (newCategory.parentCategory) {
+      const parentCategory = findCategoryById(
+        categories,
+        newCategory.parentCategory.id
+      );
+      if (parentCategory) {
+        parentCategory.subCategories = [
+          ...parentCategory.subCategories,
+          newCategory,
+        ];
+      }
+    } else {
+      categories.push(newCategory);
+    }
+  }
+
+  return updatedCategoryList;
+};

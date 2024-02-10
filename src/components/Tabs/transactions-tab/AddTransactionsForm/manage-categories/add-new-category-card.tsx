@@ -1,38 +1,37 @@
-import { Button, Card, Checkbox, CheckboxProps, Space } from "antd";
-import { Field, useField } from "formik";
-import { ManagedProperty } from "../manage-payee-cat-desc-tag-form";
+import { Button, Card, Checkbox, CheckboxProps, Input, Space } from "antd";
+import { useField } from "formik";
+import { ManagedProperty } from "../payee-cat-desc-tag-manager";
 import AddTransactionsFormTransactionCategoryField from "../transaction-fields/add-transaction-form-category-field";
 
 interface AddNewCategoryCardProps {
   subCategoryOfFieldName: string;
-  name: string;
+  fieldCategoryName: string;
   isSubcategoryFieldName: string;
   handleAddCategoryBtnClick: () => void;
 }
 
 function AddNewCategoryCard({
-  name,
+  fieldCategoryName,
   subCategoryOfFieldName,
   isSubcategoryFieldName,
-  handleAddCategoryBtnClick,
+  handleAddCategoryBtnClick: handleSaveCategoryBtnClick,
 }: AddNewCategoryCardProps) {
   const [isSubcategoryField, , isSubcategoryFieldHelper] = useField(
     isSubcategoryFieldName
   );
 
+  const [categoryName] = useField(fieldCategoryName);
+
   const onChange: CheckboxProps["onChange"] = (e) => {
-    // console.log(`checked = ${e.target.checked}`);
     isSubcategoryFieldHelper.setValue(e.target.checked);
   };
 
   return (
     <Card title="Add new Category">
       <Space direction="vertical">
-        <label htmlFor={name}>{`${ManagedProperty.CATEGORY} Name`}</label>
-        <Field
-          id={name}
-          name={name}
-          placeholder={`${ManagedProperty.CATEGORY} Name`}
+        <Input
+          {...categoryName}
+          placeholder={`Enter ${ManagedProperty.CATEGORY} name`}
         />
 
         <Checkbox
@@ -50,9 +49,9 @@ function AddNewCategoryCard({
           size="small"
           type="primary"
           style={{ marginTop: 10, float: "right" }}
-          onClick={() => handleAddCategoryBtnClick()}
+          onClick={() => handleSaveCategoryBtnClick()}
         >
-          Add {ManagedProperty.CATEGORY}
+          Save {ManagedProperty.CATEGORY}
         </Button>
       </Space>
     </Card>

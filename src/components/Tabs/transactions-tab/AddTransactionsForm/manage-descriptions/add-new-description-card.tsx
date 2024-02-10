@@ -1,6 +1,6 @@
 import { Button, Card, Space } from "antd";
 import { Field } from "formik";
-import { ManagedProperty } from "../manage-payee-cat-desc-tag-form";
+import { ManagedProperty } from "../payee-cat-desc-tag-manager";
 
 interface AddNewDescriptionCardProps {
   name: string;

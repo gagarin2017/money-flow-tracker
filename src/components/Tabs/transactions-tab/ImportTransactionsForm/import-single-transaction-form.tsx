@@ -41,9 +41,9 @@ function ImportSingleTransactionForm() {
   const { bankAccounts, selectedBankAccountId, fetchBankAccounts } =
     useBankAccountsContext();
 
-  useEffect(() => {
-    fetchPayeesCategoriesTags(isSpringBoot, dispatch);
-  }, []);
+  // useEffect(() => {
+  //   fetchPayeesCategoriesTags(isSpringBoot, dispatch);
+  // }, []);
 
   const bankAccount = bankAccounts.find(
     (bankAccount) => bankAccount.id === selectedBankAccountId

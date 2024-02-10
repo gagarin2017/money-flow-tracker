@@ -36,7 +36,29 @@ export const saveCategoryAPI = async (category: Category) => {
   return receivedCategory;
 };
 
-export const deleteCategoryAPI = async (categoryId: number) => {
+export const updateCategoryAPI = async (category: Category) => {
+  const response = await fetch(
+    BASE_URL.concat("/")
+      .concat(CATEGORIES_NODE)
+      .concat("/")
+      .concat(category.id.toString()),
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(category),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+};
+
+export const deleteCategoryAPI = async (
+  categoryId: number
+): Promise<Response> => {
   const url: string = BASE_URL.concat("/")
     .concat(CATEGORIES_NODE)
     .concat("/")
@@ -46,7 +68,5 @@ export const deleteCategoryAPI = async (categoryId: number) => {
     method: Method.DELETE,
   });
 
-  if (!response.ok) {
-    throw new Error("Category API: Deleting of data failed");
-  }
+  return response;
 };

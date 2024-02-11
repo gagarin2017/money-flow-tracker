@@ -58,6 +58,13 @@ function AddTransactionsFormPayeeField({
     option?: { label: string; value: number }
   ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
+  const payeeDropdownOptions = payees
+    ? payees.map((item) => ({
+        label: item.name || "<empty>",
+        value: item.id,
+      }))
+    : [];
+
   return (
     <Space direction="vertical">
       <Select
@@ -69,10 +76,7 @@ function AddTransactionsFormPayeeField({
         filterOption={filterOption}
         onClear={onClear}
         allowClear
-        options={payees.map((item) => ({
-          label: item.name || "<empty>",
-          value: item.id,
-        }))}
+        options={payeeDropdownOptions}
         value={payeeField.value?.name}
       />
     </Space>

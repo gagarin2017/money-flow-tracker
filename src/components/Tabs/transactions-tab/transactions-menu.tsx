@@ -64,6 +64,7 @@ function TransactionsMenu() {
   );
 
   const handleOpenCloseOfImportTransactionsForm = () => {
+    fetchPayeesCategoriesTags(isSpringBoot, dispatch, api);
     dispatch({
       type: ImportTransactionsActionType.IMPORT_TXS_FORM_VISIBLE,
       payload: !state.isImportTransactionsFormVisible,
@@ -71,6 +72,7 @@ function TransactionsMenu() {
   };
 
   const handleOpenCloseOfImportSingleTransactionsForm = () => {
+    fetchPayeesCategoriesTags(isSpringBoot, dispatch, api);
     dispatch({
       type: ImportTransactionsActionType.IMPORT_SINGLE_TXS_FORM_VISIBLE,
       payload: !state.isImportTransactionsFormVisible,

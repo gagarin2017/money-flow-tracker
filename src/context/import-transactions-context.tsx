@@ -171,7 +171,7 @@ const newTransactionsReducer = (
         ...state,
         payees: action.payload.payee
           ? [...state.payees, action.payload.payee]
-          : [],
+          : state.payees,
       };
     case ImportTransactionsActionType.SAVE_CATEGORY:
       action.payload.category && saveCategory(action.payload);

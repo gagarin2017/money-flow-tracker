@@ -89,13 +89,7 @@ const PayeeCatDescTagManager = ({
   >(undefined);
 
   const getInitialValues = () => {
-    console.log("🚀 ~ getInitialValues is Called!!!\n\n");
     let initialForm = {} as FormData;
-
-    console.log(
-      "🚀 ~ getInitialValues ~ selectedCategory:",
-      selectedCategory?.name
-    );
 
     if (selectedCategory) {
       initialForm = {
@@ -112,8 +106,6 @@ const PayeeCatDescTagManager = ({
         tag: undefined,
       } as FormData;
     }
-
-    console.log("🚀 ~ getInitialValues ~ initialForm:", initialForm);
 
     return initialForm;
   };
@@ -142,7 +134,7 @@ const PayeeCatDescTagManager = ({
 
   const buildCategory = (formValues: FormData) => {
     const categoryToBeSaved: Category = {
-      id: selectedCategory?.id || -1122.3 * Math.random(),
+      id: selectedCategory?.id || Math.floor(Math.random() * 1123) + 8,
       name: formValues.name,
       subCategories: [],
       parentCategory: formValues.category,

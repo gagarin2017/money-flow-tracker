@@ -16,7 +16,7 @@ const BankAccountList = () => {
 
   useEffect(() => {
     fetchBankAccounts();
-  }, []);
+  }, [bankAccounts]);
 
   const handleSelectBankAccount = (id: number) => {
     setSelectedBankAccountId(id);

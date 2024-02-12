@@ -5,18 +5,17 @@ import { ManagedProperty } from "../components/Tabs/transactions-tab/AddTransact
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
 import {
-  deleteCategoryAPI,
   saveCategoryAPI,
   updateCategoryAPI,
 } from "../components/services/categories-api";
+import { deleteDescriptionAPI } from "../components/services/descriptions-api";
 import { deletePayeeAPI, savePayeeAPI } from "../components/services/payee-api";
 import BankAccount from "../model/bank-account";
 import { Category } from "../model/category";
 import { Description } from "../model/description";
 import Error from "../model/error";
 import { Tag } from "../model/tag";
-import { NotificationInstance } from "antd/es/notification/interface";
-import { addCategory, findCategoryById } from "../utils/category-helper";
+import { addCategory } from "../utils/category-helper";
 
 export const enum ImportTransactionsActionType {
   FETCH_START = "StartFetchingData",
@@ -28,6 +27,8 @@ export const enum ImportTransactionsActionType {
   ADD_NEW_TXS = "AddNewTransactions",
   SAVE_PAYEE = "SavePayee",
   SAVE_CATEGORY = "SaveCategory",
+  SAVE_DESCRIPTION = "SaveDescription",
+  SAVE_TAG = "SaveTag",
   DELETE_PAYEE = "DeletePayee",
   DELETE_CATEGORY = "DeleteCategory",
   DELETE_DESCRIPTION = "DeleteDescription",
@@ -120,6 +121,20 @@ type ImportTransactionsAction =
       };
     }
   | {
+      type: ImportTransactionsActionType.SAVE_DESCRIPTION;
+      payload: {
+        name: ManagedProperty;
+        description: Description;
+      };
+    }
+  | {
+      type: ImportTransactionsActionType.SAVE_TAG;
+      payload: {
+        name: ManagedProperty;
+        tag: Tag;
+      };
+    }
+  | {
       type: ImportTransactionsActionType.DELETE_PAYEE;
       payload: number;
     }
@@ -192,6 +207,20 @@ const newTransactionsReducer = (
       };
 
       return updatedState;
+    case ImportTransactionsActionType.SAVE_DESCRIPTION:
+      return {
+        ...state,
+        descriptions: action.payload.description
+          ? [...state.descriptions, action.payload.description]
+          : state.descriptions,
+      };
+    case ImportTransactionsActionType.SAVE_TAG:
+      return {
+        ...state,
+        tags: action.payload.tag
+          ? [...state.tags, action.payload.tag]
+          : state.tags,
+      };
     case ImportTransactionsActionType.DELETE_PAYEE:
       deletePayee(action.payload);
       const updatedPayees = state.payees.filter(
@@ -205,13 +234,11 @@ const newTransactionsReducer = (
 
       return { ...state, categories: updatedCategories };
     case ImportTransactionsActionType.DELETE_DESCRIPTION:
-      deleteDescription(action.payload);
       const updatedDescriptions = state.descriptions.filter(
-        (payee) => payee.id !== action.payload
+        (desc) => desc.id !== action.payload
       );
       return { ...state, descriptions: updatedDescriptions };
     case ImportTransactionsActionType.DELETE_TAG:
-      // deletePayee(action.payload);
       const updatedTags = state.tags.filter(
         (payee) => payee.id !== action.payload
       );
@@ -282,14 +309,6 @@ const deletePayee = async (payeeId: number) => {
     await deletePayeeAPI(payeeId);
   } catch (error) {
     console.error("Error on deleting payee:", error);
-  }
-};
-
-const deleteDescription = async (descId: number) => {
-  try {
-    await deletePayeeAPI(descId);
-  } catch (error) {
-    console.error("Error deleting description:", error);
   }
 };
 

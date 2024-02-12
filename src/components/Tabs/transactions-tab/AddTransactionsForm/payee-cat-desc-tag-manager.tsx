@@ -1,5 +1,6 @@
-import { Empty, message, notification } from "antd";
+import { Empty, message } from "antd";
 
+import { DirectoryTreeProps } from "antd/es/tree";
 import { FormEvent, useState } from "react";
 import {
   ImportTransactionsActionType,
@@ -8,6 +9,7 @@ import {
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
 import { Tag } from "../../../../model/tag";
+import { findCategoryById } from "../../../../utils/category-helper";
 import AddNewCategoryCard from "./manage-categories/add-new-category-card";
 import CategoriesList from "./manage-categories/categories-list";
 import AddNewDescriptionCard from "./manage-descriptions/add-new-description-card";
@@ -16,9 +18,8 @@ import ManageForm from "./manage-form";
 import AddNewPayeeCard from "./manage-payees/add-new-payee-card";
 import PayeeList from "./manage-payees/payee-list";
 import Payee from "./model/payee";
-import { DirectoryTreeProps } from "antd/es/tree";
-import { useField } from "formik";
-import { findCategoryById } from "../../../../utils/category-helper";
+import { saveDescriptionsAPI as saveDescriptionAPI } from "../../../services/descriptions-api";
+import { saveTagAPI } from "../../../services/tags-api";
 
 export enum ManagedProperty {
   PAYEE = "Payee",
@@ -112,9 +113,7 @@ const PayeeCatDescTagManager = ({
 
   const buildPayee = (formValues: FormData) => {
     const payeeToBeSaved: Payee = {
-      id:
-        formValues.category?.id ||
-        1122.3 * (formValues.tag?.id || Math.random()),
+      id: generateRandomId(),
       name: formValues.name,
       category: {
         id: formValues.category?.id || 0,
@@ -132,9 +131,18 @@ const PayeeCatDescTagManager = ({
     return payeeToBeSaved;
   };
 
+  const buildTagDescription = (formValues: FormData) => {
+    const itemToBeSaved: Description | Tag = {
+      id: generateRandomId(),
+      name: formValues.name,
+    };
+
+    return itemToBeSaved;
+  };
+
   const buildCategory = (formValues: FormData) => {
     const categoryToBeSaved: Category = {
-      id: selectedCategory?.id || Math.floor(Math.random() * 1123) + 8,
+      id: selectedCategory?.id || generateRandomId(),
       name: formValues.name,
       subCategories: [],
       parentCategory: formValues.category,
@@ -156,7 +164,6 @@ const PayeeCatDescTagManager = ({
         });
         break;
       case ManagedProperty.CATEGORY:
-        console.log("Saving category: ", formValues);
         dispatch({
           type: ImportTransactionsActionType.SAVE_CATEGORY,
           payload: {
@@ -165,10 +172,40 @@ const PayeeCatDescTagManager = ({
             update: selectedCategory ? true : false,
           },
         });
-        // dispatch({
-        //   type: ImportTransactionsActionType.ADD_NEW_PAYEE,
-        //   payload: { name: managedProperty, payee: buildPayee(formValues) },
-        // });
+        break;
+      case ManagedProperty.DESC:
+        const descToBeSaved = buildTagDescription(formValues);
+
+        try {
+          const desc = await saveDescriptionAPI(descToBeSaved);
+          dispatch({
+            type: ImportTransactionsActionType.SAVE_DESCRIPTION,
+            payload: {
+              name: managedProperty,
+              description: desc,
+            },
+          });
+        } catch (error) {
+          console.error("Error on saving description:", error);
+        }
+
+        break;
+      case ManagedProperty.TAG:
+        const tagToBeSaved = buildTagDescription(formValues);
+
+        try {
+          const tag = await saveTagAPI(tagToBeSaved);
+          dispatch({
+            type: ImportTransactionsActionType.SAVE_TAG,
+            payload: {
+              name: managedProperty,
+              tag: tag,
+            },
+          });
+        } catch (error) {
+          console.error("Error on saving tag:", error);
+        }
+
         break;
     }
     api.open({
@@ -275,3 +312,7 @@ const PayeeCatDescTagManager = ({
 };
 
 export default PayeeCatDescTagManager;
+
+function generateRandomId(): number {
+  return Math.floor(Math.random() * 11) * -8;
+}

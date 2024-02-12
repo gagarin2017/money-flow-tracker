@@ -1,10 +1,13 @@
-import { Badge, Button, Card, Col, List, Row } from "antd";
+import { Badge, Button, Card, Col, List, Popconfirm, Row } from "antd";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../../../context/import-transactions-context";
 import { Description } from "../../../../../model/description";
 import { Tag } from "../../../../../model/tag";
+import { QuestionCircleOutlined } from "@ant-design/icons";
+import { deleteDescriptionAPI } from "../../../../services/descriptions-api";
+import { deleteTagAPI } from "../../../../services/tags-api";
 
 interface DescriptionListProps {
   isTag?: boolean;
@@ -26,17 +29,27 @@ function DescriptionList({ isTag }: DescriptionListProps) {
       : [];
   };
 
-  const handleItemDelete = (id: number) => {
+  const handleItemDelete = async (id: number) => {
     if (isTag) {
-      dispatch({
-        type: ImportTransactionsActionType.DELETE_TAG,
-        payload: id,
-      });
+      try {
+        await deleteTagAPI(id);
+        dispatch({
+          type: ImportTransactionsActionType.DELETE_TAG,
+          payload: id,
+        });
+      } catch (error) {
+        console.error("Error deleting tag:", error);
+      }
     } else {
-      dispatch({
-        type: ImportTransactionsActionType.DELETE_DESCRIPTION,
-        payload: id,
-      });
+      try {
+        await deleteDescriptionAPI(id);
+        dispatch({
+          type: ImportTransactionsActionType.DELETE_DESCRIPTION,
+          payload: id,
+        });
+      } catch (error) {
+        console.error("Error deleting description:", error);
+      }
     }
   };
 
@@ -60,17 +73,25 @@ function DescriptionList({ isTag }: DescriptionListProps) {
                   <div style={{ marginTop: 4 }}>{item.name}</div>
                 </Col>
                 <Col span={12}>
-                  <Button
-                    onClick={() => handleItemDelete(item.id)}
-                    type="link"
-                    style={{
-                      float: "right",
-                      alignItems: "center",
-                      display: "flex",
-                    }}
+                  <Popconfirm
+                    title="Delete this payee?"
+                    onConfirm={() => handleItemDelete(item.id)}
+                    onCancel={() => {}}
+                    icon={<QuestionCircleOutlined style={{ color: "red" }} />}
+                    okText="Yes"
+                    cancelText="No"
                   >
-                    Delete
-                  </Button>
+                    <Button
+                      type="link"
+                      style={{
+                        float: "right",
+                        alignItems: "center",
+                        display: "flex",
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </Popconfirm>
                 </Col>
               </Row>
             </Card>

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import BankAccount from "../model/bank-account";
 import {
-  editBankAccountsAPI,
+  saveBankAccountsAPI,
   fetchBankAccountsAPI,
 } from "../components/services/bank-account-api";
 import { sortBankAccountsByBankNameAccName } from "../utils/bank-account-helper";
@@ -55,20 +55,23 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
 
   const editBankAccount = async (account: BankAccount) => {
     try {
-      const fetchedAccount = editBankAccountsAPI(account);
+      const fetchedAccount = await saveBankAccountsAPI(account);
 
       const updatedBankAccountsList: BankAccount[] = bankAccounts.map(
         (bankAccount) => {
           if (bankAccount.id === account.id) {
-            return { ...bankAccount, ...fetchedAccount };
+            const mergedObject = { ...bankAccount, ...fetchedAccount };
+            return mergedObject;
           }
           return bankAccount;
         }
       );
 
-      setBankAccounts(
-        sortBankAccountsByBankNameAccName(updatedBankAccountsList)
+      const sortedBankAccounts = sortBankAccountsByBankNameAccName(
+        updatedBankAccountsList
       );
+
+      setBankAccounts(sortedBankAccounts);
     } catch (error) {
       console.error("Error updating bank account:", error);
     }

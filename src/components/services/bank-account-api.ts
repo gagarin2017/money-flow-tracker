@@ -17,7 +17,7 @@ export const fetchBankAccountsAPI = async () => {
   return await response.json();
 };
 
-export const editBankAccountsAPI = async (account: BankAccount) => {
+export const saveBankAccountsAPI = async (account: BankAccount) => {
   const response = await fetch(
     BASE_URL.concat("/")
       .concat("bank-accounts")
@@ -35,6 +35,7 @@ export const editBankAccountsAPI = async (account: BankAccount) => {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
+  return await response.json();
 };
 
 export const fetchActiveBankAccountsAPI = async () => {

@@ -2,6 +2,7 @@ import { Button, Card, Checkbox, CheckboxProps, Input, Space } from "antd";
 import { useField } from "formik";
 import { ManagedProperty } from "../payee-cat-desc-tag-manager";
 import AddTransactionsFormTransactionCategoryField from "../transaction-fields/add-transaction-form-category-field";
+import ErrorMessage from "../transaction-fields/error-message";
 
 interface AddNewCategoryCardProps {
   subCategoryOfFieldName: string;
@@ -33,16 +34,29 @@ function AddNewCategoryCard({
           {...categoryName}
           placeholder={`Enter ${ManagedProperty.CATEGORY} name`}
         />
+        <ErrorMessage
+          key={`${fieldCategoryName} Error`}
+          name={fieldCategoryName}
+        />
 
         <Checkbox
           onChange={onChange}
-          style={{ marginTop: 10, marginBottom: 10 }}
+          style={{ marginTop: 10 }}
           checked={isSubcategoryField.value}
         >
-          is subcategroy Of
+          is Subcategory Of
         </Checkbox>
+        <ErrorMessage
+          style={{ marginBottom: 10 }}
+          key={`${isSubcategoryFieldName} Error`}
+          name={isSubcategoryFieldName}
+        />
         <AddTransactionsFormTransactionCategoryField
           fieldName={subCategoryOfFieldName}
+        />
+        <ErrorMessage
+          key={`${subCategoryOfFieldName} Error`}
+          name={subCategoryOfFieldName}
         />
 
         <Button

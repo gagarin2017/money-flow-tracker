@@ -7,7 +7,7 @@ const ErrorMessage = ({ name }: any) => (
       const touch = getIn(form.touched, name);
 
       return touch && error ? (
-        <div style={{ color: "red" }}>Required</div>
+        <div style={{ color: "red" }}>{error}</div>
       ) : null;
     }}
   </Field>

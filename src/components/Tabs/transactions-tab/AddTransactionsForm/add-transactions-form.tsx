@@ -9,10 +9,9 @@ import {
 } from "formik";
 import BankAccount from "../../../../model/bank-account";
 import { Transaction } from "../../../../model/transaction";
-
-import { useEffect } from "react";
 import * as Yup from "yup";
 import FormsModal from "../../../../UI/forms-modal";
+import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
@@ -21,15 +20,12 @@ import { useTransactionsContext } from "../../../../context/transactions-context
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
 import { getDateFromString } from "../../../../utils/date-helper";
-import { isSpringBoot } from "../../../services/api-common";
 import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
-  fetchPayeesCategoriesTags,
 } from "../add-transactions-utils";
 import AccountTransactionsList from "./account-transaction-list";
-import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 
 export interface AccountTransaction {
   bankAccount: BankAccount | undefined;

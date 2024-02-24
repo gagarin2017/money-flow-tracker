@@ -15,7 +15,10 @@ import { Category } from "../model/category";
 import { Description } from "../model/description";
 import Error from "../model/error";
 import { Tag } from "../model/tag";
-import { addCategory } from "../utils/category-helper";
+import {
+  addCategoryToList,
+  deepDeleteCategoryFromList,
+} from "../utils/category-helper";
 
 export const enum ImportTransactionsActionType {
   FETCH_START = "StartFetchingData",
@@ -117,7 +120,6 @@ type ImportTransactionsAction =
       payload: {
         name: ManagedProperty;
         category: Category;
-        update: boolean;
       };
     }
   | {
@@ -189,21 +191,16 @@ const newTransactionsReducer = (
           : state.payees,
       };
     case ImportTransactionsActionType.SAVE_CATEGORY:
-      action.payload.category && saveCategory(action.payload);
-
-      let updatedState = { ...state };
-
       const category = action.payload.category;
 
-      const updatedCategory = [...state.categories];
+      const updatedCategoryState = addCategoryToList(
+        [...state.categories],
+        category
+      );
 
-      addCategory(updatedCategory, category);
-
-      updatedState = {
+      const updatedState = {
         ...state,
-        categories: action.payload.category
-          ? updatedCategory
-          : state.categories,
+        categories: category ? updatedCategoryState : state.categories,
       };
 
       return updatedState;
@@ -227,12 +224,15 @@ const newTransactionsReducer = (
         (payee) => payee.id !== action.payload
       );
       return { ...state, payees: updatedPayees };
-    case ImportTransactionsActionType.DELETE_CATEGORY:
-      const updatedCategories = state.categories.filter(
-        (category) => category.id !== action.payload
+    case ImportTransactionsActionType.DELETE_CATEGORY: {
+      const updatedCategories = deepDeleteCategoryFromList(
+        [...state.categories],
+        action.payload
       );
 
       return { ...state, categories: updatedCategories };
+    }
+
     case ImportTransactionsActionType.DELETE_DESCRIPTION:
       const updatedDescriptions = state.descriptions.filter(
         (desc) => desc.id !== action.payload
@@ -285,22 +285,6 @@ const savePayee = async (payee: Payee) => {
     await savePayeeAPI(payee);
   } catch (error) {
     console.error("Error on saving payee:", error);
-  }
-};
-
-const saveCategory = async (payload: {
-  name: ManagedProperty;
-  category: Category;
-  update: boolean;
-}) => {
-  try {
-    if (payload.update) {
-      await updateCategoryAPI(payload.category);
-    } else {
-      await saveCategoryAPI(payload.category);
-    }
-  } catch (error) {
-    console.error("Error on saving category:", error);
   }
 };
 

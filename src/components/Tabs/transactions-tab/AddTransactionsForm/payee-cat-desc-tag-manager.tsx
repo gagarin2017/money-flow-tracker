@@ -1,5 +1,4 @@
 import { Empty, message } from "antd";
-
 import { DirectoryTreeProps } from "antd/es/tree";
 import { FormEvent, useState } from "react";
 import {
@@ -10,16 +9,20 @@ import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
 import { Tag } from "../../../../model/tag";
 import { findCategoryById } from "../../../../utils/category-helper";
+import {
+  saveCategoryAPI,
+  updateCategoryAPI,
+} from "../../../services/categories-api";
+import { saveDescriptionsAPI as saveDescriptionAPI } from "../../../services/descriptions-api";
+import { saveTagAPI } from "../../../services/tags-api";
 import AddNewCategoryCard from "./manage-categories/add-new-category-card";
 import CategoriesList from "./manage-categories/categories-list";
 import AddNewDescriptionCard from "./manage-descriptions/add-new-description-card";
 import DescriptionList from "./manage-descriptions/description-list";
-import ManageForm from "./manage-form";
+import ManageForm, { FormData } from "./manage-form";
 import AddNewPayeeCard from "./manage-payees/add-new-payee-card";
 import PayeeList from "./manage-payees/payee-list";
 import Payee from "./model/payee";
-import { saveDescriptionsAPI as saveDescriptionAPI } from "../../../services/descriptions-api";
-import { saveTagAPI } from "../../../services/tags-api";
 
 export enum ManagedProperty {
   PAYEE = "Payee",
@@ -66,18 +69,6 @@ interface PayeeCatDescTagManagerProps {
   managedProperty: ManagedProperty;
 }
 
-interface FormData {
-  name: string;
-  category: Category | undefined;
-  description: Description | undefined;
-  descriptionName: string;
-  categoryName: string;
-  tagName: string;
-  tag: Tag | undefined;
-  amount: number;
-  isSubcategory: boolean;
-}
-
 const PayeeCatDescTagManager = ({
   managedProperty,
 }: PayeeCatDescTagManagerProps) => {
@@ -88,6 +79,24 @@ const PayeeCatDescTagManager = ({
   const [selectedCategory, setSelectedCategory] = useState<
     Category | undefined
   >(undefined);
+
+  const handleShowAllCategoriesClick = () => {
+    setSelectedCategory(undefined);
+  };
+
+  const getCategoriesToDisplay = () => {
+    let categoriesToDisplay: Category[] = [];
+
+    if (selectedCategory) {
+      categoriesToDisplay.push(selectedCategory);
+    } else {
+      categoriesToDisplay = [...state.categories]
+        .sort((a, b) => (a.name > b.name ? 1 : -1))
+        .filter((cat) => cat.name);
+    }
+
+    return categoriesToDisplay;
+  };
 
   const getInitialValues = () => {
     let initialForm = {} as FormData;
@@ -114,7 +123,7 @@ const PayeeCatDescTagManager = ({
   const buildPayee = (formValues: FormData) => {
     const payeeToBeSaved: Payee = {
       id: generateRandomId(),
-      name: formValues.name,
+      name: formValues.payeeName,
       category: {
         id: formValues.category?.id || 0,
         name: formValues.category?.name || "",
@@ -164,14 +173,29 @@ const PayeeCatDescTagManager = ({
         });
         break;
       case ManagedProperty.CATEGORY:
-        dispatch({
-          type: ImportTransactionsActionType.SAVE_CATEGORY,
-          payload: {
-            name: managedProperty,
-            category: buildCategory(formValues),
-            update: selectedCategory ? true : false,
-          },
-        });
+        const categoryToBeSaved = buildCategory(formValues);
+
+        let savedCategory: Category | undefined = undefined;
+
+        try {
+          if (selectedCategory ? true : false) {
+            savedCategory = await updateCategoryAPI(categoryToBeSaved);
+          } else {
+            savedCategory = await saveCategoryAPI(categoryToBeSaved);
+          }
+          if (savedCategory) {
+            dispatch({
+              type: ImportTransactionsActionType.SAVE_CATEGORY,
+              payload: {
+                name: managedProperty,
+                category: savedCategory,
+              },
+            });
+          }
+        } catch (error) {
+          console.error("Error on saving category:", error);
+        }
+
         break;
       case ManagedProperty.DESC:
         const descToBeSaved = buildTagDescription(formValues);
@@ -223,7 +247,9 @@ const PayeeCatDescTagManager = ({
           <CategoriesList
             handleCategoryEdit={handleEditCategory}
             selectedCategory={selectedCategory}
+            categories={getCategoriesToDisplay()}
             handleCategorySelect={handleCategorySelect}
+            handleShowAllCategoriesClick={handleShowAllCategoriesClick}
           />
         );
       case ManagedProperty.DESC:
@@ -243,7 +269,7 @@ const PayeeCatDescTagManager = ({
       case ManagedProperty.PAYEE:
         return (
           <AddNewPayeeCard
-            fieldPayeeName="name"
+            fieldPayeeName="payeeName"
             fieldCategory="category"
             fieldDescription="description"
             fieldTag="tag"
@@ -279,16 +305,10 @@ const PayeeCatDescTagManager = ({
   };
 
   const handleCategorySelect: DirectoryTreeProps["onSelect"] = (keys, info) => {
-    console.log("Trigger Select", keys, info);
-
-    console.log("selected id: ", keys[0]);
-    console.log("state categories: ", state.categories);
-
     const selectedCategory: Category | undefined = findCategoryById(
       state.categories,
       +keys[0]
     );
-    console.log("🚀 ~ selectedCategory:", selectedCategory);
     selectedCategory && setSelectedCategory(selectedCategory);
   };
 

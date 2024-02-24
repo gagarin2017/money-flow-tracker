@@ -1,6 +1,7 @@
 import { Button, Card, Space } from "antd";
 import { Field } from "formik";
 import { ManagedProperty } from "../payee-cat-desc-tag-manager";
+import ErrorMessage from "../transaction-fields/error-message";
 
 interface AddNewDescriptionCardProps {
   name: string;
@@ -26,6 +27,7 @@ function AddNewDescriptionCard({
           name={descriptionName}
           placeholder={isTag ? ManagedProperty.TAG : ManagedProperty.DESC}
         />
+        <ErrorMessage key={`${descriptionName} Error`} name={descriptionName} />
 
         <Button
           size="small"

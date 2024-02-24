@@ -54,6 +54,9 @@ export const updateCategoryAPI = async (category: Category) => {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
+
+  const updatedCategory = await response.json();
+  return updatedCategory;
 };
 
 export const deleteCategoryAPI = async (

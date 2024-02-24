@@ -1,4 +1,5 @@
 import { Category } from "../model/category";
+import cloneDeep from "lodash.clonedeep";
 
 export const findCategoryById = (
   categories: Category[],
@@ -20,16 +21,23 @@ export const findCategoryById = (
   return undefined; // Category with the specified id not found
 };
 
-export const addCategory = (
+/**
+ * Method adds the specified category to the passed list.
+ * NOTE: the passed list is not modified, the copy of the list with the category added is returned
+ *
+ * @param categories
+ * @param newCategory
+ * @returns the copy of the list with the category added to it
+ */
+export const addCategoryToList = (
   categories: Category[],
   newCategory: Category
 ): Category[] => {
-  const updatedCategoryList: Category[] = [...categories];
-
+  const updatedCategoryList: Category[] = cloneDeep(categories);
   if (newCategory) {
     if (newCategory.parentCategory) {
       const parentCategory = findCategoryById(
-        categories,
+        updatedCategoryList,
         newCategory.parentCategory.id
       );
       if (parentCategory) {
@@ -39,9 +47,45 @@ export const addCategory = (
         ];
       }
     } else {
-      categories.push(newCategory);
+      updatedCategoryList.push(newCategory);
     }
   }
 
   return updatedCategoryList;
+};
+
+/**
+ * Method removes the specified category from the passed list.
+ * NOTE: the passed list is not modified, the copy of the list with the category removed is returned
+ *
+ * @param categories
+ * @param categoryId
+ * @returns the copy of the list with the category removed from it
+ */
+export const deepDeleteCategoryFromList = (
+  categories: Category[],
+  categoryId: number
+): Category[] => {
+  let listCopy: Category[] = cloneDeep(categories);
+
+  const category = findCategoryById(listCopy, categoryId);
+
+  if (category) {
+    if (category.parentCategory) {
+      const parentCategory = findCategoryById(
+        listCopy,
+        category.parentCategory.id
+      );
+
+      if (parentCategory) {
+        parentCategory.subCategories = parentCategory.subCategories.filter(
+          (cat) => cat.id !== category.id
+        );
+      }
+    } else {
+      listCopy = listCopy.filter((cat) => cat.id !== category.id);
+    }
+  }
+
+  return listCopy;
 };

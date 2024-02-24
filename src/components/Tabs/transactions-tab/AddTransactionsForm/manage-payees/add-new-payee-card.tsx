@@ -3,6 +3,7 @@ import { Field } from "formik";
 import AddTransactionsFormAmountField from "../transaction-fields/add-transaction-form-amount-field";
 import AddTransactionsFormTransactionCategoryField from "../transaction-fields/add-transaction-form-category-field";
 import AddTransactionsFormTransactionDescriptionAndTagField from "../transaction-fields/add-transaction-form-description-tag-field";
+import ErrorMessage from "../transaction-fields/error-message";
 
 interface AddNewPayeeCardProps {
   fieldPayeeName: string;
@@ -30,11 +31,13 @@ function AddNewPayeeCard({
           name={fieldPayeeName}
           placeholder="Payee's Name"
         />
+        <ErrorMessage key={`${fieldPayeeName} Error`} name={fieldPayeeName} />
 
         <label htmlFor={fieldCategory}>Category</label>
         <AddTransactionsFormTransactionCategoryField
           fieldName={fieldCategory}
         />
+        <ErrorMessage key={`${fieldCategory} Error`} name={fieldCategory} />
 
         <label htmlFor={fieldDescription}>Description</label>
         <AddTransactionsFormTransactionDescriptionAndTagField

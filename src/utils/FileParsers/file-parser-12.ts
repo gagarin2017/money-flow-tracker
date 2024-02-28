@@ -1,3 +1,6 @@
+import { Category } from "../../model/category";
+import { Description } from "../../model/description";
+import { Tag } from "../../model/tag";
 import { Transaction } from "../../model/transaction";
 import {
   DATE_FORMAT_DD_MM_YYYY,
@@ -64,10 +67,16 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
 
       if (amount) {
         transactions.push({
+          id: -1,
           date: txDate,
           bankAccount: { id: accountId },
-          description: row[DESC_COLUMN_INDEX],
-          balance: parseFloat(row[BALANCE_COLUMN_INDEX].replace(/,/g, "")),
+          category: {} as Category,
+          memo: row[DESC_COLUMN_INDEX],
+          description: {} as Description,
+          tag: {} as Tag,
+          runningBalance: parseFloat(
+            row[BALANCE_COLUMN_INDEX].replace(/,/g, "")
+          ),
           amount,
         } as Transaction);
       }

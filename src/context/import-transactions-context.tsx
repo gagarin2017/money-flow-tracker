@@ -4,11 +4,6 @@ import Payee from "../components/Tabs/transactions-tab/AddTransactionsForm/model
 import { ManagedProperty } from "../components/Tabs/transactions-tab/AddTransactionsForm/payee-cat-desc-tag-manager";
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
-import {
-  saveCategoryAPI,
-  updateCategoryAPI,
-} from "../components/services/categories-api";
-import { deleteDescriptionAPI } from "../components/services/descriptions-api";
 import { deletePayeeAPI, savePayeeAPI } from "../components/services/payee-api";
 import BankAccount from "../model/bank-account";
 import { Category } from "../model/category";

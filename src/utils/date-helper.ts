@@ -26,6 +26,6 @@ export const getDateFromString = (dateString: string) => {
 export const getDateFromStringWFormatter = (
   dateString: string,
   formatter: string
-) => {
+): Date => {
   return moment(dateString, formatter).toDate();
 };

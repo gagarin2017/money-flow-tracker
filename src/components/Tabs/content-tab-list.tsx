@@ -1,6 +1,8 @@
 import { Tabs, ConfigProvider } from "antd";
 import type { TabsProps } from "antd";
 import TransactionsTab from "./transactions-tab/transactions-tab";
+import SummaryTab from "./summary-tab/summary-tab";
+import BudgetTab from "./budget-tab/budget-tab";
 
 const onChange = (key: string) => {
   console.log(key);
@@ -8,19 +10,24 @@ const onChange = (key: string) => {
 
 const items: TabsProps["items"] = [
   {
+    key: "2",
+    label: "Summary",
+    children: <SummaryTab />,
+  },
+  {
     key: "1",
     label: "Transactions",
     children: <TransactionsTab />,
   },
   {
-    key: "2",
+    key: "3",
     label: "Spending",
     children: "Content of Tab Pane 2",
   },
   {
-    key: "3",
+    key: "4",
     label: "Budget",
-    children: "Content of Tab Pane 3",
+    children: <BudgetTab />,
   },
 ];
 

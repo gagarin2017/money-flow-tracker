@@ -3,12 +3,10 @@ import { FormTransaction } from "../add-transactions-utils";
 import { ROW_WIDTH } from "./account-transaction-list";
 import AddTransactionsFormAmountField from "./transaction-fields/add-transaction-form-amount-field";
 import AddTransactionsFormTransactionCategoryField from "./transaction-fields/add-transaction-form-category-field";
+import AddTransactionFormDateField from "./transaction-fields/add-transaction-form-date-field";
 import AddTransactionsFormTransactionDescriptionAndTagField from "./transaction-fields/add-transaction-form-description-tag-field";
 import AddTransactionsFormTransactionMemoField from "./transaction-fields/add-transaction-form-memo-field";
 import AddTransactionsFormPayeeField from "./transaction-fields/add-transaction-form-payee-field";
-import AddTransactionFormDateField from "./transaction-fields/add-transaction-form-date-field";
-import { FormikErrors, FormikTouched } from "formik";
-import { NewTransactionsFormData } from "./add-transactions-form";
 import ErrorMessage from "./transaction-fields/error-message";
 
 interface AccountTransactionProps {
@@ -16,8 +14,6 @@ interface AccountTransactionProps {
   accountIndex: number;
   txIndex: number;
   isDateEditable?: boolean;
-  errors: FormikErrors<NewTransactionsFormData>;
-  touched: FormikTouched<NewTransactionsFormData>;
 }
 
 function AccountTransaction({
@@ -25,10 +21,7 @@ function AccountTransaction({
   txIndex,
   transaction,
   isDateEditable,
-  errors,
-  touched,
 }: AccountTransactionProps) {
-
   return (
     <Row
       gutter={[2, 4]}

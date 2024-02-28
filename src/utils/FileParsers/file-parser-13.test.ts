@@ -8,6 +8,10 @@ import { prettyfyJson } from "./file-parser-13";
 import { HEADER_ROW } from "./parser-utils.test";
 
 import { DATE_COLUMN_INDEX, DESC_COLUMN_INDEX } from "./parser-utils";
+import BankAccount from "../../model/bank-account";
+import { Category } from "../../model/category";
+import { Description } from "../../model/description";
+import { Tag } from "../../model/tag";
 
 const EMPTY_ROW = ["", "", "", "", "", "", "", "", ""];
 
@@ -74,147 +78,172 @@ const credit_tx_03 = [
 const ACCOUNT_ID = 22;
 const CREDIT_COL_INDEX = 4;
 
-// describe("When parsing the transactions for the account 1", () => {
-//   test("should return a debit transaction with negative amount", () => {
-//     // Arrange
-//     const inputData = [HEADER_ROW, EMPTY_ROW, debit_tx_01];
+describe("When parsing the transactions for the account 1", () => {
+  test("should return a debit transaction with negative amount", () => {
+    // Arrange
+    const inputData = [HEADER_ROW, EMPTY_ROW, debit_tx_01];
 
-//     // Act
-//     const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
+    // Act
+    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
 
-//     // Assert
+    // Assert
 
-//     expect(result).toBeDefined();
-//     expect(result.length).toBe(1);
+    expect(result).toBeDefined();
+    expect(result.length).toBe(1);
 
-//     const expectedDebitAmount: number = +debit_tx_01[3];
+    const expectedDebitAmount: number = +debit_tx_01[3];
 
-//     const expectedTransaction = {
-//       date: getDateFromStringWFormatter(
-//         debit_tx_01[DATE_COLUMN_INDEX],
-//         DATE_FORMAT_DD_MM_YYYY
-//       ),
-//       bankAccount: ACCOUNT_ID,
-//       description: debit_tx_01[DESC_COLUMN_INDEX],
-//       amount: -expectedDebitAmount,
-//     } as Transaction;
+    const expectedTransaction = {
+      id: -1,
+      bankAccount: { id: ACCOUNT_ID } as BankAccount,
+      category: {} as Category,
+      date: getDateFromStringWFormatter(
+        debit_tx_01[DATE_COLUMN_INDEX],
+        DATE_FORMAT_DD_MM_YYYY
+      ),
+      description: {} as Description,
+      memo: debit_tx_01[DESC_COLUMN_INDEX],
+      tag: {} as Tag,
+      runningBalance: 0,
+      amount: -expectedDebitAmount,
+    } as Transaction;
 
-//     expect(result[0]).toEqual(expectedTransaction);
-//   });
+    expect(result[0]).toEqual(expectedTransaction);
+  });
 
-//   test("should return a debit transaction with negative amount where other currency", () => {
-//     // Arrange
-//     const inputData = [HEADER_ROW, EMPTY_ROW, debit_tx_02];
+  test("should return a debit transaction with negative amount where other currency", () => {
+    // Arrange
+    const inputData = [HEADER_ROW, EMPTY_ROW, debit_tx_02];
 
-//     // Act
-//     const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
+    // Act
+    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
 
-//     // Assert
+    // Assert
 
-//     expect(result).toBeDefined();
-//     expect(result.length).toBe(1);
+    expect(result).toBeDefined();
+    expect(result.length).toBe(1);
 
-//     const expectedDebitAmount: number = +debit_tx_02[3];
+    const expectedDebitAmount: number = +debit_tx_02[3];
 
-//     const expectedTransaction = {
-//       date: getDateFromStringWFormatter(
-//         debit_tx_02[DATE_COLUMN_INDEX],
-//         DATE_FORMAT_DD_MM_YYYY
-//       ),
-//       account: ACCOUNT_ID,
-//       description: debit_tx_02[DESC_COLUMN_INDEX],
-//       amount: -expectedDebitAmount,
-//     } as Transaction;
+    const expectedTransaction = {
+      id: -1,
+      bankAccount: { id: ACCOUNT_ID } as BankAccount,
+      category: {} as Category,
+      date: getDateFromStringWFormatter(
+        debit_tx_02[DATE_COLUMN_INDEX],
+        DATE_FORMAT_DD_MM_YYYY
+      ),
+      description: {} as Description,
+      memo: debit_tx_02[DESC_COLUMN_INDEX],
+      tag: {} as Tag,
+      runningBalance: 0,
+      amount: -expectedDebitAmount,
+    } as Transaction;
 
-//     expect(result[0]).toEqual(expectedTransaction);
-//   });
+    expect(result[0]).toEqual(expectedTransaction);
+  });
 
-//   test("should return a credit transaction with positive amount", () => {
-//     // Arrange
-//     const inputData = [HEADER_ROW, EMPTY_ROW, credit_tx_01];
+  test("should return a credit transaction with positive amount", () => {
+    // Arrange
+    const inputData = [HEADER_ROW, EMPTY_ROW, credit_tx_01];
 
-//     // Act
-//     const result: Transaction[] | undefined = prettyfyJson(
-//       inputData,
-//       ACCOUNT_ID
-//     );
+    // Act
+    const result: Transaction[] | undefined = prettyfyJson(
+      inputData,
+      ACCOUNT_ID
+    );
 
-//     // Assert
-//     const expectedCreditAmount: number = +credit_tx_01[CREDIT_COL_INDEX];
+    // Assert
+    const expectedCreditAmount: number = +credit_tx_01[CREDIT_COL_INDEX];
 
-//     expect(result).toBeDefined();
-//     expect(result.length).toBe(1);
+    expect(result).toBeDefined();
+    expect(result.length).toBe(1);
 
-//     const expectedTransaction = {
-//       date: getDateFromStringWFormatter(
-//         credit_tx_01[DATE_COLUMN_INDEX],
-//         DATE_FORMAT_DD_MM_YYYY
-//       ),
-//       account: ACCOUNT_ID,
-//       description: credit_tx_01[DESC_COLUMN_INDEX],
-//       amount: expectedCreditAmount,
-//     } as Transaction;
+    const expectedTransaction = {
+      id: -1,
+      bankAccount: { id: ACCOUNT_ID } as BankAccount,
+      category: {} as Category,
+      date: getDateFromStringWFormatter(
+        credit_tx_01[DATE_COLUMN_INDEX],
+        DATE_FORMAT_DD_MM_YYYY
+      ),
+      description: {} as Description,
+      memo: credit_tx_01[DESC_COLUMN_INDEX],
+      tag: {} as Tag,
+      runningBalance: 0,
+      amount: expectedCreditAmount,
+    } as Transaction;
 
-//     expect(result[0]).toEqual(expectedTransaction);
-//   });
+    expect(result[0]).toEqual(expectedTransaction);
+  });
 
-//   test("should return a credit transaction with positive amount where other currency", () => {
-//     // Arrange
-//     const inputData = [HEADER_ROW, EMPTY_ROW, credit_tx_02];
+  test("should return a credit transaction with positive amount where other currency", () => {
+    // Arrange
+    const inputData = [HEADER_ROW, EMPTY_ROW, credit_tx_02];
 
-//     // Act
-//     const result: Transaction[] | undefined = prettyfyJson(
-//       inputData,
-//       ACCOUNT_ID
-//     );
+    // Act
+    const result: Transaction[] | undefined = prettyfyJson(
+      inputData,
+      ACCOUNT_ID
+    );
 
-//     // Assert
-//     const expectedCreditAmount: number = +credit_tx_02[CREDIT_COL_INDEX];
+    // Assert
+    const expectedCreditAmount: number = +credit_tx_02[CREDIT_COL_INDEX];
 
-//     expect(result).toBeDefined();
-//     expect(result.length).toBe(1);
+    expect(result).toBeDefined();
+    expect(result.length).toBe(1);
 
-//     const expectedTransaction = {
-//       date: getDateFromStringWFormatter(
-//         credit_tx_02[DATE_COLUMN_INDEX],
-//         DATE_FORMAT_DD_MM_YYYY
-//       ),
-//       account: ACCOUNT_ID,
-//       description: credit_tx_02[DESC_COLUMN_INDEX],
-//       amount: expectedCreditAmount,
-//     } as Transaction;
+    const expectedTransaction = {
+      id: -1,
+      bankAccount: { id: ACCOUNT_ID } as BankAccount,
+      category: {} as Category,
+      date: getDateFromStringWFormatter(
+        credit_tx_02[DATE_COLUMN_INDEX],
+        DATE_FORMAT_DD_MM_YYYY
+      ),
+      description: {} as Description,
+      memo: credit_tx_02[DESC_COLUMN_INDEX],
+      tag: {} as Tag,
+      runningBalance: 0,
+      amount: expectedCreditAmount,
+    } as Transaction;
 
-//     expect(result[0]).toEqual(expectedTransaction);
-//   });
+    expect(result[0]).toEqual(expectedTransaction);
+  });
 
-//   test("should return a credit transaction where amount is with comma", () => {
-//     // Arrange
-//     const inputData = [HEADER_ROW, EMPTY_ROW, credit_tx_03];
+  test("should return a credit transaction where amount is with comma", () => {
+    // Arrange
+    const inputData = [HEADER_ROW, EMPTY_ROW, credit_tx_03];
 
-//     // Act
-//     const result: Transaction[] | undefined = prettyfyJson(
-//       inputData,
-//       ACCOUNT_ID
-//     );
+    // Act
+    const result: Transaction[] | undefined = prettyfyJson(
+      inputData,
+      ACCOUNT_ID
+    );
 
-//     // Assert
-//     const expectedCreditAmount: number = +credit_tx_03[
-//       CREDIT_COL_INDEX
-//     ].replace(/,/g, "");
+    // Assert
+    const expectedCreditAmount: number = +credit_tx_03[
+      CREDIT_COL_INDEX
+    ].replace(/,/g, "");
 
-//     expect(result).toBeDefined();
-//     expect(result.length).toBe(1);
+    expect(result).toBeDefined();
+    expect(result.length).toBe(1);
 
-//     const expectedTransaction = {
-//       date: getDateFromStringWFormatter(
-//         credit_tx_03[DATE_COLUMN_INDEX],
-//         DATE_FORMAT_DD_MM_YYYY
-//       ),
-//       account: ACCOUNT_ID,
-//       description: credit_tx_03[DESC_COLUMN_INDEX],
-//       amount: expectedCreditAmount,
-//     } as Transaction;
+    const expectedTransaction = {
+      id: -1,
+      bankAccount: { id: ACCOUNT_ID } as BankAccount,
+      category: {} as Category,
+      date: getDateFromStringWFormatter(
+        credit_tx_03[DATE_COLUMN_INDEX],
+        DATE_FORMAT_DD_MM_YYYY
+      ),
+      description: {} as Description,
+      memo: credit_tx_02[DESC_COLUMN_INDEX],
+      tag: {} as Tag,
+      runningBalance: 0,
+      amount: expectedCreditAmount,
+    } as Transaction;
 
-//     expect(result[0]).toEqual(expectedTransaction);
-//   });
-// });
+    expect(result[0]).toEqual(expectedTransaction);
+  });
+});

@@ -70,8 +70,6 @@ function AccountTransactionsList({
             accountIndex={accountIndex}
             txIndex={txIndex}
             isDateEditable={isDateEditable}
-            errors={errors}
-            touched={touched}
           />
         );
       })}

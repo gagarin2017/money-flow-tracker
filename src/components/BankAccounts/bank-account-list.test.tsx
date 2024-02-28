@@ -73,32 +73,6 @@ const contextValueWithoutAccounts = getBankAccCtxValueToShare(
   mockedSetSelectedBankAccountIdFunction
 );
 
-// Sorting is done in enother place atm
-it.skip("should display card per each bank account passed to the list sorted by bank name", async () => {
-  render(
-    <MockBankAccountProvider valueToShare={contextValueWithAccounts}>
-      <BankAccountList />
-    </MockBankAccountProvider>
-  );
-
-  const bankAccountCards = screen.getAllByTestId("bank-account");
-
-  // Assert that there are exactly 4 bank account cards
-  expect(bankAccountCards).toHaveLength(4);
-
-  const bankAccountLogo01 = within(bankAccountCards[0]).getByRole("img");
-  const bankAccountLogo02 = within(bankAccountCards[1]).getByRole("img");
-  const bankAccountLogo03 = within(bankAccountCards[2]).getByRole("img");
-  const bankAccountLogo04 = within(bankAccountCards[3]).getByRole("img");
-
-  expect(bankAccountLogo01).toHaveAttribute("src", "aib-logo.png");
-  expect(bankAccountLogo02).toHaveAttribute("src", "boi-logo-1.png");
-  expect(bankAccountLogo03).toHaveAttribute("src", "boi-logo-1.png");
-  expect(bankAccountLogo04).toHaveAttribute("src", "kbc-logo.png");
-
-  expect(mockedFetchAccountsFunction).toHaveBeenCalledTimes(1);
-});
-
 test("that selected bank account card has unique style", async () => {
   render(
     <MockBankAccountProvider valueToShare={contextValueWithAccounts}>

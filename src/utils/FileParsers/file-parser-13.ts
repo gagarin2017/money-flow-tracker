@@ -1,4 +1,6 @@
+import { Category } from "../../model/category";
 import { Description } from "../../model/description";
+import { Tag } from "../../model/tag";
 import { Transaction } from "../../model/transaction";
 import {
   getDateFromStringWFormatter,
@@ -19,12 +21,12 @@ import {
  * @returns
  */
 export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
+  const resultTransactions: Transaction[] = [];
+
   const headers = uglyJsonArray[0];
 
   const DEBIT_AMT_COLUMN_INDEX = getDebitAmtIndex(headers);
   const CREDIT_AMT_COLUMN_INDEX = getCreditAmtIndex(headers);
-
-  let transactions: Transaction[] = [];
 
   // Removing headers
   uglyJsonArray.splice(0, 1);
@@ -33,11 +35,16 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
     return row.map((el) => el.trim());
   });
 
-  transactions = inputArray.map((row: any) => {
-    const txDate = getDateFromStringWFormatter(
-      row[DATE_COLUMN_INDEX],
-      DATE_FORMAT_DD_MM_YYYY
-    );
+  inputArray.forEach((row: String) => {
+    let txDateString: string = row[DATE_COLUMN_INDEX];
+    let txDate;
+
+    if (txDateString && txDateString !== "") {
+      txDate = getDateFromStringWFormatter(
+        row[DATE_COLUMN_INDEX],
+        DATE_FORMAT_DD_MM_YYYY
+      );
+    }
 
     let amount;
 
@@ -58,13 +65,19 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
     ) {
       amount = parseFloat(row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
     }
-    return {
-      date: txDate,
-      bankAccount: { id: +accountId },
-      description: { name: row[DESC_COLUMN_INDEX] } as Description,
-      amount,
-    } as Transaction;
+    if (txDate)
+      resultTransactions.push({
+        id: -1,
+        date: txDate,
+        bankAccount: { id: accountId },
+        category: {} as Category,
+        memo: row[DESC_COLUMN_INDEX],
+        description: {} as Description,
+        tag: {} as Tag,
+        runningBalance: 0,
+        amount,
+      } as Transaction);
   });
 
-  return transactions;
+  return resultTransactions;
 };

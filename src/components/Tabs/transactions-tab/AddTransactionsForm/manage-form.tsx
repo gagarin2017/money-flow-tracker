@@ -15,29 +15,25 @@ export const NEW_PROP_VALID_SCHEMA = Yup.object().shape({
   payeeName: Yup.string()
     .min(3, "Too Short!")
     .max(50, "Too Long!")
-    .test(
-      "Checking payee's name",
-      "Payee's name is required",
-      (payeeName, ctx) => {
-        const theName = ctx.parent.name;
+    .test("checking payee's name", "Required", (payeeName, ctx) => {
+      const theName = ctx.parent.name;
 
-        let result = true;
+      let result = true;
 
-        if (theName) {
-          // if there's a name input then ignore this validation as the user is on Add New Category/Description/Tag widget
-          result = true;
-        } else if (!payeeName) {
-          // the user is on Add New Payee widget, hence fail this validation as payee name is required
-          result = false;
-        }
-
-        return result;
+      if (theName) {
+        // if there's a name input then ignore this validation as the user is on Add New Category/Description/Tag widget
+        result = true;
+      } else if (!payeeName) {
+        // the user is on Add New Payee widget, hence fail this validation as payee name is required
+        result = false;
       }
-    ),
+
+      return result;
+    }),
   name: Yup.string()
     .min(3, "Too Short!")
     .max(50, "Too Long!")
-    .test("checking prop's name", "The name is required", (propsName, ctx) => {
+    .test("checking prop's name", "Required", (propsName, ctx) => {
       const payeeName = ctx.parent.payeeName;
 
       let result = true;

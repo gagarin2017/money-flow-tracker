@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 export const DATE_FORMAT_DD_MM_YYYY = "DD-MM-YYYY";
 export const DATE_FORMAT_YYYY_MM_DD = "YYYY-MM-DD";
@@ -13,6 +13,10 @@ export const getAmountString = (amount: number) => {
 
 export const getStringFromDate = (date: Date) => {
   return moment(date).format(DATE_FORMAT_YYYY_MM_DD);
+};
+
+export const getStringFromMoment = (date: Moment, formatter: string) => {
+  return date.format(formatter);
 };
 
 export const getStringFromDateWFormatter = (date: Date, formatter: string) => {

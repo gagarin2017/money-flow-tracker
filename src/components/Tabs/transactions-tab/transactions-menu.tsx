@@ -1,20 +1,19 @@
+import { DownOutlined, LineOutlined, MenuOutlined } from "@ant-design/icons";
 import { Button, Dropdown, MenuProps, Space, notification } from "antd";
+import { useState } from "react";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../context/import-transactions-context";
+import { isSpringBoot } from "../../services/api-common";
 import AddTransactionsForm from "./AddTransactionsForm/add-transactions-form";
-import ImportTransactionsForm from "./ImportTransactionsForm/import-transactions-form";
 import PayeeCatDescTagManager, {
   ManagedPropertiesMap,
   ManagedProperty,
 } from "./AddTransactionsForm/payee-cat-desc-tag-manager";
-import { isSpringBoot } from "../../services/api-common";
-import { fetchPayeesCategoriesTags } from "./add-transactions-utils";
-import { DownOutlined, MenuOutlined, LineOutlined } from "@ant-design/icons";
 import ImportSingleTransactionForm from "./ImportTransactionsForm/import-single-transaction-form";
-import { useState } from "react";
-import ErrorDisplay from "../../../UI/error-display";
+import ImportTransactionsForm from "./ImportTransactionsForm/import-transactions-form";
+import { fetchPayeesCategoriesTags } from "./add-transactions-utils";
 
 const importOptions: MenuProps["items"] = [
   {

@@ -5,3 +5,7 @@ GET http://localhost:8080/api/transactions/bank-account/1/
 PUT http://localhost:8080/api/transactions/reset-database
 
 ###
+
+GET http://localhost:8080/api/transactions/2011
+
+###

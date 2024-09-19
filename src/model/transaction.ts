@@ -18,6 +18,9 @@ export interface Transaction {
   balance?: number;
   type?: string;
   amount: number;
+  creditAmount: number;
+  debitAmount: number;
+  transactionType?: TransactionType;
   // running balance calculated for all transactions on the billing account
   runningBalance: number;
   // the flag needed to filter transactions for the report (need to ignore these to caclulate the spending sum per month, for example)
@@ -25,4 +28,9 @@ export interface Transaction {
   created_At?: string;
   updated_At?: string;
   _links?: object;
+}
+
+export interface TransactionType {
+  debit: string;
+  credit: string;
 }

@@ -76,6 +76,8 @@ const inputTransactions: Transaction[] = [
     },
     reconsiled: true,
     amount: -1220.2,
+    creditAmount: 0,
+    debitAmount: -1220.2,
     runningBalance: 15641.2,
     betweenAccountsTransaction: false,
     created_At: "2023-10-15T18:58:10.672",

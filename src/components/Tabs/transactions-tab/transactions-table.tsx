@@ -1,5 +1,5 @@
 import { Button, Popconfirm, Space, Table, Tag } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { Category } from "../../../model/category";
 import { Description } from "../../../model/description";
 import { Tag as TxTag } from "../../../model/tag";
@@ -9,11 +9,9 @@ import {
   DATE_FORMAT_DD_MM_YYYY,
   getStringFromDateWFormatter,
 } from "../../../utils/date-helper";
-import {
-  TransactionSorterByDate,
-  getCategoryAsString,
-} from "../../../utils/transactions-helper";
+import { getCategoryAsString } from "../../../utils/transactions-helper";
 import BankAccount from "../../../model/bank-account";
+import { useEffect, useState } from "react";
 
 // The representation of the transaction (we might not want to include all transaction fields to be displayed on the UI)
 interface DataType {
@@ -27,6 +25,8 @@ interface DataType {
   tag: TxTag;
   reconsiled?: boolean;
   amount: number;
+  creditAmount: number;
+  debitAmount: number;
   runningBalance: number;
 }
 
@@ -41,6 +41,17 @@ function TransactionsTable({
   isLoading,
   handleTransactionDeletion,
 }: TransactionsTableProps) {
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    pageSize: 9,
+    showSizeChanger: false,
+    current: 1,
+  });
+
+  useEffect(() => {
+    // Reset pagination to the first page when data changes
+    setPagination({ ...pagination, current: 1 });
+  }, [transactions]);
+
   const columns: ColumnsType<DataType> = [
     {
       title: "Date",
@@ -91,18 +102,30 @@ function TransactionsTable({
       },
     },
     {
-      title: "Amount",
+      title: "Credit",
       dataIndex: "amount",
       key: "amount",
       render: (_: any, record: Transaction) => {
-        return record.amount > 0 ? (
+        return record.creditAmount > 0 ? (
           <span style={{ color: "green" }}>
-            {getAmountAsFormatedString(record.amount)}
+            {getAmountAsFormatedString(record.creditAmount)}
           </span>
         ) : (
+          <></>
+        );
+      },
+    },
+    {
+      title: "Debit",
+      dataIndex: "amount",
+      key: "amount",
+      render: (_: any, record: Transaction) => {
+        return record.debitAmount < 0 ? (
           <span style={{ color: "red" }}>
-            {getAmountAsFormatedString(record.amount)}
+            {getAmountAsFormatedString(record.debitAmount)}
           </span>
+        ) : (
+          <></>
         );
       },
     },
@@ -143,6 +166,10 @@ function TransactionsTable({
     handleTransactionDeletion(transactionId);
   };
 
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    setPagination(pagination);
+  };
+
   const data: DataType[] = transactions.map((tx) => ({ ...tx, key: tx.id }));
 
   return (
@@ -150,7 +177,7 @@ function TransactionsTable({
       columns={columns}
       dataSource={data}
       loading={isLoading}
-      pagination={{ pageSize: 9, showSizeChanger: false }}
+      pagination={pagination}
       onRow={(record, index) => ({
         style: {
           backgroundColor:
@@ -159,6 +186,7 @@ function TransactionsTable({
               : "#F7FCFF",
         },
       })}
+      onChange={handleTableChange}
     />
   );
 }

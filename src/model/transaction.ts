@@ -18,8 +18,8 @@ export interface Transaction {
   balance?: number;
   type?: string;
   amount: number;
-  creditAmount: number;
   debitAmount: number;
+  creditAmount: number;
   transactionType?: TransactionType;
   // running balance calculated for all transactions on the billing account
   runningBalance: number;

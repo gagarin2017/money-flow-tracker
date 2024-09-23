@@ -33,7 +33,7 @@ import {
   fetchPayeesCategoriesTags,
 } from "../add-transactions-utils";
 
-const CUSTOM_WIDTH = 1400;
+const CUSTOM_WIDTH = 1450;
 
 function ImportSingleTransactionForm() {
   const { state, dispatch } = useImportTransactionsContext();
@@ -89,6 +89,8 @@ function ImportSingleTransactionForm() {
           } as Category,
           memo: tx.memo,
           tag: tx.tag,
+          debitAmount: tx.debitAmount,
+          creditAmount: tx.creditAmount,
           amount: tx.amount,
           runningBalance: 0,
         } as Transaction);

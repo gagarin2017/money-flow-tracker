@@ -44,7 +44,8 @@ function AccountTransaction({
           categoryFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
           descriptionFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.description`}
           tagFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
-          amountFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
+          debitAmountFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.debitAmount`}
+          creditAmountFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.creditAmount`}
         />
       </Col>
       <Col className="gutter-row" span={3}>
@@ -75,11 +76,20 @@ function AccountTransaction({
       </Col>
       <Col className="gutter-row" span={2}>
         <AddTransactionsFormAmountField
-          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
+          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.debitAmount`}
         />
         <ErrorMessage
-          key={`${transaction.id}amount`}
-          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.amount`}
+          key={`${transaction.id}debitAmount`}
+          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.debitAmount`}
+        />
+      </Col>
+      <Col className="gutter-row" span={2}>
+        <AddTransactionsFormAmountField
+          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.creditAmount`}
+        />
+        <ErrorMessage
+          key={`${transaction.id}creditAmount`}
+          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.creditAmount`}
         />
       </Col>
       <Col className="gutter-row" span={2}>

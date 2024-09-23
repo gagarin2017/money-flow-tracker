@@ -9,4 +9,6 @@ export default interface Payee {
   category: Category;
   tag: Tag;
   amount?: number;
+  debitAmount?: number;
+  creditAmount?: number;
 }

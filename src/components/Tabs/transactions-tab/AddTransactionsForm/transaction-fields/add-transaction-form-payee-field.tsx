@@ -7,7 +7,8 @@ interface AddTransactionsFormPayeeFieldProps {
   categoryFieldName: string;
   descriptionFieldName: string;
   tagFieldName: string;
-  amountFieldName: string;
+  debitAmountFieldName: string;
+  creditAmountFieldName: string;
 }
 
 function AddTransactionsFormPayeeField({
@@ -15,7 +16,8 @@ function AddTransactionsFormPayeeField({
   categoryFieldName,
   descriptionFieldName,
   tagFieldName,
-  amountFieldName,
+  debitAmountFieldName,
+  creditAmountFieldName,
 }: AddTransactionsFormPayeeFieldProps) {
   const { state } = useImportTransactionsContext();
 
@@ -25,13 +27,15 @@ function AddTransactionsFormPayeeField({
   const [, , categoryHelper] = useField(categoryFieldName);
   const [, , descriptionyHelper] = useField(descriptionFieldName);
   const [, , tagHelper] = useField(tagFieldName);
-  const [, , amountHelper] = useField(amountFieldName);
+  const [, , debitAmountHelper] = useField(debitAmountFieldName);
+  const [, , creditAmountHelper] = useField(creditAmountFieldName);
 
   const onClear = () => {
     categoryHelper.setValue(undefined);
     descriptionyHelper.setValue(undefined);
     tagHelper.setValue(undefined);
-    amountHelper.setValue(undefined);
+    debitAmountHelper.setValue(undefined);
+    creditAmountHelper.setValue(undefined);
     payeeHelper.setTouched(true);
   };
 
@@ -43,13 +47,15 @@ function AddTransactionsFormPayeeField({
       categoryHelper.setValue(selectedPayee?.category);
       descriptionyHelper.setValue(selectedPayee?.description);
       tagHelper.setValue(selectedPayee?.tag);
-      amountHelper.setValue(selectedPayee?.amount);
+      debitAmountHelper.setValue(selectedPayee?.debitAmount);
+      creditAmountHelper.setValue(selectedPayee?.creditAmount);
       payeeHelper.setTouched(true);
     } else {
       categoryHelper.setValue(undefined);
       descriptionyHelper.setValue(undefined);
       tagHelper.setValue(undefined);
-      amountHelper.setValue(undefined);
+      debitAmountHelper.setValue(undefined);
+      creditAmountHelper.setValue(undefined);
     }
   };
 

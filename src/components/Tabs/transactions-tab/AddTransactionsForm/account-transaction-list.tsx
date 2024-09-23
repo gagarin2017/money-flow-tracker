@@ -35,8 +35,11 @@ const HEADER_ROW = (
     <Col className="gutter-row" span={3} key={"Tag"}>
       <div style={style}>Tag</div>
     </Col>
-    <Col className="gutter-row" span={2} key={"Amount"}>
-      <div style={style}>Amount</div>
+    <Col className="gutter-row" span={2} key={"DebitAmount"}>
+      <div style={style}>Debit</div>
+    </Col>
+    <Col className="gutter-row" span={2} key={"CreditAmount"}>
+      <div style={style}>Credit</div>
     </Col>
     <Col className="gutter-row" span={2} key={"Action"}>
       <div style={style}>Action</div>

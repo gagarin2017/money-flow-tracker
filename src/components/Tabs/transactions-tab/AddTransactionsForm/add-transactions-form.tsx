@@ -44,7 +44,24 @@ export const ACC_TRXS_VALID_SCHEMA = Yup.object().shape({
           category: Yup.object().shape({
             name: Yup.string().required(),
           }),
-          amount: Yup.number().required(),
+          debitAmount: Yup.number().test(
+            "debitOrCreditRequired",
+            "Either debitAmount or creditAmount is required",
+            function (value) {
+              return (
+                value !== undefined || this.parent.creditAmount !== undefined
+              );
+            }
+          ),
+          creditAmount: Yup.number().test(
+            "creditOrDebitRequired",
+            "Either debitAmount or creditAmount is required",
+            function (value) {
+              return (
+                value !== undefined || this.parent.debitAmount !== undefined
+              );
+            }
+          ),
         })
       ),
     })
@@ -111,7 +128,8 @@ const AddTransactionsForm = () => {
           category: { id: tx.category?.id } as Category,
           memo: tx.memo,
           tag: tx.tag,
-          amount: tx.amount,
+          debitAmount: tx.debitAmount,
+          creditAmount: tx.creditAmount,
           runningBalance: 0,
         } as Transaction);
       });

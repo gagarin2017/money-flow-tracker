@@ -102,13 +102,13 @@ function TransactionsTable({
       },
     },
     {
-      title: "Credit",
+      title: "Debit",
       dataIndex: "amount",
       key: "amount",
       render: (_: any, record: Transaction) => {
-        return record.creditAmount > 0 ? (
-          <span style={{ color: "green" }}>
-            {getAmountAsFormatedString(record.creditAmount)}
+        return record.debitAmount > 0 ? (
+          <span style={{ color: "red" }}>
+            {getAmountAsFormatedString(record.debitAmount)}
           </span>
         ) : (
           <></>
@@ -116,13 +116,13 @@ function TransactionsTable({
       },
     },
     {
-      title: "Debit",
+      title: "Credit",
       dataIndex: "amount",
       key: "amount",
       render: (_: any, record: Transaction) => {
-        return record.debitAmount < 0 ? (
-          <span style={{ color: "red" }}>
-            {getAmountAsFormatedString(record.debitAmount)}
+        return record.creditAmount > 0 ? (
+          <span style={{ color: "green" }}>
+            {getAmountAsFormatedString(record.creditAmount)}
           </span>
         ) : (
           <></>

@@ -29,6 +29,11 @@ const items: TabsProps["items"] = [
     label: "Budget",
     children: <BudgetTab />,
   },
+  {
+    key: "5",
+    label: "Loan calculator",
+    children: <BudgetTab />,
+  },
 ];
 
 function ContentTabList() {

@@ -29,6 +29,8 @@ export interface FormTransaction {
   memo?: string;
   tag?: Tag;
   amount: number | undefined;
+  debitAmount: number | undefined;
+  creditAmount: number | undefined;
 }
 
 export const EMPTY_FORM_TRANSACTION = {
@@ -39,7 +41,8 @@ export const EMPTY_FORM_TRANSACTION = {
   description: undefined,
   memo: "",
   tag: undefined,
-  amount: undefined,
+  debitAmount: undefined,
+  creditAmount: undefined,
 } as FormTransaction;
 
 export const transformParsedTransactions = (
@@ -82,7 +85,8 @@ function transformTransactionsToTableTransactions(
         id: -date.length * Math.random() * 1234,
         date: date,
         memo: txToImport.description.name,
-        amount: txToImport.amount,
+        debitAmount: txToImport.debitAmount,
+        creditAmount: txToImport.creditAmount,
         category: undefined,
       } as FormTransaction;
     }

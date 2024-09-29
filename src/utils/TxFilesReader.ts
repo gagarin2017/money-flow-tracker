@@ -28,7 +28,7 @@ export const readAndParseTxFiles = (
         } as FileParserResults;
 
         switch (+fileBankAccount.bankAccountId) {
-          case 10:
+          case 11:
             prettyJson = prettyfyJson12(
               results.data,
               fileBankAccount.bankAccountId
@@ -40,7 +40,7 @@ export const readAndParseTxFiles = (
               fileBankAccount.bankAccountId
             );
             break;
-          case 9:
+          case 10:
             prettyJson = prettyfyJson13(
               results.data,
               fileBankAccount.bankAccountId
@@ -56,6 +56,7 @@ export const readAndParseTxFiles = (
             status: ParsingStatus.FINISHED,
             accountId: fileBankAccount.bankAccountId,
           } as FileParserResults;
+
           return resolve(parsingResults);
         } else {
           return reject(errorParsingResult);

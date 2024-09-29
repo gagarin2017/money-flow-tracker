@@ -9,7 +9,7 @@ import {
 } from "../date-helper";
 
 import { prettyfyJson } from "./file-parser-12";
-import { DATE_COLUMN_INDEX, DESC_COLUMN_INDEX } from "./parser-utils";
+import { DATE_COLUMN_INDEX, getDescriptionIndex } from "./parser-utils";
 import { HEADER_ROW, HEADER_ROW_V1 } from "./parser-utils.test";
 
 const debit_tx_01 = [
@@ -93,6 +93,7 @@ const credit_tx_v_1 = [
 ];
 
 const ACCOUNT_ID = 22;
+let DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW);
 
 describe("File type 1", () => {
   test("should return a debit transaction with negative amount", () => {
@@ -268,6 +269,7 @@ describe("File type 2", () => {
   test("should return a debit transaction with negative amount", () => {
     // Arrange
     const inputData = [HEADER_ROW_V1, debit_tx_v_1];
+    DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW_V1);
 
     // Act
     const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
@@ -299,6 +301,7 @@ describe("File type 2", () => {
   test("should return a credit transaction with positive amount", () => {
     // Arrange
     const inputData = [HEADER_ROW_V1, credit_tx_v_1];
+    DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW_V1);
 
     // Act
     const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);

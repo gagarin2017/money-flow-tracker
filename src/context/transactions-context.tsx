@@ -1,6 +1,6 @@
 import { notification } from "antd";
 import { createContext, useContext, useState } from "react";
-import { AccountTransaction } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
+import { AccountWithTransactions } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
 import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
 import { isSpringBoot } from "../components/services/api-common";
@@ -20,7 +20,7 @@ const description =
 export interface TransactionsData {
   transactions: Transaction[];
   isLoading: boolean;
-  importedTransactions: AccountTransaction[];
+  importedTransactions: AccountWithTransactions[];
   fetchTransactionsByBankAccount: (bankAccount: BankAccount) => void;
   fetchTransactionsByBankAccountId: (bankAccountId: number) => void;
   fetchTransactionsToBeImported: (
@@ -49,7 +49,7 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [importedTransactions, setImportedTransactions] = useState<
-    AccountTransaction[]
+    AccountWithTransactions[]
   >([]);
   const [errors, setErrors] = useState<Error[]>([]);
 

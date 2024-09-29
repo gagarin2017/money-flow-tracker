@@ -8,9 +8,9 @@ import {
 } from "../date-helper";
 import {
   DATE_COLUMN_INDEX,
-  DESC_COLUMN_INDEX,
-  getCreditAmtIndex,
-  getDebitAmtIndex,
+  getDescriptionIndex,
+  getPaidOutAmtIndex,
+  getPaidInAmtIndex,
 } from "./parser-utils";
 
 /**
@@ -25,8 +25,9 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
 
   const headers = uglyJsonArray[0];
 
-  const DEBIT_AMT_COLUMN_INDEX = getDebitAmtIndex(headers);
-  const CREDIT_AMT_COLUMN_INDEX = getCreditAmtIndex(headers);
+  const DEBIT_AMT_COLUMN_INDEX = getPaidOutAmtIndex(headers);
+  const CREDIT_AMT_COLUMN_INDEX = getPaidInAmtIndex(headers);
+  const DESC_COLUMN_INDEX = getDescriptionIndex(headers);
 
   // Removing headers
   uglyJsonArray.splice(0, 1);
@@ -46,7 +47,8 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
       );
     }
 
-    let amount;
+    let debitAmount;
+    let creditAmount;
 
     // debit amount
     if (
@@ -54,7 +56,7 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
       row[DEBIT_AMT_COLUMN_INDEX] !== null &&
       +row[DEBIT_AMT_COLUMN_INDEX] !== 0
     ) {
-      amount = -parseFloat(row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
+      debitAmount = parseFloat(row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
     }
 
     // credit amount
@@ -63,7 +65,7 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
       row[CREDIT_AMT_COLUMN_INDEX] !== null &&
       +row[CREDIT_AMT_COLUMN_INDEX] !== 0
     ) {
-      amount = parseFloat(row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
+      creditAmount = parseFloat(row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
     }
     if (txDate)
       resultTransactions.push({
@@ -75,7 +77,8 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
         description: {} as Description,
         tag: {} as Tag,
         runningBalance: 0,
-        amount,
+        debitAmount,
+        creditAmount,
       } as Transaction);
   });
 

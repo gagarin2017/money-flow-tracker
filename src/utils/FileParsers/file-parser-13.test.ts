@@ -7,7 +7,7 @@ import {
 import { prettyfyJson } from "./file-parser-13";
 import { HEADER_ROW } from "./parser-utils.test";
 
-import { DATE_COLUMN_INDEX, DESC_COLUMN_INDEX } from "./parser-utils";
+import { DATE_COLUMN_INDEX, getDescriptionIndex } from "./parser-utils";
 import BankAccount from "../../model/bank-account";
 import { Category } from "../../model/category";
 import { Description } from "../../model/description";
@@ -77,6 +77,7 @@ const credit_tx_03 = [
 
 const ACCOUNT_ID = 22;
 const CREDIT_COL_INDEX = 4;
+const DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW);
 
 describe("When parsing the transactions for the account 1", () => {
   test("should return a debit transaction with negative amount", () => {

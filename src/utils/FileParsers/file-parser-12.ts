@@ -8,10 +8,10 @@ import {
 } from "../date-helper";
 import {
   DATE_COLUMN_INDEX,
-  DESC_COLUMN_INDEX,
   getBalanceAmtIndex,
   getCreditAmtIndex,
   getDebitAmtIndex,
+  getDescriptionIndex,
 } from "./parser-utils";
 
 /**
@@ -29,6 +29,7 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
   const DEBIT_AMT_COLUMN_INDEX = getDebitAmtIndex(headerRow);
   const CREDIT_AMT_COLUMN_INDEX = getCreditAmtIndex(headerRow);
   const BALANCE_COLUMN_INDEX = getBalanceAmtIndex(headerRow);
+  const DESC_COLUMN_INDEX = getDescriptionIndex(headerRow);
 
   // Removing headers
   uglyJsonArray.splice(0, 1);
@@ -44,7 +45,8 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
         DATE_FORMAT_DD_MM_YYYY
       );
 
-      let amount: number | undefined = undefined;
+      let debitAmount: number | undefined = undefined;
+      let creditAmount: number | undefined = undefined;
 
       // does the row have any amount
       if (
@@ -53,7 +55,7 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
         +row[DEBIT_AMT_COLUMN_INDEX] !== 0
       ) {
         // debit amount
-        amount = -parseFloat(row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
+        debitAmount = parseFloat(row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
       }
 
       if (
@@ -62,10 +64,12 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
         +row[CREDIT_AMT_COLUMN_INDEX] !== 0
       ) {
         // credit amount
-        amount = parseFloat(row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
+        creditAmount = parseFloat(
+          row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, "")
+        );
       }
 
-      if (amount) {
+      if (debitAmount || creditAmount) {
         transactions.push({
           id: -1,
           date: txDate,
@@ -77,7 +81,8 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
           runningBalance: parseFloat(
             row[BALANCE_COLUMN_INDEX].replace(/,/g, "")
           ),
-          amount,
+          debitAmount,
+          creditAmount,
         } as Transaction);
       }
     }

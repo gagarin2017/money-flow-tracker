@@ -11,11 +11,15 @@ function AddTransactionsFormAmountField({
 }: AddTransactionsFormAmountFieldProps) {
   const [field, , helper] = useField(fieldName);
 
-  const [amount, setAmount] = useState<number>(field.value);
+  const [amount, setAmount] = useState<number | undefined>(field.value);
 
   const onChange = (value: number | null) => {
     if (value) {
       setAmount(value);
+      helper.setValue(value);
+    } else {
+      setAmount(undefined);
+      helper.setValue(undefined);
     }
   };
 
@@ -31,7 +35,8 @@ function AddTransactionsFormAmountField({
   };
 
   return (
-    <InputNumber onChange={onChange} onBlur={onBlur} value={field.value} />
+    // <InputNumber onChange={onChange} onBlur={onBlur} value={field.value} />
+    <InputNumber onChange={onChange} value={field.value} />
   );
 }
 

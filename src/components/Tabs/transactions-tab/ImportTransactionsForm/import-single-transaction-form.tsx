@@ -1,12 +1,5 @@
 import { Alert, Space } from "antd";
-import {
-  FieldArray,
-  Formik,
-  FormikErrors,
-  FormikHelpers,
-  FormikTouched,
-} from "formik";
-import { useEffect } from "react";
+import { Formik, FormikHelpers } from "formik";
 import FormsModal from "../../../../UI/forms-modal";
 import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 import {
@@ -21,17 +14,13 @@ import {
   getDateFromStringWFormatter,
 } from "../../../../utils/date-helper";
 import BankAccountTitle from "../../../BankAccounts/bank-account-title";
-import { isSpringBoot } from "../../../services/api-common";
-import AccountTransactionsList from "../AddTransactionsForm/account-transaction-list";
-import {
-  ACC_TRXS_VALID_SCHEMA,
-  AccountTransaction,
-  NewTransactionsFormData,
-} from "../AddTransactionsForm/add-transactions-form";
+import AccountTransaction from "../AddTransactionsForm/account-transaction";
 import {
   EMPTY_FORM_TRANSACTION,
-  fetchPayeesCategoriesTags,
+  FormTransaction,
 } from "../add-transactions-utils";
+import { HEADER_ROW } from "../transactions-utils";
+import { TRANSACTION_VALIDATION_SCHEMA } from "./validation-schemas";
 
 const CUSTOM_WIDTH = 1450;
 
@@ -41,24 +30,9 @@ function ImportSingleTransactionForm() {
   const { bankAccounts, selectedBankAccountId, fetchBankAccounts } =
     useBankAccountsContext();
 
-  // useEffect(() => {
-  //   fetchPayeesCategoriesTags(isSpringBoot, dispatch);
-  // }, []);
-
   const bankAccount = bankAccounts.find(
     (bankAccount) => bankAccount.id === selectedBankAccountId
   );
-
-  const getInitialValues = () => {
-    return {
-      accountTransactions: [
-        {
-          bankAccount,
-          transactions: [EMPTY_FORM_TRANSACTION],
-        },
-      ],
-    };
-  };
 
   const handleFormClose = () => {
     dispatch({
@@ -68,36 +42,33 @@ function ImportSingleTransactionForm() {
   };
 
   const onSubmit = async (
-    formValues: NewTransactionsFormData,
-    { resetForm }: FormikHelpers<NewTransactionsFormData>
+    formTransaction: FormTransaction,
+    { resetForm }: FormikHelpers<FormTransaction>
   ) => {
-    const transactionsToSave: Transaction[] = [];
+    const transactionToSave: Transaction = {
+      id: -1,
+      bankAccount: bankAccount,
+      date:
+        formTransaction.date &&
+        getDateFromStringWFormatter(
+          formTransaction.date,
+          DATE_FORMAT_DD_MM_YYYY
+        ),
+      description: formTransaction.description,
+      category: {
+        id: formTransaction.category?.id,
+        name: formTransaction.category?.name,
+        subCategories: formTransaction.category?.subCategories,
+      } as Category,
+      memo: formTransaction.memo,
+      tag: formTransaction.tag,
+      debitAmount: formTransaction.debitAmount,
+      creditAmount: formTransaction.creditAmount,
+      amount: formTransaction.amount,
+      runningBalance: 0,
+    } as Transaction;
 
-    formValues.accountTransactions.forEach((formData) => {
-      formData.transactions.forEach((tx) => {
-        transactionsToSave.push({
-          id: -1,
-          bankAccount: formData.bankAccount,
-          date:
-            tx.date &&
-            getDateFromStringWFormatter(tx.date, DATE_FORMAT_DD_MM_YYYY),
-          description: tx.description,
-          category: {
-            id: tx.category?.id,
-            name: tx.category?.name,
-            subCategories: tx.category?.subCategories,
-          } as Category,
-          memo: tx.memo,
-          tag: tx.tag,
-          debitAmount: tx.debitAmount,
-          creditAmount: tx.creditAmount,
-          amount: tx.amount,
-          runningBalance: 0,
-        } as Transaction);
-      });
-    });
-
-    saveTransactions(transactionsToSave);
+    saveTransactions([transactionToSave]);
 
     // refresh accounts with the latest balances
     await fetchBankAccounts();
@@ -106,35 +77,16 @@ function ImportSingleTransactionForm() {
     handleFormClose();
   };
 
-  const accountTransactionSection = (
-    values: NewTransactionsFormData,
-    errors: FormikErrors<NewTransactionsFormData>,
-    touched: FormikTouched<NewTransactionsFormData>
-  ) => {
-    return values.accountTransactions.map(
-      (accTransactions: AccountTransaction, index: number) => (
-        <AccountTransactionsList
-          key={index}
-          accountIndex={index}
-          transactions={accTransactions.transactions}
-          isDateEditable
-          errors={errors}
-          touched={touched}
-        />
-      )
-    );
-  };
-
   return (
     <Formik
-      initialValues={getInitialValues()}
+      initialValues={EMPTY_FORM_TRANSACTION}
       onSubmit={(
-        values: NewTransactionsFormData,
-        handleReset: FormikHelpers<NewTransactionsFormData>
+        values: FormTransaction,
+        handleReset: FormikHelpers<FormTransaction>
       ) => {
         onSubmit(values, handleReset);
       }}
-      validationSchema={ACC_TRXS_VALID_SCHEMA}
+      validationSchema={TRANSACTION_VALIDATION_SCHEMA}
       validateOnMount={true}
     >
       {({
@@ -156,20 +108,34 @@ function ImportSingleTransactionForm() {
           handleOk={handleSubmit}
           isLoading={isLoading}
         >
-          <Alert
-            message={
-              <Space>
-                {"New transactions for "}
-                <BankAccountTitle bankAccount={bankAccount} />
-              </Space>
-            }
-            type="info"
-            showIcon
-            style={{ marginBottom: 10 }}
-          />
-          <FieldArray name="accountTransactions">
-            {() => <>{accountTransactionSection(values, errors, touched)}</>}
-          </FieldArray>
+          <>
+            <Alert
+              message={
+                <Space>
+                  {"Add new transaction for "}
+                  <BankAccountTitle bankAccount={bankAccount} />
+                </Space>
+              }
+              type="info"
+              showIcon
+              style={{ marginBottom: 10 }}
+            />
+            {HEADER_ROW}
+            <AccountTransaction
+              transaction={EMPTY_FORM_TRANSACTION}
+              accountIndex={bankAccount === undefined ? -21 : bankAccount.id}
+              txIndex={EMPTY_FORM_TRANSACTION.id}
+              isDateEditable={true}
+              dateField="date"
+              payeeFieldName="payee"
+              categoryFieldName="category"
+              descriptionFieldName="description"
+              tagFieldName="tag"
+              debitAmountFieldName="debitAmount"
+              creditAmountFieldName="creditAmount"
+              memoFieldName="memo"
+            />
+          </>
         </FormsModal>
       )}
     </Formik>

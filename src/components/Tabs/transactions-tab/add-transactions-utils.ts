@@ -15,22 +15,22 @@ import { fetchCategoriesAPI } from "../../services/categories-api";
 import { fetchDescriptionsAPI } from "../../services/descriptions-api";
 import { fetchPayeesAPI } from "../../services/payee-api";
 import { fetchTagsAPI } from "../../services/tags-api";
-import { AccountTransaction } from "./AddTransactionsForm/add-transactions-form";
+import { AccountWithTransactions } from "./AddTransactionsForm/add-transactions-form";
 import Payee from "./AddTransactionsForm/model/payee";
 import { FileParserResults } from "./ImportTransactionsForm/model/file-parser-results";
 import { NotificationInstance } from "antd/es/notification/interface";
 
 export interface FormTransaction {
-  id: number | undefined;
+  id: number;
   date: string | undefined;
   payee?: Payee;
   category: Category | undefined;
   description?: Description;
   memo?: string;
   tag?: Tag;
-  amount: number | undefined;
-  debitAmount: number | undefined;
-  creditAmount: number | undefined;
+  amount?: number | undefined;
+  debitAmount?: number | undefined;
+  creditAmount?: number | undefined;
 }
 
 export const EMPTY_FORM_TRANSACTION = {
@@ -48,8 +48,8 @@ export const EMPTY_FORM_TRANSACTION = {
 export const transformParsedTransactions = (
   parsedResults: FileParserResults[],
   activeAccounts: BankAccount[]
-): AccountTransaction[] => {
-  const result: AccountTransaction[] = [];
+): AccountWithTransactions[] => {
+  const result: AccountWithTransactions[] = [];
 
   parsedResults.forEach((parserResults: FileParserResults) => {
     const account = activeAccounts.find(
@@ -61,7 +61,7 @@ export const transformParsedTransactions = (
         transactions: transformTransactionsToTableTransactions(
           parserResults.buildTransactionsForRequest
         ),
-      } as AccountTransaction;
+      } as AccountWithTransactions;
 
       result.push(tableTransactions);
     }
@@ -84,7 +84,7 @@ function transformTransactionsToTableTransactions(
       return {
         id: -date.length * Math.random() * 1234,
         date: date,
-        memo: txToImport.description.name,
+        memo: txToImport.description.name || txToImport.memo,
         debitAmount: txToImport.debitAmount,
         creditAmount: txToImport.creditAmount,
         category: undefined,

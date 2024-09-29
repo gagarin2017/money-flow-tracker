@@ -1,12 +1,12 @@
 import { Col, Row } from "antd";
 import { FormTransaction } from "../add-transactions-utils";
-import { ROW_WIDTH } from "./account-transaction-list";
 import AddTransactionsFormAmountField from "./transaction-fields/add-transaction-form-amount-field";
 import AddTransactionsFormTransactionCategoryField from "./transaction-fields/add-transaction-form-category-field";
 import AddTransactionFormDateField from "./transaction-fields/add-transaction-form-date-field";
 import AddTransactionsFormTransactionDescriptionAndTagField from "./transaction-fields/add-transaction-form-description-tag-field";
 import AddTransactionsFormTransactionMemoField from "./transaction-fields/add-transaction-form-memo-field";
 import AddTransactionsFormPayeeField from "./transaction-fields/add-transaction-form-payee-field";
+import { ROW_WIDTH } from "../transactions-utils";
 import ErrorMessage from "./transaction-fields/error-message";
 
 interface AccountTransactionProps {
@@ -14,6 +14,14 @@ interface AccountTransactionProps {
   accountIndex: number;
   txIndex: number;
   isDateEditable?: boolean;
+  dateField: string;
+  payeeFieldName: string;
+  categoryFieldName: string;
+  descriptionFieldName: string;
+  tagFieldName: string;
+  debitAmountFieldName: string;
+  creditAmountFieldName: string;
+  memoFieldName: string;
 }
 
 function AccountTransaction({
@@ -21,6 +29,14 @@ function AccountTransaction({
   txIndex,
   transaction,
   isDateEditable,
+  dateField,
+  payeeFieldName,
+  categoryFieldName,
+  descriptionFieldName,
+  tagFieldName,
+  debitAmountFieldName,
+  creditAmountFieldName,
+  memoFieldName,
 }: AccountTransactionProps) {
   return (
     <Row
@@ -29,67 +45,59 @@ function AccountTransaction({
       key={transaction.id}
       style={{ width: ROW_WIDTH, paddingTop: 5 }}
     >
-      <Col className="gutter-row" span={2}>
+      <Col className="gutter-row" span={2} key={`Date`}>
         {isDateEditable ? (
-          <AddTransactionFormDateField
-            fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.date`}
-          />
+          <AddTransactionFormDateField fieldName={dateField} />
         ) : (
           transaction.date
         )}
       </Col>
-      <Col className="gutter-row" span={3}>
+      <Col className="gutter-row" span={3} key={`Payee`}>
         <AddTransactionsFormPayeeField
-          payeeFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.payee`}
-          categoryFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
-          descriptionFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.description`}
-          tagFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
-          debitAmountFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.debitAmount`}
-          creditAmountFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.creditAmount`}
+          payeeFieldName={payeeFieldName}
+          categoryFieldName={categoryFieldName}
+          descriptionFieldName={descriptionFieldName}
+          tagFieldName={tagFieldName}
+          debitAmountFieldName={debitAmountFieldName}
+          creditAmountFieldName={creditAmountFieldName}
         />
       </Col>
-      <Col className="gutter-row" span={3}>
+      <Col className="gutter-row" span={3} key={`Description`}>
         <AddTransactionsFormTransactionDescriptionAndTagField
-          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.description`}
+          fieldName={descriptionFieldName}
           isTagField={false}
         />
       </Col>
-      <Col className="gutter-row" span={3}>
-        <AddTransactionsFormTransactionMemoField
-          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.memo`}
-        />
+      <Col className="gutter-row" span={3} key={`Memo`}>
+        <AddTransactionsFormTransactionMemoField fieldName={memoFieldName} />
       </Col>
-      <Col className="gutter-row" span={3}>
+      <Col className="gutter-row" span={3} key={`Category`}>
         <AddTransactionsFormTransactionCategoryField
-          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
+          fieldName={categoryFieldName}
         />
         <ErrorMessage
-          key={`${transaction.id}category`}
-          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.category`}
+          key={`${transaction.id}categoryError - ${txIndex} - ${Math.random()}`}
+          name={categoryFieldName}
         />
       </Col>
-      <Col className="gutter-row" span={3}>
+      <Col className="gutter-row" span={3} key={`Tag`}>
         <AddTransactionsFormTransactionDescriptionAndTagField
-          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.tag`}
+          fieldName={tagFieldName}
           isTagField
         />
       </Col>
-      <Col className="gutter-row" span={2}>
-        <AddTransactionsFormAmountField
-          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.debitAmount`}
-        />
+      <Col className="gutter-row" span={2} key={`DebitAmount`}>
+        <AddTransactionsFormAmountField fieldName={debitAmountFieldName} />
         <ErrorMessage
-          key={`${transaction.id}debitAmount`}
-          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.debitAmount`}
+          key={`${transaction.id}debitAmount${Math.random()}`}
+          name={debitAmountFieldName}
         />
       </Col>
-      <Col className="gutter-row" span={2}>
-        <AddTransactionsFormAmountField
-          fieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.creditAmount`}
-        />
+      <Col className="gutter-row" span={2} key={`CreditAmount`}>
+        <AddTransactionsFormAmountField fieldName={creditAmountFieldName} />
         <ErrorMessage
-          key={`${transaction.id}creditAmount`}
-          name={`accountTransactions.${accountIndex}.transactions.${txIndex}.creditAmount`}
+          key={`${transaction.id}creditAmount${Math.random()}`}
+          name={creditAmountFieldName}
         />
       </Col>
       <Col className="gutter-row" span={2}>

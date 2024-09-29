@@ -1,5 +1,5 @@
 import { Dispatch, createContext, useContext, useReducer } from "react";
-import { AccountTransaction } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
+import { AccountWithTransactions } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
 import Payee from "../components/Tabs/transactions-tab/AddTransactionsForm/model/payee";
 import { ManagedProperty } from "../components/Tabs/transactions-tab/AddTransactionsForm/payee-cat-desc-tag-manager";
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
@@ -8,7 +8,6 @@ import { deletePayeeAPI, savePayeeAPI } from "../components/services/payee-api";
 import BankAccount from "../model/bank-account";
 import { Category } from "../model/category";
 import { Description } from "../model/description";
-import Error from "../model/error";
 import { Tag } from "../model/tag";
 import {
   addCategoryToList,
@@ -43,7 +42,7 @@ export interface ImportTransactionsState {
   isImportSingleTransactionsFormVisible: boolean;
   isAddTransactionsFormModalVisible: boolean;
   isManageFormVisible: boolean;
-  newTransactions: AccountTransaction[];
+  newTransactions: AccountWithTransactions[];
   isLoading: boolean;
   errors: Error[];
   categories: Category[];

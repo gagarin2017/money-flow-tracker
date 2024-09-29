@@ -26,47 +26,16 @@ import {
   FormTransaction,
 } from "../add-transactions-utils";
 import AccountTransactionsList from "./account-transaction-list";
+import { ACC_TRXS_VALID_SCHEMA } from "../ImportTransactionsForm/validation-schemas";
 
-export interface AccountTransaction {
+export interface AccountWithTransactions {
   bankAccount: BankAccount | undefined;
   transactions: FormTransaction[];
 }
 
 export interface NewTransactionsFormData {
-  accountTransactions: AccountTransaction[];
+  accountTransactions: AccountWithTransactions[];
 }
-
-export const ACC_TRXS_VALID_SCHEMA = Yup.object().shape({
-  accountTransactions: Yup.array().of(
-    Yup.object().shape({
-      transactions: Yup.array().of(
-        Yup.object().shape({
-          category: Yup.object().shape({
-            name: Yup.string().required(),
-          }),
-          debitAmount: Yup.number().test(
-            "debitOrCreditRequired",
-            "Either debitAmount or creditAmount is required",
-            function (value) {
-              return (
-                value !== undefined || this.parent.creditAmount !== undefined
-              );
-            }
-          ),
-          creditAmount: Yup.number().test(
-            "creditOrDebitRequired",
-            "Either debitAmount or creditAmount is required",
-            function (value) {
-              return (
-                value !== undefined || this.parent.debitAmount !== undefined
-              );
-            }
-          ),
-        })
-      ),
-    })
-  ),
-});
 
 const AddTransactionsForm = () => {
   const { state, dispatch } = useImportTransactionsContext();
@@ -153,7 +122,7 @@ const AddTransactionsForm = () => {
     touched: FormikTouched<NewTransactionsFormData>
   ) => {
     const items: CollapseProps["items"] = values.accountTransactions.map(
-      (accTransactions: AccountTransaction, index: number) => ({
+      (accTransactions: AccountWithTransactions, index: number) => ({
         key: index,
         label: (
           <div

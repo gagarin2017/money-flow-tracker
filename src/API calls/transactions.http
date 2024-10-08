@@ -9,3 +9,7 @@ PUT http://localhost:8080/api/transactions/reset-database
 GET http://localhost:8080/api/transactions/2011
 
 ###
+
+GET http://localhost:8080/api/transactions?dateFrom=2024-10-01&dateTo=2024-10-31
+
+###

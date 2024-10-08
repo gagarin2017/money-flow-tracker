@@ -15,6 +15,10 @@ export const getStringFromDate = (date: Date) => {
   return moment(date).format(DATE_FORMAT_YYYY_MM_DD);
 };
 
+export const getStringFromMomentDate = (date: Moment) => {
+  return date.format(DATE_FORMAT_YYYY_MM_DD);
+};
+
 export const getStringFromMoment = (date: Moment, formatter: string) => {
   return date.format(formatter);
 };

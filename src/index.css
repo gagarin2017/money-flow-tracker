@@ -5,16 +5,3 @@ body {
 .form-field-error {
   color: red;
 }
-
-.past-date {
-  background-color: #f0f0f0;
-  color: #d9d9d9;
-}
-
-.today {
-  border: 2px solid rgb(125, 125, 253);
-}
-
-.future-date {
-  color: red;
-}

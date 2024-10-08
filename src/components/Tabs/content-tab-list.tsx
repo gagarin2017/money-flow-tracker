@@ -3,6 +3,7 @@ import type { TabsProps } from "antd";
 import TransactionsTab from "./transactions-tab/transactions-tab";
 import SummaryTab from "./summary-tab/summary-tab";
 import BudgetTab from "./budget-tab/budget-tab";
+import SpendingTab from "./spending-tab/spending-tab";
 
 const onChange = (key: string) => {
   console.log(key);
@@ -22,7 +23,7 @@ const items: TabsProps["items"] = [
   {
     key: "3",
     label: "Spending",
-    children: "Content of Tab Pane 2",
+    children: <SpendingTab />,
   },
   {
     key: "4",

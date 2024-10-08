@@ -1,0 +1,15 @@
+GET http://localhost:8088/api/spending/graphs/dodged-bar-chart/data
+
+###
+
+GET http://localhost:8088/api/spending/graphs/stacked-group-column/data
+
+###
+
+GET http://localhost:8088/api/spending/graphs/stacked-column-chart/data
+
+###
+
+GET http://localhost:8080/api/spending/graphs/stacked-column-chart/data
+
+

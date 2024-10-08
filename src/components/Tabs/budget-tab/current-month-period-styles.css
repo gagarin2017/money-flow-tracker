@@ -1,0 +1,24 @@
+.past-date {
+  background-color: #f0f0f0;
+  color: #d9d9d9;
+}
+
+.future-date {
+  color: rgb(127, 182, 255);
+}
+
+.current-month {
+  color: red;
+  background-color: #39f2;
+}
+
+.header-style {
+  /* font-weight: normal; */
+  text-align: center;
+}
+
+.days-till-end-style {
+  /* color: white; */
+  background-color: rgb(245, 216, 238);
+  padding: 2px;
+}

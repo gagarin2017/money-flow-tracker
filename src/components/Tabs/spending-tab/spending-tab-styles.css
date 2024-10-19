@@ -1,0 +1,6 @@
+.no-wrap-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px; /* Adjust width as needed */
+}

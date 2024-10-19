@@ -1,17 +1,17 @@
-import { Button, Popconfirm, Space, Table, Tag } from "antd";
-import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
+import "./spending-tab-styles.css";
+import { Table } from "antd";
+import { ColumnsType } from "antd/es/table";
+import BankAccount from "../../../model/bank-account";
 import { Category } from "../../../model/category";
 import { Description } from "../../../model/description";
-import { Tag as TxTag } from "../../../model/tag";
+import { Tag } from "../../../model/tag";
 import { Transaction } from "../../../model/transaction";
+import { getCategoryAsString } from "../../../utils/category-helper";
 import { getAmountAsFormatedString } from "../../../utils/currency-helper";
 import {
   DATE_FORMAT_DD_MM_YYYY,
   getStringFromDateWFormatter,
 } from "../../../utils/date-helper";
-import { getCategoryAsString } from "../../../utils/category-helper";
-import BankAccount from "../../../model/bank-account";
-import { useEffect, useState } from "react";
 
 // The representation of the transaction (we might not want to include all transaction fields to be displayed on the UI)
 interface DataType {
@@ -22,49 +22,40 @@ interface DataType {
   category: Category;
   description: Description;
   memo: string;
-  tag: TxTag;
+  tag: Tag;
   reconsiled?: boolean;
-  amount: number;
   creditAmount: number;
   debitAmount: number;
-  runningBalance: number;
 }
 
 interface TransactionsTableProps {
   transactions: Transaction[];
   isLoading: boolean;
-  handleTransactionDeletion: (id: number) => void;
 }
 
 function TransactionsTable({
   transactions,
   isLoading,
-  handleTransactionDeletion,
 }: TransactionsTableProps) {
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    pageSize: 9,
-    showSizeChanger: false,
-    current: 1,
-  });
-
-  useEffect(() => {
-    // Reset pagination to the first page when data changes
-    setPagination({ ...pagination, current: 1 });
-  }, [transactions]);
-
   const columns: ColumnsType<DataType> = [
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
-      render: (_: any, record: Transaction) =>
+      width: 110,
+      render: (_: any, record: DataType) =>
         getStringFromDateWFormatter(record.date, DATE_FORMAT_DD_MM_YYYY),
+      sorter: (a: DataType, b: DataType) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime(),
+      defaultSortOrder: "ascend",
     },
     {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      render: (_: any, record: Transaction) => {
+      width: 450, // Ensure this column has a fixed width
+      ellipsis: true, // Enable text truncation with ellipsis
+      render: (_: any, record: DataType) => {
         return getCategoryAsString(record.category);
       },
     },
@@ -72,7 +63,7 @@ function TransactionsTable({
       title: "Description",
       dataIndex: "description",
       key: "description",
-      render: (_: any, record: Transaction) => {
+      render: (_: any, record: DataType) => {
         return record.description?.name || undefined;
       },
     },
@@ -85,7 +76,7 @@ function TransactionsTable({
       title: "Tag",
       dataIndex: "tag",
       key: "tag",
-      render: (_: any, record: Transaction) => {
+      render: (_: any, record: DataType) => {
         return record.tag?.name || undefined;
       },
     },
@@ -93,20 +84,22 @@ function TransactionsTable({
       title: "Reconsiled",
       dataIndex: "reconciled",
       key: "reconciled",
-      render: (_: any, { reconsiled }: Transaction) => {
-        return (
-          <Tag color={reconsiled ? "green" : "volcano"}>
-            {reconsiled ? "Yes" : "No"}
-          </Tag>
-        );
-      },
+      width: 110,
+      //   render: (_: any, { reconsiled }: Transaction) => {
+      //     return (
+      //       <Tag color={reconsiled ? "green" : "volcano"}>
+      //         {reconsiled ? "Yes" : "No"}
+      //       </Tag>
+      //     );
+      //   },
     },
     {
       title: "Debit",
       dataIndex: "amount",
       key: "amount",
-      render: (_: any, record: Transaction) => {
-        return record.debitAmount > 0 ? (
+      width: 120,
+      render: (_: any, record: DataType) => {
+        return record.debitAmount ? (
           <span style={{ color: "red" }}>
             {getAmountAsFormatedString(record.debitAmount)}
           </span>
@@ -119,7 +112,8 @@ function TransactionsTable({
       title: "Credit",
       dataIndex: "amount",
       key: "amount",
-      render: (_: any, record: Transaction) => {
+      width: 120,
+      render: (_: any, record: DataType) => {
         return record.creditAmount > 0 ? (
           <span style={{ color: "green" }}>
             {getAmountAsFormatedString(record.creditAmount)}
@@ -129,46 +123,7 @@ function TransactionsTable({
         );
       },
     },
-    {
-      title: "Balance",
-      dataIndex: "runningBalance",
-      key: "runningBalance",
-      render: (_: any, record: Transaction) => {
-        return record.runningBalance < 0 ? (
-          <span style={{ color: "red" }}>
-            {getAmountAsFormatedString(record.runningBalance)}
-          </span>
-        ) : (
-          <span>{getAmountAsFormatedString(record.runningBalance)}</span>
-        );
-      },
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_: any, record: Transaction) => (
-        <Space size="middle">
-          <Popconfirm
-            title="Delete this transaction?"
-            onConfirm={() => handleTransactionDelete(record.id)}
-            onCancel={() => {}}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button type="link">Delete</Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
   ];
-
-  const handleTransactionDelete = (transactionId: number) => {
-    handleTransactionDeletion(transactionId);
-  };
-
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    setPagination(pagination);
-  };
 
   const data: DataType[] = transactions.map((tx) => ({ ...tx, key: tx.id }));
 
@@ -177,7 +132,8 @@ function TransactionsTable({
       columns={columns}
       dataSource={data}
       loading={isLoading}
-      pagination={pagination}
+      pagination={false}
+      scroll={{ y: 600 }} // Enable vertical scroll with a fixed height
       onRow={(record, index) => ({
         style: {
           backgroundColor:
@@ -186,7 +142,6 @@ function TransactionsTable({
               : "#F7FCFF",
         },
       })}
-      onChange={handleTableChange}
     />
   );
 }

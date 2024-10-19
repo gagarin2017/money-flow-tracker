@@ -89,3 +89,24 @@ export const deepDeleteCategoryFromList = (
 
   return listCopy;
 };
+
+export const getCategoryAsString = (category: Category): string => {
+  const string = `${category.name}${
+    category.parentCategory
+      ? getParentCategoryAsString(category.parentCategory)
+      : ""
+  }`;
+
+  const splitString = string.split(" : ");
+  const reverseArray = splitString.reverse();
+
+  return reverseArray.join(" : ");
+};
+
+function getParentCategoryAsString(parentCategory: Category): string {
+  return ` : ${parentCategory.name}${
+    parentCategory.parentCategory
+      ? getParentCategoryAsString(parentCategory.parentCategory)
+      : ""
+  }`;
+}

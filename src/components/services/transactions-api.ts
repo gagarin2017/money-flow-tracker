@@ -101,3 +101,20 @@ export const deleteTransactionAPI = async (transactionId: number) => {
     throw new Error("Transactions API: Deleting of data failed");
   }
 };
+
+export const fetchCurrentMonthTransactionsAPI = async (
+  dateFrom: string,
+  dateTo: string
+) => {
+  const transactionsUrl: string = BASE_URL.concat("/")
+    .concat(TRANSACTIONS_FIELD)
+    .concat("?")
+    .concat(`dateFrom=${dateFrom}&dateTo=${dateTo}`);
+  const response = await fetch(transactionsUrl);
+
+  if (!response.ok) {
+    throw new Error("Transactions API: Fetching of data failed");
+  }
+
+  return await response.json();
+};

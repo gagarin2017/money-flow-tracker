@@ -28,19 +28,19 @@ export const readAndParseTxFiles = (
         } as FileParserResults;
 
         switch (+fileBankAccount.bankAccountId) {
+          case 18:
+            prettyJson = prettyfyJson12(
+              results.data,
+              fileBankAccount.bankAccountId
+            );
+            break;
+          case 12:
+            prettyJson = prettyfyJson12(
+              results.data,
+              fileBankAccount.bankAccountId
+            );
+            break;
           case 11:
-            prettyJson = prettyfyJson12(
-              results.data,
-              fileBankAccount.bankAccountId
-            );
-            break;
-          case 17:
-            prettyJson = prettyfyJson12(
-              results.data,
-              fileBankAccount.bankAccountId
-            );
-            break;
-          case 10:
             prettyJson = prettyfyJson13(
               results.data,
               fileBankAccount.bankAccountId

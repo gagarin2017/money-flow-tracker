@@ -1,4 +1,4 @@
-import { Category } from "../model/category";
+import { Transaction } from "../model/transaction";
 
 export const TransactionSorterByDate = (dateTimeA: Date, dateTimeB: Date) => {
   if (dateTimeA > dateTimeB) return -1;
@@ -6,23 +6,12 @@ export const TransactionSorterByDate = (dateTimeA: Date, dateTimeB: Date) => {
   else return 0;
 };
 
-export const getCategoryAsString = (category: Category): string => {
-  const string = `${category.name}${
-    category.parentCategory
-      ? getParentCategoryAsString(category.parentCategory)
-      : ""
-  }`;
+export const getMostParentCategoryName = (transaction: Transaction): string => {
+  let category = transaction.category;
 
-  const splitString = string.split(" : ");
-  const reverseArray = splitString.reverse();
+  while (category.parentCategory) {
+    category = category.parentCategory;
+  }
 
-  return reverseArray.join(" : ");
+  return category.name;
 };
-
-function getParentCategoryAsString(parentCategory: Category): string {
-  return ` : ${parentCategory.name}${
-    parentCategory.parentCategory
-      ? getParentCategoryAsString(parentCategory.parentCategory)
-      : ""
-  }`;
-}

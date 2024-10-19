@@ -4,7 +4,7 @@ import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../../../context/import-transactions-context";
-import { getCategoryAsString } from "../../../../../utils/transactions-helper";
+import { getCategoryAsString } from "../../../../../utils/category-helper";
 import Payee from "../model/payee";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { getAmountAsFormatedString } from "../../../../../utils/currency-helper";

@@ -9,7 +9,7 @@ import {
 } from "../date-helper";
 
 import { prettyfyJson } from "./file-parser-12";
-import { DATE_COLUMN_INDEX, getDescriptionIndex } from "./parser-utils";
+import { getDateIndex, getDescriptionIndex } from "./parser-utils";
 import { HEADER_ROW, HEADER_ROW_V1 } from "./parser-utils.test";
 
 const debit_tx_01 = [
@@ -93,6 +93,7 @@ const credit_tx_v_1 = [
 ];
 
 const ACCOUNT_ID = 22;
+let DATE_COLUMN_INDEX = getDateIndex(HEADER_ROW);
 let DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW);
 
 describe("File type 1", () => {
@@ -101,7 +102,7 @@ describe("File type 1", () => {
     const inputData = [HEADER_ROW, debit_tx_01];
 
     // Act
-    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
+    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID, []);
 
     // Assert
 
@@ -135,7 +136,8 @@ describe("File type 1", () => {
     // Act
     const result: Transaction[] | undefined = prettyfyJson(
       inputData,
-      ACCOUNT_ID
+      ACCOUNT_ID,
+      []
     );
 
     // Assert
@@ -169,7 +171,8 @@ describe("File type 1", () => {
     // Act
     const result: Transaction[] | undefined = prettyfyJson(
       inputData,
-      ACCOUNT_ID
+      ACCOUNT_ID,
+      []
     );
 
     // Assert
@@ -203,7 +206,8 @@ describe("File type 1", () => {
     // Act
     const result: Transaction[] | undefined = prettyfyJson(
       inputData,
-      ACCOUNT_ID
+      ACCOUNT_ID,
+      []
     );
 
     // Assert
@@ -237,7 +241,8 @@ describe("File type 1", () => {
     // Act
     const result: Transaction[] | undefined = prettyfyJson(
       inputData,
-      ACCOUNT_ID
+      ACCOUNT_ID,
+      []
     );
 
     // Assert
@@ -272,7 +277,7 @@ describe("File type 2", () => {
     DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW_V1);
 
     // Act
-    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
+    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID, []);
 
     // Assert
     expect(result).toBeDefined();
@@ -304,7 +309,7 @@ describe("File type 2", () => {
     DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW_V1);
 
     // Act
-    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
+    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID, []);
 
     // Assert
     expect(result).toBeDefined();

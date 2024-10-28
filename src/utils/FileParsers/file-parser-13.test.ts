@@ -7,7 +7,7 @@ import {
 import { prettyfyJson } from "./file-parser-13";
 import { HEADER_ROW } from "./parser-utils.test";
 
-import { DATE_COLUMN_INDEX, getDescriptionIndex } from "./parser-utils";
+import { getDateIndex, getDescriptionIndex } from "./parser-utils";
 import BankAccount from "../../model/bank-account";
 import { Category } from "../../model/category";
 import { Description } from "../../model/description";
@@ -75,6 +75,7 @@ const credit_tx_03 = [
   "some text",
 ];
 
+const DATE_COLUMN_INDEX = getDateIndex(HEADER_ROW);
 const ACCOUNT_ID = 22;
 const CREDIT_COL_INDEX = 4;
 const DESC_COLUMN_INDEX = getDescriptionIndex(HEADER_ROW);
@@ -85,7 +86,7 @@ describe("When parsing the transactions for the account 1", () => {
     const inputData = [HEADER_ROW, EMPTY_ROW, debit_tx_01];
 
     // Act
-    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
+    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID, []);
 
     // Assert
 
@@ -117,7 +118,7 @@ describe("When parsing the transactions for the account 1", () => {
     const inputData = [HEADER_ROW, EMPTY_ROW, debit_tx_02];
 
     // Act
-    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID);
+    const result: Transaction[] = prettyfyJson(inputData, ACCOUNT_ID, []);
 
     // Assert
 
@@ -151,7 +152,8 @@ describe("When parsing the transactions for the account 1", () => {
     // Act
     const result: Transaction[] | undefined = prettyfyJson(
       inputData,
-      ACCOUNT_ID
+      ACCOUNT_ID,
+      []
     );
 
     // Assert
@@ -185,7 +187,8 @@ describe("When parsing the transactions for the account 1", () => {
     // Act
     const result: Transaction[] | undefined = prettyfyJson(
       inputData,
-      ACCOUNT_ID
+      ACCOUNT_ID,
+      []
     );
 
     // Assert
@@ -219,7 +222,8 @@ describe("When parsing the transactions for the account 1", () => {
     // Act
     const result: Transaction[] | undefined = prettyfyJson(
       inputData,
-      ACCOUNT_ID
+      ACCOUNT_ID,
+      []
     );
 
     // Assert

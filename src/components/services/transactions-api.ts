@@ -1,5 +1,7 @@
 import { Transaction } from "../../model/transaction";
+import { AccountWithTransactions } from "../Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
 import { FileParserResults } from "../Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
+import { RemoteAccountTransactions } from "./APIResources/remote-account-transactions-dto";
 import {
   deserializeFilteredTransactions,
   deserializeTransactions,
@@ -39,22 +41,30 @@ export const filterTransactionsAPI = async (
     serializeFileTransactions(tx)
   );
 
-  const filteredTransactions = await fetch(transactionsUrl, {
-    method: Method.POST,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(transactionsToBeFiltered),
-  });
+  let result: AccountWithTransactions[] = [];
 
-  if (!filteredTransactions.ok) {
-    throw new Error("Transactions API: Sending of data failed");
+  if (transactionsToBeFiltered) {
+    // await new Promise((resolve) => setTimeout(resolve, 5000)); // Add timeout for DEV purposes
+
+    const filteredTransactions = await fetch(transactionsUrl, {
+      method: Method.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(transactionsToBeFiltered),
+    });
+
+    if (!filteredTransactions.ok) {
+      throw new Error("Transactions API: Sending of data failed");
+    }
+
+    let receivedTransactions: RemoteAccountTransactions[] =
+      await filteredTransactions.json();
+
+    result = deserializeFilteredTransactions(receivedTransactions);
+  } else {
+    throw new Error("Transactions API: No params to be used for fetch");
   }
-
-  const receivedTransactions = await filteredTransactions.json();
-
-  const result: FileParserResults[] =
-    deserializeFilteredTransactions(receivedTransactions);
 
   return result;
 };

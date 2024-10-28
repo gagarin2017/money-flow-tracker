@@ -1,5 +1,4 @@
-export const DATE_COLUMN_INDEX = 2;
-
+const DATE_STR = "Date";
 const DEBIT_STR = "Debit";
 const CREDIT_STR = "Credit";
 const BALANCE_STR = "Balance";
@@ -11,6 +10,10 @@ const findColumnIndexIncludesText = (headersRow: string[], text: string) => {
   return headersRow.findIndex((title) =>
     title.toLowerCase().includes(text.toLowerCase())
   );
+};
+
+export const getDateIndex = (row: string[]) => {
+  return findColumnIndexIncludesText(row, DATE_STR);
 };
 
 export const getDebitAmtIndex = (row: string[]) => {
@@ -35,4 +38,8 @@ export const getBalanceAmtIndex = (row: string[]) => {
 
 export const getDescriptionIndex = (row: string[]) => {
   return findColumnIndexIncludesText(row, DESCRIPTION_STR);
+};
+
+export const isValidDate = (date: Date) => {
+  return date instanceof Date && !isNaN(date.getTime());
 };

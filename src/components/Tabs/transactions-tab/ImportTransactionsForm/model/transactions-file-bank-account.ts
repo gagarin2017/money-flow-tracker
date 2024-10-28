@@ -1,7 +1,7 @@
 /**
- * The mapper between the file (xls, csv) and the BankAccount (eg dropdown)
+ * The wrapper for the file (xls, csv) and the BankAccount (eg dropdown)
  **/
-export interface TransactionsFileBankAccount {
+export interface TransactionsFileBankAccountPair {
   file: any;
   bankAccountId: number;
 }

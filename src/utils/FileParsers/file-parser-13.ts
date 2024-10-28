@@ -1,16 +1,14 @@
-import { Category } from "../../model/category";
-import { Description } from "../../model/description";
-import { Tag } from "../../model/tag";
 import { Transaction } from "../../model/transaction";
 import {
-  getDateFromStringWFormatter,
   DATE_FORMAT_DD_MM_YYYY,
+  getDateFromStringWFormatter,
 } from "../date-helper";
 import {
-  DATE_COLUMN_INDEX,
+  getDateIndex,
   getDescriptionIndex,
-  getPaidOutAmtIndex,
   getPaidInAmtIndex,
+  getPaidOutAmtIndex,
+  isValidDate,
 } from "./parser-utils";
 
 /**
@@ -20,11 +18,16 @@ import {
  * @param accountId
  * @returns
  */
-export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
+export const prettyfyJson = (
+  uglyJsonArray: any,
+  accountId: number,
+  errors: string[]
+) => {
   const resultTransactions: Transaction[] = [];
 
   const headers = uglyJsonArray[0];
 
+  const DATE_COLUMN_INDEX = 2; // hardcoding the value as Column doesnt have date in the title
   const DEBIT_AMT_COLUMN_INDEX = getPaidOutAmtIndex(headers);
   const CREDIT_AMT_COLUMN_INDEX = getPaidInAmtIndex(headers);
   const DESC_COLUMN_INDEX = getDescriptionIndex(headers);
@@ -37,49 +40,56 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
   });
 
   inputArray.forEach((row: String) => {
-    let txDateString: string = row[DATE_COLUMN_INDEX];
-    let txDate;
+    let debitAmount: number | undefined = undefined;
+    let creditAmount: number | undefined = undefined;
 
-    if (txDateString && txDateString !== "") {
-      txDate = getDateFromStringWFormatter(
-        row[DATE_COLUMN_INDEX],
-        DATE_FORMAT_DD_MM_YYYY
+    const txDate = getDateFromStringWFormatter(
+      row[DATE_COLUMN_INDEX],
+      DATE_FORMAT_DD_MM_YYYY
+    );
+
+    if (!isValidDate(txDate)) {
+      errors.push(
+        "The file date value could not be parsed properly: [" +
+          row[DATE_COLUMN_INDEX] +
+          "]. Error: [" +
+          txDate +
+          "]"
       );
     }
 
-    let debitAmount;
-    let creditAmount;
+    if (errors.length === 0) {
+      // debit amount
+      if (
+        row[DEBIT_AMT_COLUMN_INDEX] &&
+        row[DEBIT_AMT_COLUMN_INDEX] !== null &&
+        +row[DEBIT_AMT_COLUMN_INDEX] !== 0
+      ) {
+        debitAmount = parseFloat(row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
+      }
 
-    // debit amount
-    if (
-      row[DEBIT_AMT_COLUMN_INDEX] &&
-      row[DEBIT_AMT_COLUMN_INDEX] !== null &&
-      +row[DEBIT_AMT_COLUMN_INDEX] !== 0
-    ) {
-      debitAmount = parseFloat(row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
+      // credit amount
+      if (
+        row[CREDIT_AMT_COLUMN_INDEX] &&
+        row[CREDIT_AMT_COLUMN_INDEX] !== null &&
+        +row[CREDIT_AMT_COLUMN_INDEX] !== 0
+      ) {
+        creditAmount = parseFloat(
+          row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, "")
+        );
+      }
     }
 
-    // credit amount
-    if (
-      row[CREDIT_AMT_COLUMN_INDEX] &&
-      row[CREDIT_AMT_COLUMN_INDEX] !== null &&
-      +row[CREDIT_AMT_COLUMN_INDEX] !== 0
-    ) {
-      creditAmount = parseFloat(row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
-    }
-    if (txDate)
+    if (errors.length === 0 && (debitAmount || creditAmount)) {
       resultTransactions.push({
         id: -1,
         date: txDate,
         bankAccount: { id: accountId },
-        category: {} as Category,
         memo: row[DESC_COLUMN_INDEX],
-        description: {} as Description,
-        tag: {} as Tag,
-        runningBalance: 0,
         debitAmount,
         creditAmount,
       } as Transaction);
+    }
   });
 
   return resultTransactions;

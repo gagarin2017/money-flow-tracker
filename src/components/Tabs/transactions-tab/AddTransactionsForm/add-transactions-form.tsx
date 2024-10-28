@@ -1,4 +1,4 @@
-import { Collapse, CollapseProps } from "antd";
+import { Collapse, CollapseProps, Spin } from "antd";
 import {
   FieldArray,
   Form,
@@ -7,9 +7,6 @@ import {
   FormikHelpers,
   FormikTouched,
 } from "formik";
-import BankAccount from "../../../../model/bank-account";
-import { Transaction } from "../../../../model/transaction";
-import * as Yup from "yup";
 import FormsModal from "../../../../UI/forms-modal";
 import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
 import {
@@ -17,16 +14,18 @@ import {
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
 import { useTransactionsContext } from "../../../../context/transactions-context";
+import BankAccount from "../../../../model/bank-account";
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
+import { Transaction } from "../../../../model/transaction";
 import { getDateFromString } from "../../../../utils/date-helper";
 import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
+import { ACC_TRXS_VALID_SCHEMA } from "../ImportTransactionsForm/validation-schemas";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
 } from "../add-transactions-utils";
 import AccountTransactionsList from "./account-transaction-list";
-import { ACC_TRXS_VALID_SCHEMA } from "../ImportTransactionsForm/validation-schemas";
 
 export interface AccountWithTransactions {
   bankAccount: BankAccount | undefined;
@@ -39,19 +38,27 @@ export interface NewTransactionsFormData {
 
 const AddTransactionsForm = () => {
   const { state, dispatch } = useImportTransactionsContext();
-  const { isLoading, saveTransactions } = useTransactionsContext();
-  const { fetchBankAccounts } = useBankAccountsContext();
-
-  // useEffect(() => {
-  //   fetchPayeesCategoriesTags(isSpringBoot, dispatch);
-  // }, []);
+  const { saveTransactions } = useTransactionsContext();
+  const { fetchBankAccounts, bankAccounts } = useBankAccountsContext();
 
   const getInitialValue = () => {
     let initialForm = {} as NewTransactionsFormData;
 
-    if (state.newTransactions && state.newTransactions.length > 0) {
+    if (state.filteredTansactions && state.filteredTansactions.length > 0) {
+      console.log("AddTransactionsForm -> ", state.filteredTansactions);
+
+      const result = state.filteredTansactions.map((filteredTransaction) => {
+        const account = bankAccounts.find(
+          (acc) => acc.id === filteredTransaction.bankAccount?.id
+        );
+        return {
+          bankAccount: account,
+          transactions: filteredTransaction.transactions,
+        } as AccountWithTransactions;
+      });
+
       initialForm = {
-        accountTransactions: state.newTransactions,
+        accountTransactions: result,
       };
     } else {
       initialForm = {
@@ -71,13 +78,6 @@ const AddTransactionsForm = () => {
     dispatch({
       type: ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE,
       payload: false,
-    });
-    dispatch({
-      type: ImportTransactionsActionType.ADD_NEW_TXS,
-      payload: {
-        bankAccounts: [],
-        parserResults: [],
-      },
     });
   };
 
@@ -114,7 +114,7 @@ const AddTransactionsForm = () => {
   };
 
   const areThereAnyTransactionsToImport =
-    state.newTransactions && state.newTransactions.length === 0;
+    state.filteredTansactions && state.filteredTansactions.length === 0;
 
   const accountTransactionSection = (
     values: NewTransactionsFormData,
@@ -173,7 +173,6 @@ const AddTransactionsForm = () => {
           }}
           customWidth={1500}
           isLoading={isSubmitting}
-          okText={undefined}
         >
           <Form>
             {areThereAnyTransactionsToImport ? (

@@ -1,28 +1,37 @@
-import { Alert, Col, notification, Row, Spin } from "antd";
+import { Alert, Col, Row } from "antd";
 import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
-import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
+import { useEffect, useState } from "react";
 import {
   ImportTransactionsActionType,
   useImportTransactionsContext,
 } from "../../../../context/import-transactions-context";
 import FormsModal from "../../../../UI/forms-modal";
-import {
-  ParsingStatus,
-  readAndParseTxFiles,
-} from "../../../../utils/TxFilesReader";
-import { FileParserResults } from "./model/file-parser-results";
-import { TransactionsFileBankAccount } from "./model/transactions-file-bank-account";
 import TransactionsFilesBankAccountList from "./transactions-files-bank-account-list";
 import TransactionsFilesInput from "./transactions-files-input";
+import { TransactionsFileBankAccountPair } from "./model/transactions-file-bank-account";
 
-type TransactionsFilesFormData = {
+interface TransactionsFilesFormData {
   selectedFiles: any[];
-  transactionsFileBankAccountField: TransactionsFileBankAccount[];
-};
+  transactionsFileBankAccountField: TransactionsFileBankAccountPair[];
+}
 
 const ImportTransactionsForm = () => {
-  const { bankAccounts } = useBankAccountsContext();
   const { state, dispatch } = useImportTransactionsContext();
+  const [resetFormFn, setResetFormFn] = useState<(() => void) | null>(null);
+
+  useEffect(() => {
+    if (!state.isLoading && resetFormFn) {
+      resetFormFn();
+      dispatch({
+        type: ImportTransactionsActionType.IMPORT_TXS_FORM_VISIBLE,
+        payload: false,
+      });
+      dispatch({
+        type: ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE,
+        payload: true,
+      });
+    }
+  }, [dispatch, resetFormFn, state.isLoading]);
 
   const onFormClose = () => {
     dispatch({
@@ -31,62 +40,18 @@ const ImportTransactionsForm = () => {
     });
   };
 
-  const processTransactionFiles = async (
-    transactions: TransactionsFileBankAccount[]
+  const handleSubmit = async (
+    values: TransactionsFilesFormData,
+    { setSubmitting, resetForm }: FormikHelpers<TransactionsFilesFormData>
   ) => {
-    let promises: Promise<FileParserResults>[] = transactions.map(
-      async (fileAccountPair) => {
-        try {
-          const parsingResult: FileParserResults = await readAndParseTxFiles(
-            fileAccountPair
-          );
-          return parsingResult;
-        } catch (error: any) {
-          return error;
-        }
-      }
-    );
+    setResetFormFn(() => resetForm);
+    dispatch({ type: ImportTransactionsActionType.SET_LOADING, payload: true });
+    setSubmitting(true);
 
-    return Promise.all(promises);
-  };
-
-  const onSubmit = async (
-    formValues: TransactionsFilesFormData,
-    { resetForm }: FormikHelpers<TransactionsFilesFormData>
-  ) => {
-    let closePopup: boolean = false;
-
-    const parsedTransactions: FileParserResults[] =
-      await processTransactionFiles(
-        formValues.transactionsFileBankAccountField
-      );
-
-    parsedTransactions
-      .filter((result) => result.status === ParsingStatus.ERROR)
-      .forEach((error) => {
-        notification["error"]({
-          message: `Transactions from file "${error.fileName}" could not be imported into account [${error.accountId}]. Check the account name and try again.`,
-          description: error.parsingErrors,
-          duration: 0,
-        });
-      });
-
-    const parserResults = parsedTransactions.filter(
-      (result) => result.status === ParsingStatus.FINISHED
-    );
-
-    if (parserResults.length > 0) {
-      dispatch({
-        type: ImportTransactionsActionType.ADD_NEW_TXS,
-        payload: { bankAccounts, parserResults },
-      });
-      closePopup = true;
-    }
-
-    if (closePopup) {
-      resetForm();
-      onFormClose();
-    }
+    dispatch({
+      type: ImportTransactionsActionType.SET_TRANSACTIONS_BANK_ACC_PAIRS,
+      payload: values.transactionsFileBankAccountField,
+    });
   };
 
   return (
@@ -97,7 +62,7 @@ const ImportTransactionsForm = () => {
           transactionsFileBankAccountField: [],
         } as TransactionsFilesFormData
       }
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
     >
       {({
         handleSubmit,
@@ -116,7 +81,7 @@ const ImportTransactionsForm = () => {
               onFormClose();
             }}
             customWidth={520}
-            isLoading={isSubmitting}
+            isLoading={isSubmitting || state.isLoading}
             okText="Next"
           >
             <Form>
@@ -141,9 +106,6 @@ const ImportTransactionsForm = () => {
                   <TransactionsFilesBankAccountList formikFieldName="transactionsFileBankAccountField" />
                 </Col>
               </Row>
-              {isSubmitting && (
-                <Spin style={{ position: "fixed", top: "50%", left: "50%" }} />
-              )}
             </Form>
           </FormsModal>
         );

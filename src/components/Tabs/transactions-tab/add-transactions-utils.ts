@@ -45,29 +45,23 @@ export const EMPTY_FORM_TRANSACTION = {
   creditAmount: undefined,
 } as FormTransaction;
 
-export const transformParsedTransactions = (
-  parsedResults: FileParserResults[],
-  activeAccounts: BankAccount[]
-): AccountWithTransactions[] => {
-  const result: AccountWithTransactions[] = [];
-
-  parsedResults.forEach((parserResults: FileParserResults) => {
-    const account = activeAccounts.find(
-      (acc) => acc.id === parserResults.accountId
-    );
-    if (account) {
-      const tableTransactions = {
-        bankAccount: account,
-        transactions: transformTransactionsToTableTransactions(
-          parserResults.buildTransactionsForRequest
-        ),
-      } as AccountWithTransactions;
-
-      result.push(tableTransactions);
-    }
+export const transformRemoteTransactionsIntoFormTransactions = (
+  transactions: Transaction[]
+): FormTransaction[] => {
+  return transactions.map((transaction) => {
+    return {
+      id: -1,
+      date: getStringFromDate(transaction.date),
+      category: transaction.category,
+      memo: transaction.memo,
+      creditAmount: transaction.creditAmount,
+      debitAmount: transaction.debitAmount,
+      description: transaction.description,
+      tag: transaction.tag,
+      amount: transaction.amount,
+      payee: {} as Payee,
+    } as FormTransaction;
   });
-
-  return result;
 };
 
 /**
@@ -84,7 +78,7 @@ function transformTransactionsToTableTransactions(
       return {
         id: -date.length * Math.random() * 1234,
         date: date,
-        memo: txToImport.description.name || txToImport.memo,
+        memo: txToImport.memo || txToImport.description?.name,
         debitAmount: txToImport.debitAmount,
         creditAmount: txToImport.creditAmount,
         category: undefined,
@@ -100,7 +94,7 @@ export const fetchPayeesCategoriesTags = async (
   api: NotificationInstance
 ) => {
   try {
-    dispatch({ type: ImportTransactionsActionType.FETCH_START });
+    // dispatch({ type: ImportTransactionsActionType.FETCH_START });
 
     const categoriesResponse = await fetchCategoriesAPI();
     const descriptionsResponse = await fetchDescriptionsAPI();

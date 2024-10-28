@@ -1,6 +1,6 @@
 import * as Papa from "papaparse";
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
-import { TransactionsFileBankAccount } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model//transactions-file-bank-account";
+import { TransactionsFileBankAccountPair } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model//transactions-file-bank-account";
 import { Transaction } from "../model/transaction";
 import { prettyfyJson as prettyfyJson12 } from "./FileParsers/file-parser-12";
 import { prettyfyJson as prettyfyJson13 } from "./FileParsers/file-parser-13";
@@ -12,7 +12,7 @@ export enum ParsingStatus {
 }
 
 export const readAndParseTxFiles = (
-  fileBankAccount: TransactionsFileBankAccount
+  fileBankAccount: TransactionsFileBankAccountPair
 ): Promise<FileParserResults> => {
   return new Promise((resolve, reject) => {
     Papa.parse(fileBankAccount.file, {
@@ -27,30 +27,35 @@ export const readAndParseTxFiles = (
           accountId: fileBankAccount.bankAccountId,
         } as FileParserResults;
 
+        const errors: string[] = [];
+
         switch (+fileBankAccount.bankAccountId) {
           case 18:
             prettyJson = prettyfyJson12(
               results.data,
-              fileBankAccount.bankAccountId
+              fileBankAccount.bankAccountId,
+              errors
             );
             break;
           case 12:
             prettyJson = prettyfyJson12(
               results.data,
-              fileBankAccount.bankAccountId
+              fileBankAccount.bankAccountId,
+              errors
             );
             break;
           case 11:
             prettyJson = prettyfyJson13(
               results.data,
-              fileBankAccount.bankAccountId
+              fileBankAccount.bankAccountId,
+              errors
             );
             break;
           default:
             parsingResults = errorParsingResult;
         }
 
-        if (prettyJson && prettyJson.length > 0) {
+        if (errors.length === 0 && prettyJson && prettyJson.length > 0) {
           parsingResults = {
             buildTransactionsForRequest: prettyJson,
             status: ParsingStatus.FINISHED,
@@ -58,6 +63,15 @@ export const readAndParseTxFiles = (
           } as FileParserResults;
 
           return resolve(parsingResults);
+        } else if (errors.length > 0) {
+          const errorParsingResult = {
+            parsingErrors: errors,
+            status: ParsingStatus.ERROR,
+            fileName: fileBankAccount.file.name,
+            accountId: fileBankAccount.bankAccountId,
+          } as FileParserResults;
+
+          return reject(errorParsingResult);
         } else {
           return reject(errorParsingResult);
         }

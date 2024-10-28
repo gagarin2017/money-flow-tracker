@@ -1,9 +1,16 @@
-import { Dispatch, createContext, useContext, useReducer } from "react";
+import {
+  Dispatch,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
 import { AccountWithTransactions } from "../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
 import Payee from "../components/Tabs/transactions-tab/AddTransactionsForm/model/payee";
 import { ManagedProperty } from "../components/Tabs/transactions-tab/AddTransactionsForm/payee-cat-desc-tag-manager";
 import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
-import { transformParsedTransactions } from "../components/Tabs/transactions-tab/add-transactions-utils";
+import { TransactionsFileBankAccountPair } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/transactions-file-bank-account";
+import useFilteredTransactions from "../components/hooks/useFilteredTransactions";
 import { deletePayeeAPI, savePayeeAPI } from "../components/services/payee-api";
 import BankAccount from "../model/bank-account";
 import { Category } from "../model/category";
@@ -15,13 +22,15 @@ import {
 } from "../utils/category-helper";
 
 export const enum ImportTransactionsActionType {
-  FETCH_START = "StartFetchingData",
+  SET_LOADING = "SetLoading",
+  SET_TRANSACTIONS_BANK_ACC_PAIRS = "SetTransactionsBankAccountPairs",
   ADD_ERROR = "FetchingErrors",
   IMPORT_TXS_FORM_VISIBLE = "ImportTransactionsFormVisible",
   IMPORT_SINGLE_TXS_FORM_VISIBLE = "ImportSingleTransactionsFormVisible",
   ADD_TXS_FORM_VISIBLE = "AddTransactionsFormModalVisible",
   MANAGE_FORM_VISIBLE = "ManagePayeeCatDescTagForm",
-  ADD_NEW_TXS = "AddNewTransactions",
+  ADD_FILTERED_TRANSACTIONS = "AddFilteredTransactions",
+  SET_DATA_FETCH_ERRROR = "SetDataFetchError",
   SAVE_PAYEE = "SavePayee",
   SAVE_CATEGORY = "SaveCategory",
   SAVE_DESCRIPTION = "SaveDescription",
@@ -42,19 +51,28 @@ export interface ImportTransactionsState {
   isImportSingleTransactionsFormVisible: boolean;
   isAddTransactionsFormModalVisible: boolean;
   isManageFormVisible: boolean;
-  newTransactions: AccountWithTransactions[];
+  transactionsFileBankAccountPairs: TransactionsFileBankAccountPair[];
+  filteredTansactions: AccountWithTransactions[];
   isLoading: boolean;
   errors: Error[];
+  error: any | null; // fetch data error
   categories: Category[];
   tags: Tag[];
   descriptions: Description[];
   payees: Payee[];
+  fileParserResults: FileParserResults[];
+  activeBankAccounts: BankAccount[];
 }
 
 // Define the action type
 type ImportTransactionsAction =
   | {
-      type: ImportTransactionsActionType.FETCH_START;
+      type: ImportTransactionsActionType.SET_LOADING;
+      payload: boolean;
+    }
+  | {
+      type: ImportTransactionsActionType.SET_TRANSACTIONS_BANK_ACC_PAIRS;
+      payload: TransactionsFileBankAccountPair[];
     }
   | {
       type: ImportTransactionsActionType.ADD_ERROR;
@@ -72,6 +90,17 @@ type ImportTransactionsAction =
       type: ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE;
       payload: boolean;
     }
+  | {
+      type: ImportTransactionsActionType.ADD_FILTERED_TRANSACTIONS;
+      payload: AccountWithTransactions[];
+    }
+  | {
+      type: ImportTransactionsActionType.SET_DATA_FETCH_ERRROR;
+      payload: any | null;
+    }
+  //--------------------------------
+  // Manage form and its children
+  //--------------------------------
   | {
       type: ImportTransactionsActionType.MANAGE_FORM_VISIBLE;
       payload: boolean;
@@ -91,13 +120,6 @@ type ImportTransactionsAction =
   | {
       type: ImportTransactionsActionType.SET_PAYEES;
       payload: Payee[];
-    }
-  | {
-      type: ImportTransactionsActionType.ADD_NEW_TXS;
-      payload: {
-        bankAccounts: BankAccount[];
-        parserResults: FileParserResults[];
-      };
     }
   | {
       type: ImportTransactionsActionType.SAVE_PAYEE;
@@ -163,8 +185,22 @@ const newTransactionsReducer = (
   action: ImportTransactionsAction
 ): ImportTransactionsState => {
   switch (action.type) {
-    case ImportTransactionsActionType.FETCH_START:
-      return { ...state, isLoading: true, errors: [] };
+    case ImportTransactionsActionType.SET_LOADING: {
+      console.log("SET_LOADING current state: isLoading: ", state.isLoading);
+
+      const newState = { ...state, isLoading: action.payload };
+      console.log(
+        "SET_LOADING current state setting isLoading to true. isLoading: " +
+          newState.isLoading
+      );
+      return newState;
+    }
+    case ImportTransactionsActionType.SET_TRANSACTIONS_BANK_ACC_PAIRS: {
+      return {
+        ...state,
+        transactionsFileBankAccountPairs: action.payload,
+      };
+    }
     case ImportTransactionsActionType.IMPORT_TXS_FORM_VISIBLE:
       return { ...state, isImportTransactionsFormVisible: action.payload };
     case ImportTransactionsActionType.IMPORT_SINGLE_TXS_FORM_VISIBLE:
@@ -238,37 +274,26 @@ const newTransactionsReducer = (
       );
       return { ...state, tags: updatedTags };
     case ImportTransactionsActionType.SET_CATEGORIES:
-      return { ...state, isLoading: false, categories: action.payload };
+      return { ...state, categories: action.payload };
     case ImportTransactionsActionType.SET_DESCRIPTIONS:
-      return { ...state, isLoading: false, descriptions: action.payload };
+      return { ...state, descriptions: action.payload };
     case ImportTransactionsActionType.SET_TAGS:
-      return { ...state, isLoading: false, tags: action.payload };
+      return { ...state, tags: action.payload };
     case ImportTransactionsActionType.SET_PAYEES:
-      return { ...state, isLoading: false, payees: action.payload };
+      return { ...state, payees: action.payload };
     case ImportTransactionsActionType.ADD_ERROR:
       return {
         ...state,
-        isLoading: false,
+        // isLoading: false,
         errors: [...state.errors, action.payload],
       };
-    case ImportTransactionsActionType.ADD_NEW_TXS:
-      const accountTransactions = transformParsedTransactions(
-        action.payload.parserResults,
-        action.payload.bankAccounts
-      );
-
-      if (
-        !state.isAddTransactionsFormModalVisible &&
-        accountTransactions.length > 0
-      ) {
-        return {
-          ...state,
-          isAddTransactionsFormModalVisible: true,
-          newTransactions: accountTransactions,
-        };
-      } else {
-        return { ...state, newTransactions: [] };
-      }
+    case ImportTransactionsActionType.ADD_FILTERED_TRANSACTIONS:
+      return {
+        ...state,
+        filteredTansactions: action.payload,
+      };
+    case ImportTransactionsActionType.SET_DATA_FETCH_ERRROR:
+      return { ...state, error: action.payload };
     default:
       return state;
   }
@@ -290,24 +315,63 @@ const deletePayee = async (payeeId: number) => {
   }
 };
 
+const initialState = {
+  isImportTransactionsFormVisible: false,
+  isImportSingleTransactionsFormVisible: false,
+  isAddTransactionsFormModalVisible: false,
+  isManageFormVisible: false,
+
+  transactionsFileBankAccountPairs: [],
+  newTransactions: [],
+  filteredTansactions: [],
+  isLoading: false,
+  errors: [],
+  error: null,
+
+  categories: [],
+  tags: [],
+  descriptions: [],
+  payees: [],
+  fileParserResults: [],
+  activeBankAccounts: [],
+};
+
 function ImportTransactionsProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [state, dispatch] = useReducer(newTransactionsReducer, {
-    isImportSingleTransactionsFormVisible: false,
-    isImportTransactionsFormVisible: false,
-    isAddTransactionsFormModalVisible: false,
-    isManageFormVisible: false,
-    newTransactions: [],
-    categories: [],
-    descriptions: [],
-    tags: [],
-    payees: [],
-    isLoading: false,
-    errors: [],
-  });
+  const [state, dispatch] = useReducer(newTransactionsReducer, initialState);
+
+  const { tableTransactions, isLoading, error } = useFilteredTransactions(
+    state.transactionsFileBankAccountPairs
+  );
+
+  useEffect(() => {
+    console.log("State data:", tableTransactions); // Additional log
+    console.log("State error:", error); // Additional log
+    console.log("State loading:", isLoading); // Additional log
+
+    dispatch({
+      type: ImportTransactionsActionType.SET_LOADING,
+      payload: isLoading,
+    });
+
+    if (tableTransactions) {
+      console.log("Dispatching ADD_NEW_TXS with data:", tableTransactions);
+      dispatch({
+        type: ImportTransactionsActionType.ADD_FILTERED_TRANSACTIONS,
+        payload: tableTransactions,
+      });
+    }
+    if (error) {
+      console.log("Error occurred: ", error);
+      dispatch({
+        type: ImportTransactionsActionType.SET_DATA_FETCH_ERRROR,
+        payload: error,
+      });
+    }
+  }, [tableTransactions, error, isLoading]);
 
   return (
     <ImportTransactionsContext.Provider value={{ state, dispatch }}>

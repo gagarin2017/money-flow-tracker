@@ -7,11 +7,12 @@ import {
   getDateFromStringWFormatter,
 } from "../date-helper";
 import {
-  DATE_COLUMN_INDEX,
   getBalanceAmtIndex,
   getCreditAmtIndex,
+  getDateIndex,
   getDebitAmtIndex,
   getDescriptionIndex,
+  isValidDate,
 } from "./parser-utils";
 
 /**
@@ -21,11 +22,16 @@ import {
  * @param accountId
  * @returns
  */
-export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
+export const prettyfyJson = (
+  uglyJsonArray: any,
+  accountId: number,
+  errors: string[]
+) => {
   let transactions: Transaction[] = [];
 
   const headerRow = uglyJsonArray[0];
 
+  const DATE_COLUMN_INDEX = getDateIndex(headerRow);
   const DEBIT_AMT_COLUMN_INDEX = getDebitAmtIndex(headerRow);
   const CREDIT_AMT_COLUMN_INDEX = getCreditAmtIndex(headerRow);
   const BALANCE_COLUMN_INDEX = getBalanceAmtIndex(headerRow);
@@ -48,28 +54,44 @@ export const prettyfyJson = (uglyJsonArray: any, accountId: number) => {
       let debitAmount: number | undefined = undefined;
       let creditAmount: number | undefined = undefined;
 
-      // does the row have any amount
-      if (
-        row[DEBIT_AMT_COLUMN_INDEX] &&
-        row[DEBIT_AMT_COLUMN_INDEX] !== null &&
-        +row[DEBIT_AMT_COLUMN_INDEX] !== 0
-      ) {
-        // debit amount
-        debitAmount = parseFloat(row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, ""));
-      }
+      const isDateValid: boolean = isValidDate(txDate);
 
-      if (
-        row[CREDIT_AMT_COLUMN_INDEX] &&
-        row[CREDIT_AMT_COLUMN_INDEX] !== null &&
-        +row[CREDIT_AMT_COLUMN_INDEX] !== 0
-      ) {
-        // credit amount
-        creditAmount = parseFloat(
-          row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, "")
+      if (!isDateValid) {
+        errors.push(
+          "The file date value could not be parsed properly: [" +
+            row[DATE_COLUMN_INDEX] +
+            "]. Error: [" +
+            txDate +
+            "]"
         );
       }
 
-      if (debitAmount || creditAmount) {
+      if (errors.length === 0) {
+        // does the row have any amount
+        if (
+          row[DEBIT_AMT_COLUMN_INDEX] &&
+          row[DEBIT_AMT_COLUMN_INDEX] !== null &&
+          +row[DEBIT_AMT_COLUMN_INDEX] !== 0
+        ) {
+          // debit amount
+          debitAmount = parseFloat(
+            row[DEBIT_AMT_COLUMN_INDEX].replace(/,/g, "")
+          );
+        }
+
+        if (
+          row[CREDIT_AMT_COLUMN_INDEX] &&
+          row[CREDIT_AMT_COLUMN_INDEX] !== null &&
+          +row[CREDIT_AMT_COLUMN_INDEX] !== 0
+        ) {
+          // credit amount
+          creditAmount = parseFloat(
+            row[CREDIT_AMT_COLUMN_INDEX].replace(/,/g, "")
+          );
+        }
+      }
+
+      if (errors.length === 0 && (debitAmount || creditAmount)) {
         transactions.push({
           id: -1,
           date: txDate,

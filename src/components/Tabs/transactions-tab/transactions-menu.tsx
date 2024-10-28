@@ -144,9 +144,7 @@ function TransactionsMenu() {
       </Dropdown>
 
       <ImportTransactionsForm />
-      {state.newTransactions && state.newTransactions.length > 0 && (
-        <AddTransactionsForm />
-      )}
+      {state.isAddTransactionsFormModalVisible && <AddTransactionsForm />}
       {state.isImportSingleTransactionsFormVisible && (
         <ImportSingleTransactionForm />
       )}

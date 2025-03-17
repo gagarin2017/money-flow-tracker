@@ -4,8 +4,8 @@ import { FormTransaction } from "../add-transactions-utils";
 import { Category } from "../../../../model/category";
 
 const transaction_undefined: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: undefined,
   description: undefined,
@@ -17,8 +17,8 @@ const transaction_undefined: FormTransaction = {
 };
 
 const transaction_invalid_category: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: {} as Category,
   description: undefined,
@@ -30,8 +30,8 @@ const transaction_invalid_category: FormTransaction = {
 };
 
 const transaction_valid_category: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: { name: "Shopping" } as Category,
   description: undefined,
@@ -43,8 +43,8 @@ const transaction_valid_category: FormTransaction = {
 };
 
 const transaction_blank_category_name: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: { name: "" } as Category,
   description: undefined,
@@ -56,8 +56,8 @@ const transaction_blank_category_name: FormTransaction = {
 };
 
 const transaction_undefined_amoounts: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: { name: "Shopping" } as Category,
   description: undefined,
@@ -69,8 +69,8 @@ const transaction_undefined_amoounts: FormTransaction = {
 };
 
 const transaction_defined_debit_amoount_only: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: { name: "Shopping" } as Category,
   description: undefined,
@@ -82,8 +82,8 @@ const transaction_defined_debit_amoount_only: FormTransaction = {
 };
 
 const transaction_defined_credit_amoount_only: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: { name: "Shopping" } as Category,
   description: undefined,
@@ -95,8 +95,8 @@ const transaction_defined_credit_amoount_only: FormTransaction = {
 };
 
 const transaction_defined_credit_and_debit_amoounts: FormTransaction = {
-  id: -1,
-  date: "the date",
+  id: "-1",
+  date: new Date(),
   payee: undefined,
   category: { name: "Shopping" } as Category,
   description: undefined,

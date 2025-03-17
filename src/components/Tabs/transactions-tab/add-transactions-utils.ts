@@ -1,13 +1,12 @@
+import { NotificationInstance } from "antd/es/notification/interface";
 import moment from "moment";
-import { ImportTransactionsActionType } from "../../../context/import-transactions-context";
-import BankAccount from "../../../model/bank-account";
 import { Category } from "../../../model/category";
 import { Description } from "../../../model/description";
-import Error from "../../../model/error";
 import { Tag } from "../../../model/tag";
 import { Transaction } from "../../../model/transaction";
 import {
   DATE_FORMAT_DD_MM_YYYY,
+  getDateFromString,
   getStringFromDate,
   getStringFromDateWFormatter,
 } from "../../../utils/date-helper";
@@ -15,14 +14,14 @@ import { fetchCategoriesAPI } from "../../services/categories-api";
 import { fetchDescriptionsAPI } from "../../services/descriptions-api";
 import { fetchPayeesAPI } from "../../services/payee-api";
 import { fetchTagsAPI } from "../../services/tags-api";
-import { AccountWithTransactions } from "./AddTransactionsForm/add-transactions-form";
 import Payee from "./AddTransactionsForm/model/payee";
-import { FileParserResults } from "./ImportTransactionsForm/model/file-parser-results";
-import { NotificationInstance } from "antd/es/notification/interface";
+import { ImportTransactionsActionType } from "../../../context/import-transactions-context-helpers/constants";
+import { v4 as uuidv4 } from "uuid";
 
 export interface FormTransaction {
-  id: number;
-  date: string | undefined;
+  id: string;
+  bankAccountId?: number;
+  date: Date;
   payee?: Payee;
   category: Category | undefined;
   description?: Description;
@@ -34,8 +33,9 @@ export interface FormTransaction {
 }
 
 export const EMPTY_FORM_TRANSACTION = {
-  id: Math.random() * moment().toISOString().length,
-  date: getStringFromDateWFormatter(moment().toDate(), DATE_FORMAT_DD_MM_YYYY),
+  id: "EMPTY",
+  // date: getStringFromDateWFormatter(moment().toDate(), DATE_FORMAT_DD_MM_YYYY),
+  date: getDateFromString("2025-03-15"),
   payee: undefined,
   category: undefined,
   description: undefined,
@@ -46,12 +46,12 @@ export const EMPTY_FORM_TRANSACTION = {
 } as FormTransaction;
 
 export const transformRemoteTransactionsIntoFormTransactions = (
-  transactions: Transaction[]
+  transactions: any[]
 ): FormTransaction[] => {
   return transactions.map((transaction) => {
     return {
-      id: -1,
-      date: getStringFromDate(transaction.date),
+      id: uuidv4(),
+      date: getDateFromString(transaction.date),
       category: transaction.category,
       memo: transaction.memo,
       creditAmount: transaction.creditAmount,
@@ -74,10 +74,9 @@ function transformTransactionsToTableTransactions(
 ): FormTransaction[] {
   const result: FormTransaction[] = transactionsToBeImported.map(
     (txToImport: Transaction) => {
-      const date = getStringFromDate(txToImport.date);
       return {
-        id: -date.length * Math.random() * 1234,
-        date: date,
+        id: uuidv4().toString(),
+        date: txToImport.date,
         memo: txToImport.memo || txToImport.description?.name,
         debitAmount: txToImport.debitAmount,
         creditAmount: txToImport.creditAmount,

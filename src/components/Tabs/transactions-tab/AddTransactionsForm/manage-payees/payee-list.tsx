@@ -1,13 +1,11 @@
 import { Button, Popconfirm, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import {
-  ImportTransactionsActionType,
-  useImportTransactionsContext,
-} from "../../../../../context/import-transactions-context";
+import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
 import { getCategoryAsString } from "../../../../../utils/category-helper";
 import Payee from "../model/payee";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { getAmountAsFormatedString } from "../../../../../utils/currency-helper";
+import { ImportTransactionsActionType } from "../../../../../context/import-transactions-context-helpers/constants";
 
 function PayeeList() {
   const { state, dispatch } = useImportTransactionsContext();

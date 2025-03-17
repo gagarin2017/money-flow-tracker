@@ -1,11 +1,9 @@
 import { Alert, Button, List, Space, notification } from "antd";
-import {
-  ImportTransactionsActionType,
-  useImportTransactionsContext,
-} from "../../../../../context/import-transactions-context";
+import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
 import { Category } from "../../../../../model/category";
 import { deleteCategoryAPI } from "../../../../services/categories-api";
 import DisplayCategoryCard from "./display-category-card";
+import { ImportTransactionsActionType } from "../../../../../context/import-transactions-context-helpers/constants";
 
 interface CategoriesListProps {
   categories: Category[];

@@ -80,9 +80,11 @@ export const ACC_TRXS_VALID_SCHEMA = Yup.object().shape({
               "Either debitAmount or creditAmount is required, but not both",
               function (value) {
                 const creditAmount = this.parent.creditAmount;
+                console.log("Debit amount: ", value);
+                console.log("Credit amount: ", creditAmount);
                 return (
-                  (value !== undefined && creditAmount === undefined) ||
-                  (value === undefined && creditAmount !== undefined)
+                  (value !== null && creditAmount === null) ||
+                  (value === null && creditAmount !== null)
                 );
               }
             ),
@@ -93,9 +95,11 @@ export const ACC_TRXS_VALID_SCHEMA = Yup.object().shape({
               "Either debitAmount or creditAmount is required, but not both",
               function (value) {
                 const debitAmount = this.parent.debitAmount;
+                console.log("Credit amount: ", value);
+                console.log("Debit amount: ", debitAmount);
                 return (
-                  (value !== undefined && debitAmount === undefined) ||
-                  (value === undefined && debitAmount !== undefined)
+                  (value !== null && debitAmount === null) ||
+                  (value === null && debitAmount !== null)
                 );
               }
             ),

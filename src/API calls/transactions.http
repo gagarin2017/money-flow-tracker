@@ -13,3 +13,10 @@ GET http://localhost:8080/api/transactions/2011
 GET http://localhost:8080/api/transactions?dateFrom=2024-10-01&dateTo=2024-10-31
 
 ###
+
+POST http://localhost:8080/api/transactions/filter
+content-type: application/json
+
+[{"bankAccountId":18,"fileTransactions":[{"id":-1,"date":"2024-10-01","bankAccount":{"id":18},"category":{},"memo":"Мемо 01","description":{},"tag":{},"runningBalance":120.24,"debitAmount":50},{"id":-1,"date":"2024-10-01","bankAccount":{"id":18},"category":{},"memo":"memo 02","description":{},"tag":{},"runningBalance":120.02,"debitAmount":22.5},{"id":-1,"date":"2024-10-11","bankAccount":{"id":18},"category":{},"memo":"Memo 03","description":{},"tag":{},"runningBalance":12.01,"creditAmount":15}]}]
+
+###

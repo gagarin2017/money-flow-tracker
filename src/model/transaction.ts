@@ -22,7 +22,7 @@ export interface Transaction {
   creditAmount: number;
   transactionType?: TransactionType;
   // running balance calculated for all transactions on the billing account
-  runningBalance: number;
+  runningBalance: number | null;
   // the flag needed to filter transactions for the report (need to ignore these to caclulate the spending sum per month, for example)
   betweenAccountsTransaction?: boolean;
   created_At?: string;

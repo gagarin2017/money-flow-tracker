@@ -1,13 +1,11 @@
 import { Badge, Button, Card, Col, List, Popconfirm, Row } from "antd";
-import {
-  ImportTransactionsActionType,
-  useImportTransactionsContext,
-} from "../../../../../context/import-transactions-context";
+import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
 import { Description } from "../../../../../model/description";
 import { Tag } from "../../../../../model/tag";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { deleteDescriptionAPI } from "../../../../services/descriptions-api";
 import { deleteTagAPI } from "../../../../services/tags-api";
+import { ImportTransactionsActionType } from "../../../../../context/import-transactions-context-helpers/constants";
 
 interface DescriptionListProps {
   isTag?: boolean;

@@ -90,7 +90,11 @@ export const deepDeleteCategoryFromList = (
   return listCopy;
 };
 
-export const getCategoryAsString = (category: Category): string => {
+export const getCategoryAsString = (category: Category | undefined): string => {
+  if (category === undefined) {
+    return "";
+  }
+
   const string = `${category.name}${
     category.parentCategory
       ? getParentCategoryAsString(category.parentCategory)

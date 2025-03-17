@@ -2,10 +2,7 @@ import { Alert, Space } from "antd";
 import { Formik, FormikHelpers } from "formik";
 import FormsModal from "../../../../UI/forms-modal";
 import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
-import {
-  ImportTransactionsActionType,
-  useImportTransactionsContext,
-} from "../../../../context/import-transactions-context";
+import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
 import { useTransactionsContext } from "../../../../context/transactions-context";
 import { Category } from "../../../../model/category";
 import { Transaction } from "../../../../model/transaction";
@@ -21,6 +18,7 @@ import {
 } from "../add-transactions-utils";
 import { HEADER_ROW } from "../transactions-utils";
 import { TRANSACTION_VALIDATION_SCHEMA } from "./validation-schemas";
+import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
 
 const CUSTOM_WIDTH = 1450;
 
@@ -48,12 +46,7 @@ function ImportSingleTransactionForm() {
     const transactionToSave: Transaction = {
       id: -1,
       bankAccount: bankAccount,
-      date:
-        formTransaction.date &&
-        getDateFromStringWFormatter(
-          formTransaction.date,
-          DATE_FORMAT_DD_MM_YYYY
-        ),
+      date: formTransaction.date,
       description: formTransaction.description,
       category: {
         id: formTransaction.category?.id,
@@ -65,7 +58,7 @@ function ImportSingleTransactionForm() {
       debitAmount: formTransaction.debitAmount,
       creditAmount: formTransaction.creditAmount,
       amount: formTransaction.amount,
-      runningBalance: 0,
+      runningBalance: null,
     } as Transaction;
 
     saveTransactions([transactionToSave]);

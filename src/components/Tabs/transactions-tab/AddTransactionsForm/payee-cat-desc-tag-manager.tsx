@@ -1,10 +1,7 @@
 import { Empty, message } from "antd";
 import { DirectoryTreeProps } from "antd/es/tree";
 import { FormEvent, useState } from "react";
-import {
-  ImportTransactionsActionType,
-  useImportTransactionsContext,
-} from "../../../../context/import-transactions-context";
+import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
 import { Tag } from "../../../../model/tag";
@@ -23,6 +20,7 @@ import ManageForm, { FormData } from "./manage-form";
 import AddNewPayeeCard from "./manage-payees/add-new-payee-card";
 import PayeeList from "./manage-payees/payee-list";
 import Payee from "./model/payee";
+import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
 
 export enum ManagedProperty {
   PAYEE = "Payee",

@@ -3,3 +3,7 @@ GET http://localhost:3005/bank-accounts
 ###
 
 GET http://localhost:8080/api/bank-accounts/active
+
+###
+
+GET http://localhost:8080/api/bank-accounts/updateBalance/18

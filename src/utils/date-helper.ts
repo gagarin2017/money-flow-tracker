@@ -4,6 +4,7 @@ export const DATE_FORMAT_DD_MM_YYYY = "DD-MM-YYYY";
 export const DATE_FORMAT_YYYY_MM_DD = "YYYY-MM-DD";
 export const DATE_FORMAT_DD_SLASH_MM_SLASH_YY = "DD/MM/YY";
 
+// TODO: move this method to another utils
 export const getAmountString = (amount: number) => {
   return new Intl.NumberFormat("en-IE", {
     style: "currency",
@@ -29,6 +30,15 @@ export const getStringFromDateWFormatter = (date: Date, formatter: string) => {
 
 export const getDateFromString = (dateString: string) => {
   return moment(dateString, DATE_FORMAT_YYYY_MM_DD).toDate();
+};
+
+export const convertISODateToStringWithFormatter = (
+  dateString: string,
+  formatter: string
+) => {
+  const date = getDateFromString(dateString);
+
+  return moment(date).format(formatter);
 };
 
 export const getDateFromStringWFormatter = (

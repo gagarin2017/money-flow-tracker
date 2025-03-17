@@ -28,7 +28,7 @@ function AccountTransactionsList({
             key={`accountTransaction${txIndex}${accountIndex + txIndex}`}
             transaction={transaction}
             accountIndex={accountIndex}
-            txIndex={txIndex}
+            txIndex={txIndex.toString()}
             isDateEditable={isDateEditable}
             dateField={`accountTransactions.${accountIndex}.transactions.${txIndex}.date`}
             payeeFieldName={`accountTransactions.${accountIndex}.transactions.${txIndex}.payee`}

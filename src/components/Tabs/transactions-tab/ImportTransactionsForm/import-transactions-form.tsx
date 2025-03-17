@@ -1,14 +1,13 @@
-import { Alert, Col, Row } from "antd";
+import { Alert, Col, notification, Row } from "antd";
 import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
 import { useEffect, useState } from "react";
-import {
-  ImportTransactionsActionType,
-  useImportTransactionsContext,
-} from "../../../../context/import-transactions-context";
+import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
 import FormsModal from "../../../../UI/forms-modal";
 import TransactionsFilesBankAccountList from "./transactions-files-bank-account-list";
 import TransactionsFilesInput from "./transactions-files-input";
 import { TransactionsFileBankAccountPair } from "./model/transactions-file-bank-account";
+import { ParsingError } from "./model/parsing-error";
+import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
 
 interface TransactionsFilesFormData {
   selectedFiles: any[];
@@ -30,8 +29,24 @@ const ImportTransactionsForm = () => {
         type: ImportTransactionsActionType.ADD_TXS_FORM_VISIBLE,
         payload: true,
       });
+
+      if (state.fileParsingErrors.length > 0) {
+        showParsingErrors(state.fileParsingErrors);
+      }
     }
-  }, [dispatch, resetFormFn, state.isLoading]);
+  }, [dispatch, resetFormFn, state.fileParsingErrors, state.isLoading]);
+
+  function showParsingErrors(fileParsingErrors: ParsingError[]) {
+    // Notification with the errors
+
+    fileParsingErrors.forEach((error) => {
+      notification["error"]({
+        message: error.description,
+        description: "Parsing error occurred",
+        duration: 0,
+      });
+    });
+  }
 
   const onFormClose = () => {
     dispatch({

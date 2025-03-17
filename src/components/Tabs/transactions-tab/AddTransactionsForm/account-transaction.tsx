@@ -12,7 +12,7 @@ import ErrorMessage from "./transaction-fields/error-message";
 interface AccountTransactionProps {
   transaction: FormTransaction;
   accountIndex: number;
-  txIndex: number;
+  txIndex: string;
   isDateEditable?: boolean;
   dateField: string;
   payeeFieldName: string;
@@ -38,6 +38,14 @@ function AccountTransaction({
   creditAmountFieldName,
   memoFieldName,
 }: AccountTransactionProps) {
+  console.log("Values for Account Transaction table: ", transaction);
+
+  const date = isDateEditable ? (
+    <AddTransactionFormDateField fieldName={dateField} />
+  ) : (
+    <>{transaction.date}</>
+  );
+
   return (
     <Row
       gutter={[2, 4]}
@@ -46,11 +54,7 @@ function AccountTransaction({
       style={{ width: ROW_WIDTH, paddingTop: 5 }}
     >
       <Col className="gutter-row" span={2} key={`Date`}>
-        {isDateEditable ? (
-          <AddTransactionFormDateField fieldName={dateField} />
-        ) : (
-          transaction.date
-        )}
+        {date}
       </Col>
       <Col className="gutter-row" span={3} key={`Payee`}>
         <AddTransactionsFormPayeeField
@@ -99,9 +103,6 @@ function AccountTransaction({
           key={`${transaction.id}creditAmount${Math.random()}`}
           name={creditAmountFieldName}
         />
-      </Col>
-      <Col className="gutter-row" span={2}>
-        <div>Action buttons</div>
       </Col>
     </Row>
   );

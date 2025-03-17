@@ -3,13 +3,11 @@ import { Form, Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { FormEvent, ReactNode } from "react";
 import MinimalisticModal from "../../../../UI/minimalistic-modal";
-import {
-  ImportTransactionsActionType,
-  useImportTransactionsContext,
-} from "../../../../context/import-transactions-context";
+import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
 import { Tag } from "../../../../model/tag";
+import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
 
 export const NEW_PROP_VALID_SCHEMA = Yup.object().shape({
   payeeName: Yup.string()

@@ -27,7 +27,7 @@ interface DataType {
   amount: number;
   creditAmount: number;
   debitAmount: number;
-  runningBalance: number;
+  runningBalance: number | null;
 }
 
 interface TransactionsTableProps {
@@ -134,7 +134,7 @@ function TransactionsTable({
       dataIndex: "runningBalance",
       key: "runningBalance",
       render: (_: any, record: Transaction) => {
-        return record.runningBalance < 0 ? (
+        return record.runningBalance && record.runningBalance < 0 ? (
           <span style={{ color: "red" }}>
             {getAmountAsFormatedString(record.runningBalance)}
           </span>

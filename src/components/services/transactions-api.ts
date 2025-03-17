@@ -32,7 +32,7 @@ export const fetchAccountTransactionsAPI = async (bankAccountId: number) => {
 export const filterTransactionsAPI = async (
   accountTransactions: FileParserResults[]
 ) => {
-  const transactionsUrl: string = BASE_URL.concat("/")
+  const filterTransactionsUrl: string = BASE_URL.concat("/")
     .concat(TRANSACTIONS_FIELD)
     .concat("/")
     .concat("filter");
@@ -46,7 +46,7 @@ export const filterTransactionsAPI = async (
   if (transactionsToBeFiltered) {
     // await new Promise((resolve) => setTimeout(resolve, 5000)); // Add timeout for DEV purposes
 
-    const filteredTransactions = await fetch(transactionsUrl, {
+    const filteredTransactions = await fetch(filterTransactionsUrl, {
       method: Method.POST,
       headers: {
         "Content-Type": "application/json",

@@ -30,6 +30,7 @@ export interface FormTransaction {
   amount?: number | undefined;
   debitAmount?: number | undefined;
   creditAmount?: number | undefined;
+  previouslySavedTransaction: boolean;
 }
 
 export const EMPTY_FORM_TRANSACTION = {
@@ -54,13 +55,18 @@ export const transformRemoteTransactionsIntoFormTransactions = (
       date: getDateFromString(transaction.date),
       category: transaction.category,
       memo: transaction.memo,
-      creditAmount: transaction.creditAmount,
-      debitAmount: transaction.debitAmount,
+      creditAmount:
+        transaction.creditAmount === null
+          ? undefined
+          : transaction.creditAmount,
+      debitAmount:
+        transaction.debitAmount === null ? undefined : transaction.debitAmount,
       description: transaction.description,
       tag: transaction.tag,
       amount: transaction.amount,
       payee: {} as Payee,
-    } as FormTransaction;
+      previouslySavedTransaction: transaction.previouslySavedTransaction,
+    };
   });
 };
 

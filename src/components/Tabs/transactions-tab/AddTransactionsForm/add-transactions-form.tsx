@@ -14,6 +14,11 @@ import {
 import ImportAccountTransactionsList from "./import-account-transactions-list";
 import BankAccountTitle from "../../../BankAccounts/bank-account-title";
 import EditTransactionForm from "../ImportTransactionsForm/edit-transaction-form";
+import { Category } from "../../../../model/category";
+import { Description } from "../../../../model/description";
+import { Transaction } from "../../../../model/transaction";
+import { getDateFromString } from "../../../../utils/date-helper";
+import { NEW_TRANSACTIONS_FORM_DATA_SCHEMA } from "../ImportTransactionsForm/validation-schemas";
 
 export interface AccountWithTransactions {
   bankAccount: BankAccount | undefined;
@@ -30,30 +35,28 @@ const AddTransactionsForm = () => {
   const { saveTransactions } = useTransactionsContext();
   const { fetchBankAccounts, bankAccounts } = useBankAccountsContext();
 
+  const filteredTransactions: AccountWithTransactions[] =
+    state.filteredTansactions;
+
   const getInitialValue = () => {
     let initialForm = {} as NewTransactionsFormData;
 
-    console.log(
-      "add-transactions-form --> state.filteredTansactions: ",
-      state.filteredTansactions
-    );
-
-    if (state.filteredTansactions && state.filteredTansactions.length > 0) {
-      const result = state.filteredTansactions.map((filteredTransaction) => {
-        const account = bankAccounts.find(
-          (acc) => acc.id === filteredTransaction.bankAccount?.id
-        );
-        return {
-          bankAccount: account,
-          transactions: filteredTransaction.transactions,
-          selectedTransactions: filteredTransaction.transactions.map(
-            (tx) => tx.id
-          ),
-        } as AccountWithTransactions;
-      });
-
+    if (filteredTransactions && filteredTransactions.length > 0) {
       initialForm = {
-        accountTransactions: result,
+        accountTransactions: filteredTransactions.map((accountTransactions) => {
+          // Filter out previously saved transactions
+          const filteredTransactions = accountTransactions.transactions.filter(
+            (tx) => !tx.previouslySavedTransaction
+          );
+
+          return {
+            bankAccount: bankAccounts.find(
+              (acc) => acc.id === accountTransactions.bankAccount?.id
+            ),
+            transactions: accountTransactions.transactions,
+            selectedTransactions: filteredTransactions.map((tx) => tx.id),
+          };
+        }),
       };
     } else {
       initialForm = {
@@ -83,44 +86,56 @@ const AddTransactionsForm = () => {
   ) => {
     console.log("poop transactions from the form:", formValues);
 
-    // const transactionsToSave: Transaction[] = [];
+    const transactionsToSave: Transaction[] = [];
 
-    // formValues.accountTransactions.forEach((formData) => {
-    //   formData.transactions.forEach((tx) => {
-    //     transactionsToSave.push({
-    //       id: -1,
-    //       bankAccount: formData.bankAccount,
-    //       date: tx.date && getDateFromString(tx.date),
-    //       description: { id: tx.description?.id, name: "" } as Description,
-    //       category: { id: tx.category?.id } as Category,
-    //       memo: tx.memo,
-    //       tag: tx.tag,
-    //       debitAmount: tx.debitAmount,
-    //       creditAmount: tx.creditAmount,
-    //       runningBalance: null,
-    //     } as Transaction);
-    //   });
-    // });
+    formValues.accountTransactions.forEach((formAccountTransactions) => {
+      formAccountTransactions.transactions.forEach((formTransaction) => {
+        if (
+          formAccountTransactions.selectedTransactions.includes(
+            formTransaction.id
+          )
+        ) {
+          transactionsToSave.push({
+            id: -1,
+            bankAccount: formAccountTransactions.bankAccount,
+            date: formTransaction.date,
+            description: {
+              id: formTransaction.description?.id,
+              name: "",
+            } as Description,
+            category: { id: formTransaction.category?.id } as Category,
+            memo: formTransaction.memo,
+            tag: formTransaction.tag,
+            debitAmount: formTransaction.debitAmount,
+            creditAmount: formTransaction.creditAmount,
+            runningBalance: null,
+          } as Transaction);
+        }
+      });
+    });
 
-    // saveTransactions(transactionsToSave);
+    saveTransactions(transactionsToSave);
 
-    // // refresh accounts with the latest balances
-    // await fetchBankAccounts();
+    // refresh accounts with the latest balances
+    await fetchBankAccounts();
 
     resetForm();
     handleFormClose();
   };
 
   const isNewTransactionsListEmpty =
-    state.filteredTansactions && state.filteredTansactions.length === 0;
+    filteredTransactions && filteredTransactions.length === 0;
 
   const accountTransactionSection = (
     formikProps: FormikProps<NewTransactionsFormData>
   ) => {
     const items: CollapseProps["items"] =
       formikProps.values.accountTransactions.map(
-        (accTransactions: AccountWithTransactions, index: number) => ({
-          key: index,
+        (
+          accTransactions: AccountWithTransactions,
+          bankAccountIndex: number
+        ) => ({
+          key: bankAccountIndex,
           label: (
             <BankAccountTitle
               bankAccount={accTransactions.bankAccount}
@@ -134,6 +149,7 @@ const AddTransactionsForm = () => {
                 <ImportAccountTransactionsList
                   formikProps={formikProps}
                   bankAccountId={accTransactions.bankAccount.id}
+                  bankAccountIndex={bankAccountIndex}
                 />
               ) : (
                 // <AccountTransactionsList
@@ -160,13 +176,13 @@ const AddTransactionsForm = () => {
         onSubmit={(values, handleReset) => {
           onSubmit(values, handleReset);
         }}
-        // validateOnChange={false} // Do not validate on change
-        // validationSchema={ACC_TRXS_VALID_SCHEMA}
-        // validateOnMount={true}
+        validateOnChange={false}
+        validationSchema={NEW_TRANSACTIONS_FORM_DATA_SCHEMA}
+        validateOnMount={false}
       >
         {(formikProps) => (
           <FormsModal
-            title={`Add new Transactions`}
+            title={`Importing Transactions`}
             isModalVisible={state.isAddTransactionsFormModalVisible}
             handleOk={formikProps.handleSubmit}
             handleCancel={() => {
@@ -176,13 +192,21 @@ const AddTransactionsForm = () => {
             customWidth={1500}
             isLoading={formikProps.isSubmitting}
           >
-            <Form>
-              {isNewTransactionsListEmpty ? (
-                <ImportTransactionsEmptyList />
-              ) : (
-                accountTransactionSection(formikProps)
+            <>
+              {Object.keys(formikProps.errors).length > 0 && (
+                <>
+                  {console.log("Form ahs errors: ", formikProps.errors)}
+                  <h2>Fix the errors, before submitting</h2>
+                </>
               )}
-            </Form>
+              <Form>
+                {isNewTransactionsListEmpty ? (
+                  <ImportTransactionsEmptyList />
+                ) : (
+                  accountTransactionSection(formikProps)
+                )}
+              </Form>
+            </>
           </FormsModal>
         )}
       </Formik>

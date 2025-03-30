@@ -28,6 +28,7 @@ export interface Transaction {
   created_At?: string;
   updated_At?: string;
   _links?: object;
+  previouslySavedTransaction: boolean;
 }
 
 export interface TransactionType {

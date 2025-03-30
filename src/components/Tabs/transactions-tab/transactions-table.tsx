@@ -28,6 +28,7 @@ interface DataType {
   creditAmount: number;
   debitAmount: number;
   runningBalance: number | null;
+  previouslySavedTransaction: boolean;
 }
 
 interface TransactionsTableProps {

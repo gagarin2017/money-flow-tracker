@@ -91,6 +91,7 @@ const inputTransactions: Transaction[] = [
         templated: true,
       },
     },
+    previouslySavedTransaction: false,
   },
 ];
 const renderComponent = () => {

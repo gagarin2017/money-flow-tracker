@@ -4,6 +4,7 @@ import {
   FormTransaction,
 } from "../add-transactions-utils";
 import {
+  ErrorMessage,
   FormikErrors,
   FormikHelpers,
   FormikProps,
@@ -14,7 +15,7 @@ import {
   NewTransactionsFormData,
 } from "./add-transactions-form";
 import { HEADER_ROW } from "../transactions-utils";
-import { Button, Popconfirm, Space, Table, Tag } from "antd";
+import { Button, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
 import { ColumnsType, TableRowSelection } from "antd/es/table/interface";
 import { useState } from "react";
 import { Transaction } from "../../../../model/transaction";
@@ -35,11 +36,13 @@ import EditTransactionForm from "../ImportTransactionsForm/edit-transaction-form
 interface ImportAccountTransactionsListProps {
   formikProps: FormikProps<NewTransactionsFormData>;
   bankAccountId: number;
+  bankAccountIndex: number;
 }
 
 function ImportAccountTransactionsList({
   formikProps,
   bankAccountId,
+  bankAccountIndex,
 }: ImportAccountTransactionsListProps) {
   const columns: ColumnsType<FormTransaction> = [
     {
@@ -54,8 +57,40 @@ function ImportAccountTransactionsList({
       title: "Category",
       dataIndex: "category",
       key: "category",
-      render: (_: any, record: FormTransaction) => {
-        return getCategoryAsString(record.category);
+      render: (_: any, record: FormTransaction, index) => {
+        let errorText: string | undefined;
+
+        // Safely access formikProps.errors.accountTransactions
+        const accountErrors = formikProps.errors.accountTransactions as
+          | FormikErrors<AccountWithTransactions>[]
+          | undefined;
+
+        const categoryErrorArray =
+          Array.isArray(accountErrors) &&
+          accountErrors[bankAccountIndex]?.transactions &&
+          Array.isArray(accountErrors[bankAccountIndex].transactions)
+            ? accountErrors[bankAccountIndex].transactions
+            : undefined;
+
+        if (categoryErrorArray?.[index]) {
+          const categoryError = categoryErrorArray[index];
+
+          if (
+            categoryError &&
+            typeof categoryError === "object" &&
+            "category" in categoryError
+          ) {
+            errorText = (categoryError as FormikErrors<FormTransaction>)
+              .category;
+          }
+        }
+
+        return (
+          <div>
+            <div>{getCategoryAsString(record.category)}</div>
+            {errorText && <div style={{ color: "red" }}>{errorText}</div>}
+          </div>
+        );
       },
     },
     {
@@ -112,9 +147,18 @@ function ImportAccountTransactionsList({
       key: "action",
       render: (_: any, record: FormTransaction) => (
         <Space size="middle">
-          <Button type="link" onClick={() => handleTransactionEdit(record)}>
+          <Button
+            type="link"
+            onClick={() => handleTransactionEdit(record)}
+            disabled={record.previouslySavedTransaction}
+          >
             Edit
           </Button>
+          {record.previouslySavedTransaction && (
+            <Tooltip title="This transaction has already been saved.">
+              <Tag color="green">saved</Tag>
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -125,7 +169,6 @@ function ImportAccountTransactionsList({
   function handleTransactionEdit(record: FormTransaction): void {
     record.bankAccountId = bankAccountId;
 
-    console.log("editing the transaction: ", record);
     dispatch({
       type: ImportTransactionsActionType.SET_EDITED_TRANSACTION,
       payload: record,
@@ -174,6 +217,10 @@ function ImportAccountTransactionsList({
   const rowSelection: TableRowSelection<FormTransaction> = {
     selectedRowKeys: accountTransactions?.selectedTransactions,
     onChange: onSelectChange,
+    getCheckboxProps: (record: FormTransaction) => ({
+      disabled: record.previouslySavedTransaction === true,
+      name: String(record.previouslySavedTransaction),
+    }),
   };
 
   return (

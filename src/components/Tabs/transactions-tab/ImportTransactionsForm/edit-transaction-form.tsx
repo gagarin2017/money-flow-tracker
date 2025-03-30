@@ -13,6 +13,7 @@ import {
 } from "../add-transactions-utils";
 import { HEADER_ROW } from "../transactions-utils";
 import _ from "lodash";
+import { TRANSACTION_VALIDATION_SCHEMA } from "./validation-schemas";
 
 const CUSTOM_WIDTH = 1450;
 
@@ -117,6 +118,7 @@ function EditTransactionForm() {
         tag: transaction.tag,
         debitAmount: transaction.debitAmount,
         creditAmount: transaction.creditAmount,
+        previouslySavedTransaction: false,
       };
     }
 
@@ -134,8 +136,9 @@ function EditTransactionForm() {
       ) => {
         onSubmit(values, handleReset);
       }}
-      // validationSchema={TRANSACTION_VALIDATION_SCHEMA}
+      validationSchema={TRANSACTION_VALIDATION_SCHEMA}
       validateOnMount={true}
+      validateOnChange={true}
     >
       {({
         values,

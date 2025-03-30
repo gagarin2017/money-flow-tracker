@@ -1,6 +1,5 @@
 import { InputNumber } from "antd";
 import { useField } from "formik";
-import { useState } from "react";
 
 interface AddTransactionsFormAmountFieldProps {
   fieldName: string;

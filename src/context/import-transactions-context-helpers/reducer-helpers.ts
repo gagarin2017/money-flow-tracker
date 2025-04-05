@@ -105,13 +105,20 @@ export const handleTransactionsElements = (
 ) => {
   switch (action.type) {
     case ImportTransactionsActionType.SAVE_PAYEE:
-      action.payload.payee && savePayee(action.payload.payee);
-      return {
-        ...state,
-        payees: action.payload.payee
-          ? [...state.payees, action.payload.payee]
-          : state.payees,
-      };
+      const newPayee: Payee | undefined = action.payload.payee;
+
+      let newState = state;
+
+      if (newPayee) {
+        newState = {
+          ...state,
+          payees: getUpdatedPayees(state.payees, newPayee),
+        };
+
+        savePayee(newPayee);
+      }
+
+      return newState;
     case ImportTransactionsActionType.SAVE_CATEGORY:
       const category = action.payload.category;
 
@@ -176,6 +183,16 @@ export const handleTransactionsElements = (
       return state;
   }
 };
+
+// Helper function to update payees
+function getUpdatedPayees(payees: unknown, payee: Payee): Payee[] {
+  if (!Array.isArray(payees)) {
+    return payee ? [payee] : [];
+  }
+
+  // Append new payee if it exists and filter out undefined/null
+  return [...payees, payee].filter(Boolean);
+}
 
 const savePayee = async (payee: Payee) => {
   try {

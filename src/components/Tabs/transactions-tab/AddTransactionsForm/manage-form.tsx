@@ -131,7 +131,7 @@ const ManageForm = ({
     { resetForm }: FormikHelpers<FormData>
   ) => {
     handleOnSubmit(formValues);
-    resetForm();
+    resetForm({ values: { payeeName: "" } as FormData });
   };
 
   return (

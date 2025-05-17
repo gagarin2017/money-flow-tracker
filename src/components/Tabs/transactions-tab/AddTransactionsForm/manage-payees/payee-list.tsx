@@ -90,7 +90,9 @@ function PayeeList() {
     });
   };
 
-  return <Table columns={columns} dataSource={sortedPayeesByName} />;
+  return (
+    <Table columns={columns} dataSource={sortedPayeesByName} rowKey={"id"} />
+  );
 }
 
 export default PayeeList;

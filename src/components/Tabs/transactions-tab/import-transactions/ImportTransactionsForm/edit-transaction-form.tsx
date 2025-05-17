@@ -1,19 +1,19 @@
 import { Alert, Space } from "antd";
 import { Formik, FormikHelpers } from "formik";
-import FormsModal from "../../../../UI/forms-modal";
-import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
-import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
-import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
-import BankAccountTitle from "../../../BankAccounts/bank-account-title";
-import AccountTransaction from "../AddTransactionsForm/account-transaction";
-import { AccountWithTransactions } from "../AddTransactionsForm/add-transactions-form";
-import {
-  EMPTY_FORM_TRANSACTION,
-  FormTransaction,
-} from "../add-transactions-utils";
-import { HEADER_ROW } from "../transactions-utils";
 import _ from "lodash";
-import { TRANSACTION_VALIDATION_SCHEMA } from "./validation-schemas";
+import { useBankAccountsContext } from "../../../../../context/bank-accounts-context";
+import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
+import { ImportTransactionsActionType } from "../../../../../context/import-transactions-context-helpers/constants";
+import FormsModal from "../../../../../UI/forms-modal";
+import BankAccountTitle from "../../../../BankAccounts/bank-account-title";
+import {
+  FormTransaction,
+  EMPTY_FORM_TRANSACTION,
+} from "../../add-transactions-utils";
+import AccountTransaction from "../../AddTransactionsForm/account-transaction";
+import { AccountWithTransactions } from "../../AddTransactionsForm/add-transactions-form";
+import { HEADER_ROW } from "../../transactions-utils";
+import { TRANSACTION_VALIDATION_SCHEMA } from "../validation-schemas/save-transactions-validation-schemas";
 
 const CUSTOM_WIDTH = 1450;
 

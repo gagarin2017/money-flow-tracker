@@ -13,10 +13,12 @@ export const enum ImportTransactionsActionType {
   ADD_FILTERED_TRANSACTIONS = "AddFilteredTransactions",
   SET_DATA_FETCH_ERROR = "SetDataFetchError",
   SAVE_PAYEE = "SavePayee",
+  SAVE_RULE = "SaveRule",
   SAVE_CATEGORY = "SaveCategory",
   SAVE_DESCRIPTION = "SaveDescription",
   SAVE_TAG = "SaveTag",
   DELETE_PAYEE = "DeletePayee",
+  DELETE_RULE = "DeleteRule",
   DELETE_CATEGORY = "DeleteCategory",
   DELETE_DESCRIPTION = "DeleteDescription",
   DELETE_TAG = "DeleteTag",
@@ -24,4 +26,5 @@ export const enum ImportTransactionsActionType {
   SET_DESCRIPTIONS = "SetDescriptions",
   SET_TAGS = "SetTags",
   SET_PAYEES = "SetPayees",
+  SET_RULES = "SetRules",
 }

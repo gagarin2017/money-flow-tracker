@@ -1,24 +1,20 @@
 import { Alert, Space } from "antd";
 import { Formik, FormikHelpers } from "formik";
-import FormsModal from "../../../../UI/forms-modal";
-import { useBankAccountsContext } from "../../../../context/bank-accounts-context";
-import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
-import { useTransactionsContext } from "../../../../context/transactions-context";
-import { Category } from "../../../../model/category";
-import { Transaction } from "../../../../model/transaction";
+import { useBankAccountsContext } from "../../../../../context/bank-accounts-context";
+import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
+import { ImportTransactionsActionType } from "../../../../../context/import-transactions-context-helpers/constants";
+import { useTransactionsContext } from "../../../../../context/transactions-context";
+import { Category } from "../../../../../model/category";
+import { Transaction } from "../../../../../model/transaction";
+import FormsModal from "../../../../../UI/forms-modal";
+import BankAccountTitle from "../../../../BankAccounts/bank-account-title";
 import {
-  DATE_FORMAT_DD_MM_YYYY,
-  getDateFromStringWFormatter,
-} from "../../../../utils/date-helper";
-import BankAccountTitle from "../../../BankAccounts/bank-account-title";
-import AccountTransaction from "../AddTransactionsForm/account-transaction";
-import {
-  EMPTY_FORM_TRANSACTION,
   FormTransaction,
-} from "../add-transactions-utils";
-import { HEADER_ROW } from "../transactions-utils";
-import { TRANSACTION_VALIDATION_SCHEMA } from "./validation-schemas";
-import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
+  EMPTY_FORM_TRANSACTION,
+} from "../../add-transactions-utils";
+import AccountTransaction from "../../AddTransactionsForm/account-transaction";
+import { HEADER_ROW } from "../../transactions-utils";
+import { TRANSACTION_VALIDATION_SCHEMA } from "../validation-schemas/save-transactions-validation-schemas";
 
 const CUSTOM_WIDTH = 1450;
 

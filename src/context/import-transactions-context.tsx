@@ -32,7 +32,9 @@ const ImportTransactionsContext = createContext<
 
 // Define the reducer function
 const newTransactionsReducer = (
-  state: ImportTransactionsState,
+  // Make sure the reducer function is using the state = initialState fallback:
+  // Without state = initialState, React passes undefined on first render and state.rules becomes undefined
+  state: ImportTransactionsState = initialState,
   action: ImportTransactionsAction
 ): ImportTransactionsState => {
   switch (action.type) {
@@ -60,12 +62,13 @@ const newTransactionsReducer = (
       return handleFormsVisibility(state, action);
 
     // Transaction's elements
-    // Payee sruff
     case ImportTransactionsActionType.SAVE_PAYEE:
+    case ImportTransactionsActionType.SAVE_RULE:
     case ImportTransactionsActionType.SAVE_CATEGORY:
     case ImportTransactionsActionType.SAVE_DESCRIPTION:
     case ImportTransactionsActionType.SAVE_TAG:
     case ImportTransactionsActionType.DELETE_PAYEE:
+    case ImportTransactionsActionType.DELETE_RULE:
     case ImportTransactionsActionType.DELETE_CATEGORY:
     case ImportTransactionsActionType.DELETE_DESCRIPTION:
     case ImportTransactionsActionType.DELETE_TAG:
@@ -73,6 +76,7 @@ const newTransactionsReducer = (
     case ImportTransactionsActionType.SET_DESCRIPTIONS:
     case ImportTransactionsActionType.SET_TAGS:
     case ImportTransactionsActionType.SET_PAYEES:
+    case ImportTransactionsActionType.SET_RULES:
       return handleTransactionsElements(state, action);
 
     default:
@@ -99,6 +103,7 @@ const initialState: ImportTransactionsState = {
   tags: [],
   descriptions: [],
   payees: [],
+  rules: [],
   fileParserResults: [],
   activeBankAccounts: [],
 };

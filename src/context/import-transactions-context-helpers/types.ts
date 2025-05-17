@@ -1,10 +1,11 @@
 import { FormTransaction } from "../../components/Tabs/transactions-tab/add-transactions-utils";
 import { AccountWithTransactions } from "../../components/Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
 import Payee from "../../components/Tabs/transactions-tab/AddTransactionsForm/model/payee";
+import Rule from "../../components/Tabs/transactions-tab/AddTransactionsForm/model/rule";
 import { ManagedProperty } from "../../components/Tabs/transactions-tab/AddTransactionsForm/payee-cat-desc-tag-manager";
-import { FileParserResults } from "../../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
-import { ParsingError } from "../../components/Tabs/transactions-tab/ImportTransactionsForm/model/parsing-error";
-import { TransactionsFileBankAccountPair } from "../../components/Tabs/transactions-tab/ImportTransactionsForm/model/transactions-file-bank-account";
+import { FileParserResults } from "../../components/Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/file-parser-results";
+import { ParsingError } from "../../components/Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/parsing-error";
+import { TransactionsFileBankAccountPair } from "../../components/Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/transactions-file-bank-account";
 import BankAccount from "../../model/bank-account";
 import { Category } from "../../model/category";
 import { Description } from "../../model/description";
@@ -29,6 +30,7 @@ export interface ImportTransactionsState {
   tags: Tag[];
   descriptions: Description[];
   payees: Payee[];
+  rules: Rule[];
   fileParserResults: FileParserResults[];
   activeBankAccounts: BankAccount[];
 }
@@ -113,6 +115,17 @@ export type ImportTransactionsAction =
       };
     }
   | {
+      type: ImportTransactionsActionType.SET_RULES;
+      payload: Rule[];
+    }
+  | {
+      type: ImportTransactionsActionType.SAVE_RULE;
+      payload: {
+        name: ManagedProperty;
+        rule: Rule;
+      };
+    }
+  | {
       type: ImportTransactionsActionType.SAVE_CATEGORY;
       payload: {
         name: ManagedProperty;
@@ -135,6 +148,10 @@ export type ImportTransactionsAction =
     }
   | {
       type: ImportTransactionsActionType.DELETE_PAYEE;
+      payload: number;
+    }
+  | {
+      type: ImportTransactionsActionType.DELETE_RULE;
       payload: number;
     }
   | {

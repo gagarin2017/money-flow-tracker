@@ -1,6 +1,6 @@
-import { Empty, message } from "antd";
-import { DirectoryTreeProps } from "antd/es/tree";
 import { FormEvent, useState } from "react";
+import { Empty } from "antd";
+import { DirectoryTreeProps } from "antd/es/tree";
 import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
@@ -16,17 +16,22 @@ import AddNewCategoryCard from "./manage-categories/add-new-category-card";
 import CategoriesList from "./manage-categories/categories-list";
 import AddNewDescriptionCard from "./manage-descriptions/add-new-description-card";
 import DescriptionList from "./manage-descriptions/description-list";
-import ManageForm, { FormData } from "./manage-form";
+import ManageForm, { emptyFormValues, FormData } from "./manage-form";
 import AddNewPayeeCard from "./manage-payees/add-new-payee-card";
 import PayeeList from "./manage-payees/payee-list";
 import Payee from "./model/payee";
 import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
+import AddNewRuleCard from "./manage-rules/add-new-rule-card";
+import Rule from "./model/rule";
+import RuleList from "./manage-rules/rule-list";
+import { useRules } from "../../../hooks/useRules";
 
 export enum ManagedProperty {
   PAYEE = "Payee",
   CATEGORY = "Category",
   DESC = "Description",
   TAG = "Tag",
+  RULE = "Rule",
 }
 
 export const ManagedPropertiesMap = new Map<
@@ -61,6 +66,13 @@ export const ManagedPropertiesMap = new Map<
       multipleName: `${ManagedProperty.TAG}s`,
     },
   ],
+  [
+    ManagedProperty.RULE,
+    {
+      name: ManagedProperty.RULE,
+      multipleName: `${ManagedProperty.RULE}s`,
+    },
+  ],
 ]);
 
 interface PayeeCatDescTagManagerProps {
@@ -72,11 +84,14 @@ const PayeeCatDescTagManager = ({
 }: PayeeCatDescTagManagerProps) => {
   const { state, dispatch } = useImportTransactionsContext();
 
-  const [api, contextHolder] = message.useMessage();
+  const { saveRule } = useRules();
 
   const [selectedCategory, setSelectedCategory] = useState<
     Category | undefined
   >(undefined);
+
+  // if (loadingRules) return <div>Loading...</div>;
+  // if (errorRules) return <div>Error: {errorRules.message}</div>;
 
   const handleShowAllCategoriesClick = () => {
     setSelectedCategory(undefined);
@@ -106,13 +121,7 @@ const PayeeCatDescTagManager = ({
         category: selectedCategory.parentCategory,
       } as FormData;
     } else {
-      initialForm = {
-        name: "",
-        category: undefined,
-        isSubcategory: false,
-        description: undefined,
-        tag: undefined,
-      } as FormData;
+      initialForm = emptyFormValues;
     }
 
     return initialForm;
@@ -121,7 +130,7 @@ const PayeeCatDescTagManager = ({
   const buildPayee = (formValues: FormData) => {
     const payeeToBeSaved: Payee = {
       id: generateRandomId(),
-      name: formValues.payeeName,
+      name: formValues.newPayeeName ?? "",
       category: {
         id: formValues.category?.id || 0,
         name: formValues.category?.name || "",
@@ -136,6 +145,17 @@ const PayeeCatDescTagManager = ({
     };
 
     return payeeToBeSaved;
+  };
+
+  const buildRule = (formValues: FormData) => {
+    const ruleToBeSaved: Rule = {
+      id: generateRandomId(),
+      name: formValues.name ?? "n/a",
+      payee: formValues.payee ?? undefined,
+      matchingString: formValues.matchingString ?? "",
+    };
+
+    return ruleToBeSaved;
   };
 
   const buildTagDescription = (formValues: FormData) => {
@@ -168,6 +188,16 @@ const PayeeCatDescTagManager = ({
         dispatch({
           type: ImportTransactionsActionType.SAVE_PAYEE,
           payload: { name: managedProperty, payee: buildPayee(formValues) },
+        });
+        break;
+      case ManagedProperty.RULE:
+        const newRule = buildRule(formValues);
+
+        const savedRule: Rule = await saveRule(newRule);
+
+        dispatch({
+          type: ImportTransactionsActionType.SAVE_RULE,
+          payload: { name: managedProperty, rule: savedRule },
         });
         break;
       case ManagedProperty.CATEGORY:
@@ -230,10 +260,6 @@ const PayeeCatDescTagManager = ({
 
         break;
     }
-    api.open({
-      type: "success",
-      content: "The list was updated with the new data",
-    });
   };
 
   const getManagedPropsTable = () => {
@@ -254,6 +280,8 @@ const PayeeCatDescTagManager = ({
         return <DescriptionList />;
       case ManagedProperty.TAG:
         return <DescriptionList isTag />;
+      case ManagedProperty.RULE:
+        return <RuleList />;
       default:
         <Empty />;
     }
@@ -267,7 +295,7 @@ const PayeeCatDescTagManager = ({
       case ManagedProperty.PAYEE:
         return (
           <AddNewPayeeCard
-            fieldPayeeName="payeeName"
+            fieldPayeeName="newPayeeName"
             fieldCategory="category"
             fieldDescription="description"
             fieldTag="tag"
@@ -299,6 +327,17 @@ const PayeeCatDescTagManager = ({
             isTag
           />
         );
+      case ManagedProperty.RULE:
+        return (
+          <AddNewRuleCard
+            name="name"
+            fieldMatchingString="matchingString"
+            fieldPayee="payee"
+            handleAddRuleBtnClick={handleSubmit}
+          />
+        );
+      default:
+        return <Empty />;
     }
   };
 
@@ -315,17 +354,14 @@ const PayeeCatDescTagManager = ({
   }`;
 
   return (
-    <>
-      {contextHolder}
-      <ManageForm
-        initialFormValues={getInitialValues()}
-        isModalVisible={state.isManageFormVisible}
-        modalTitle={theTitle}
-        managedPropsTable={getManagedPropsTable()}
-        getFormBody={getFormBody}
-        handleOnSubmit={onSubmit}
-      />
-    </>
+    <ManageForm
+      initialFormValues={getInitialValues()}
+      isModalVisible={state.isManageFormVisible}
+      modalTitle={theTitle}
+      managedPropsTable={getManagedPropsTable()}
+      getFormBody={getFormBody}
+      handleOnSubmit={onSubmit}
+    />
   );
 };
 

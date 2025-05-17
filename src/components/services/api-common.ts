@@ -8,6 +8,7 @@ export const CATEGORIES_NODE = "categories";
 export const DESCRIPTIONS_NODE = "descriptions";
 export const TAGS_NODE = "tags";
 export const PAYEES_NODE = "payees";
+export const RULES_NODE = "rules";
 export const TRANSACTION_COMPONENTS_NODE = "transaction-components";
 
 export const ISO_DATE_FORMAT = "YYYY-MM-DD";

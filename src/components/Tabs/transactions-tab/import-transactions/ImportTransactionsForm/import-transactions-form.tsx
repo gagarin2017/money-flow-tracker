@@ -1,13 +1,13 @@
 import { Alert, Col, notification, Row } from "antd";
 import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
 import { useEffect, useState } from "react";
-import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
-import FormsModal from "../../../../UI/forms-modal";
 import TransactionsFilesBankAccountList from "./transactions-files-bank-account-list";
 import TransactionsFilesInput from "./transactions-files-input";
 import { TransactionsFileBankAccountPair } from "./model/transactions-file-bank-account";
 import { ParsingError } from "./model/parsing-error";
-import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
+import { useImportTransactionsContext } from "../../../../../context/import-transactions-context";
+import { ImportTransactionsActionType } from "../../../../../context/import-transactions-context-helpers/constants";
+import FormsModal from "../../../../../UI/forms-modal";
 
 interface TransactionsFilesFormData {
   selectedFiles: any[];

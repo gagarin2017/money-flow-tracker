@@ -1,6 +1,6 @@
 import { Transaction } from "../../model/transaction";
 import { AccountWithTransactions } from "../Tabs/transactions-tab/AddTransactionsForm/add-transactions-form";
-import { FileParserResults } from "../Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
+import { FileParserResults } from "../Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/file-parser-results";
 import { RemoteAccountTransactions } from "./APIResources/remote-account-transactions-dto";
 import {
   deserializeFilteredTransactions,

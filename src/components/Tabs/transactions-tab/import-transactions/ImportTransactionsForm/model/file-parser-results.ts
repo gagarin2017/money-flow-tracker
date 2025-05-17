@@ -1,4 +1,4 @@
-import { Transaction } from "../../../../../model/transaction";
+import { Transaction } from "../../../../../../model/transaction";
 
 export interface FileParserResults {
   buildTransactionsForRequest: Transaction[];

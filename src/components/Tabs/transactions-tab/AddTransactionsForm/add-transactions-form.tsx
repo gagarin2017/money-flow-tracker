@@ -6,19 +6,19 @@ import { useImportTransactionsContext } from "../../../../context/import-transac
 import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
 import { useTransactionsContext } from "../../../../context/transactions-context";
 import BankAccount from "../../../../model/bank-account";
-import ImportTransactionsEmptyList from "../ImportTransactionsForm/import-transactions-empty-list";
 import {
   EMPTY_FORM_TRANSACTION,
   FormTransaction,
 } from "../add-transactions-utils";
 import ImportAccountTransactionsList from "./import-account-transactions-list";
 import BankAccountTitle from "../../../BankAccounts/bank-account-title";
-import EditTransactionForm from "../ImportTransactionsForm/edit-transaction-form";
 import { Category } from "../../../../model/category";
 import { Description } from "../../../../model/description";
 import { Transaction } from "../../../../model/transaction";
 import { getDateFromString } from "../../../../utils/date-helper";
-import { NEW_TRANSACTIONS_FORM_DATA_SCHEMA } from "../ImportTransactionsForm/validation-schemas";
+import { NEW_TRANSACTIONS_FORM_DATA_SCHEMA } from "../import-transactions/validation-schemas/save-transactions-validation-schemas";
+import EditTransactionForm from "../import-transactions/ImportTransactionsForm/edit-transaction-form";
+import ImportTransactionsEmptyList from "../import-transactions/ImportTransactionsForm/import-transactions-empty-list";
 
 export interface AccountWithTransactions {
   bankAccount: BankAccount | undefined;

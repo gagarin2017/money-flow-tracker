@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { filterTransactionsAPI } from "../services/transactions-api";
+import { useEffect, useState } from "react";
 import { ParsingStatus, readAndParseTxFiles } from "../../utils/TxFilesReader";
-import { FileParserResults } from "../Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
-import { TransactionsFileBankAccountPair } from "../Tabs/transactions-tab/ImportTransactionsForm/model/transactions-file-bank-account";
-import { ParsingError } from "../Tabs/transactions-tab/ImportTransactionsForm/model/parsing-error";
-import { getDateFromString } from "../../utils/date-helper";
+import { filterTransactionsAPI } from "../services/transactions-api";
+import { FileParserResults } from "../Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/file-parser-results";
+import { ParsingError } from "../Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/parsing-error";
+import { TransactionsFileBankAccountPair } from "../Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/transactions-file-bank-account";
 
 /**
  * Custom hook to query the transactions which about to be added.

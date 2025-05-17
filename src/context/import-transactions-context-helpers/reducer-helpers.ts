@@ -3,7 +3,6 @@ import {
   deletePayeeAPI,
 } from "../../components/services/payee-api";
 import Payee from "../../components/Tabs/transactions-tab/AddTransactionsForm/model/payee";
-import EditTransactionForm from "../../components/Tabs/transactions-tab/ImportTransactionsForm/edit-transaction-form";
 import {
   addCategoryToList,
   deepDeleteCategoryFromList,
@@ -119,6 +118,16 @@ export const handleTransactionsElements = (
       }
 
       return newState;
+    case ImportTransactionsActionType.SAVE_RULE:
+      console.log("Saving Rule in reducer-helper:", action.payload.rule);
+      console.log("State rules: ", state.rules);
+
+      return {
+        ...state,
+        rules: action.payload.rule
+          ? [...state.rules, action.payload.rule]
+          : state.rules,
+      };
     case ImportTransactionsActionType.SAVE_CATEGORY:
       const category = action.payload.category;
 
@@ -153,6 +162,14 @@ export const handleTransactionsElements = (
         (payee) => payee.id !== action.payload
       );
       return { ...state, payees: updatedPayees };
+
+    case ImportTransactionsActionType.DELETE_RULE:
+      // deletePayee(action.payload);
+      const updatedRules = state.rules.filter(
+        (rule) => rule.id !== action.payload
+      );
+
+      return { ...state, rules: updatedRules };
     case ImportTransactionsActionType.DELETE_CATEGORY: {
       const updatedCategories = deepDeleteCategoryFromList(
         [...state.categories],
@@ -179,6 +196,8 @@ export const handleTransactionsElements = (
       return { ...state, tags: action.payload };
     case ImportTransactionsActionType.SET_PAYEES:
       return { ...state, payees: action.payload };
+    case ImportTransactionsActionType.SET_RULES:
+      return { ...state, rules: action.payload };
     default:
       return state;
   }

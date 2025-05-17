@@ -1,12 +1,12 @@
 import * as Yup from "yup";
-import BankAccount from "../../../../model/bank-account";
-import { Category } from "../../../../model/category";
-import { FormTransaction } from "../add-transactions-utils";
-import { NewTransactionsFormData } from "../AddTransactionsForm/add-transactions-form";
+import BankAccount from "../../../../../model/bank-account";
+import { Category } from "../../../../../model/category";
+import { FormTransaction } from "../../add-transactions-utils";
+import { NewTransactionsFormData } from "../../AddTransactionsForm/add-transactions-form";
 import {
   NEW_TRANSACTIONS_FORM_DATA_SCHEMA,
   TRANSACTION_VALIDATION_SCHEMA,
-} from "./validation-schemas";
+} from "./save-transactions-validation-schemas";
 
 const transaction_undefined: FormTransaction = {
   id: "-1",

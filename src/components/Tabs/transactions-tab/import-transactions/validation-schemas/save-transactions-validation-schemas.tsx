@@ -1,10 +1,10 @@
 import * as Yup from "yup";
-import { Category } from "../../../../model/category";
+import { Category } from "../../../../../model/category";
 import {
   AccountWithTransactions,
   NewTransactionsFormData,
-} from "../AddTransactionsForm/add-transactions-form";
-import { FormTransaction } from "../add-transactions-utils";
+} from "../../AddTransactionsForm/add-transactions-form";
+import { FormTransaction } from "../../add-transactions-utils";
 import { Key } from "react";
 
 export const TRANSACTION_VALIDATION_SCHEMA = Yup.object().shape({

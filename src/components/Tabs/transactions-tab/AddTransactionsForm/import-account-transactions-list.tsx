@@ -1,37 +1,19 @@
-import AccountTransaction from "./account-transaction";
+import { Button, Space, Table, Tag, Tooltip } from "antd";
+import { ColumnsType, TableRowSelection } from "antd/es/table/interface";
+import { FormikErrors, FormikProps } from "formik";
+import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
+import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
+import { getCategoryAsString } from "../../../../utils/category-helper";
+import { getAmountAsFormatedString } from "../../../../utils/currency-helper";
 import {
-  EMPTY_FORM_TRANSACTION,
-  FormTransaction,
-} from "../add-transactions-utils";
-import {
-  ErrorMessage,
-  FormikErrors,
-  FormikHelpers,
-  FormikProps,
-  FormikTouched,
-} from "formik";
+  DATE_FORMAT_DD_MM_YYYY,
+  getStringFromDateWFormatter,
+} from "../../../../utils/date-helper";
+import { FormTransaction } from "../add-transactions-utils";
 import {
   AccountWithTransactions,
   NewTransactionsFormData,
 } from "./add-transactions-form";
-import { HEADER_ROW } from "../transactions-utils";
-import { Button, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
-import { ColumnsType, TableRowSelection } from "antd/es/table/interface";
-import { useState } from "react";
-import { Transaction } from "../../../../model/transaction";
-import { getCategoryAsString } from "../../../../utils/category-helper";
-import { getAmountAsFormatedString } from "../../../../utils/currency-helper";
-import {
-  getStringFromDateWFormatter,
-  DATE_FORMAT_DD_MM_YYYY,
-  getDateFromString,
-  convertISODateToStringWithFormatter,
-  getStringFromDate,
-} from "../../../../utils/date-helper";
-import BankAccount from "../../../../model/bank-account";
-import { useImportTransactionsContext } from "../../../../context/import-transactions-context";
-import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
-import EditTransactionForm from "../ImportTransactionsForm/edit-transaction-form";
 
 interface ImportAccountTransactionsListProps {
   formikProps: FormikProps<NewTransactionsFormData>;

@@ -1,9 +1,9 @@
 import * as Papa from "papaparse";
-import { FileParserResults } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model/file-parser-results";
-import { TransactionsFileBankAccountPair } from "../components/Tabs/transactions-tab/ImportTransactionsForm/model//transactions-file-bank-account";
 import { Transaction } from "../model/transaction";
 import { prettyfyJson as prettyfyJson12 } from "./FileParsers/file-parser-12";
 import { prettyfyJson as prettyfyJson13 } from "./FileParsers/file-parser-13";
+import { FileParserResults } from "../components/Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/file-parser-results";
+import { TransactionsFileBankAccountPair } from "../components/Tabs/transactions-tab/import-transactions/ImportTransactionsForm/model/transactions-file-bank-account";
 
 export enum ParsingStatus {
   IN_PROGRESS = "In progress",

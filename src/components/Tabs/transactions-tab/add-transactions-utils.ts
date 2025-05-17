@@ -17,6 +17,7 @@ import { fetchTagsAPI } from "../../services/tags-api";
 import Payee from "./AddTransactionsForm/model/payee";
 import { ImportTransactionsActionType } from "../../../context/import-transactions-context-helpers/constants";
 import { v4 as uuidv4 } from "uuid";
+import { fetchRulesAPI } from "../../services/rule-api";
 
 export interface FormTransaction {
   id: string;
@@ -105,6 +106,7 @@ export const fetchPayeesCategoriesTags = async (
     const descriptionsResponse = await fetchDescriptionsAPI();
     const tagsResponse = await fetchTagsAPI();
     const payeesResponse = await fetchPayeesAPI();
+    const rulesResponse = await fetchRulesAPI();
 
     // TODO: Dev ONLY!
     // Fix it when in production
@@ -128,6 +130,10 @@ export const fetchPayeesCategoriesTags = async (
       ? payeesResponse._embedded?.payees
       : payeesResponse;
 
+    // TODO: Dev ONLY!
+    // Fix it when in production
+    const rules = isSpringBoot ? rulesResponse._embedded?.rules : rulesResponse;
+
     dispatch({
       type: ImportTransactionsActionType.SET_CATEGORIES,
       payload: categories,
@@ -144,6 +150,10 @@ export const fetchPayeesCategoriesTags = async (
     dispatch({
       type: ImportTransactionsActionType.SET_PAYEES,
       payload: payees,
+    });
+    dispatch({
+      type: ImportTransactionsActionType.SET_RULES,
+      payload: rules,
     });
   } catch (error) {
     api.error({

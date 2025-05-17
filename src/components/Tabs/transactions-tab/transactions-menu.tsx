@@ -8,10 +8,11 @@ import PayeeCatDescTagManager, {
   ManagedPropertiesMap,
   ManagedProperty,
 } from "./AddTransactionsForm/payee-cat-desc-tag-manager";
-import ImportSingleTransactionForm from "./ImportTransactionsForm/import-single-transaction-form";
-import ImportTransactionsForm from "./ImportTransactionsForm/import-transactions-form";
-import { fetchPayeesCategoriesTags } from "./add-transactions-utils";
+import { fetchPayeesCategoriesTags as fetchPayeesCategoriesTagsRules } from "./add-transactions-utils";
 import { ImportTransactionsActionType } from "../../../context/import-transactions-context-helpers/constants";
+import ImportSingleTransactionForm from "./import-transactions/ImportTransactionsForm/import-single-transaction-form";
+import ImportTransactionsForm from "./import-transactions/ImportTransactionsForm/import-transactions-form";
+import { useRules } from "../../hooks/useRules";
 
 const importOptions: MenuProps["items"] = [
   {
@@ -49,10 +50,16 @@ const managePropsOptions: MenuProps["items"] = [
     label: `${ManagedPropertiesMap.get(ManagedProperty.TAG)?.multipleName}`,
     icon: <LineOutlined />,
   },
+  {
+    key: "5",
+    label: `${ManagedPropertiesMap.get(ManagedProperty.RULE)?.multipleName}`,
+    icon: <LineOutlined />,
+  },
 ];
 
 function TransactionsMenu() {
   const { state, dispatch } = useImportTransactionsContext();
+  const { rules, deleteRule, refetch: fetchRules, loading } = useRules();
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -61,7 +68,7 @@ function TransactionsMenu() {
   );
 
   const handleOpenCloseOfImportTransactionsForm = () => {
-    fetchPayeesCategoriesTags(isSpringBoot, dispatch, api);
+    fetchPayeesCategoriesTagsRules(isSpringBoot, dispatch, api);
     dispatch({
       type: ImportTransactionsActionType.IMPORT_TXS_FORM_VISIBLE,
       payload: !state.isImportTransactionsFormVisible,
@@ -69,7 +76,7 @@ function TransactionsMenu() {
   };
 
   const handleOpenCloseOfImportSingleTransactionsForm = () => {
-    fetchPayeesCategoriesTags(isSpringBoot, dispatch, api);
+    fetchPayeesCategoriesTagsRules(isSpringBoot, dispatch, api);
     dispatch({
       type: ImportTransactionsActionType.IMPORT_SINGLE_TXS_FORM_VISIBLE,
       payload: !state.isImportTransactionsFormVisible,
@@ -78,7 +85,7 @@ function TransactionsMenu() {
 
   const handleManagePayeeCatDescTagForm = (managedProp: ManagedProperty) => {
     setManagedProp(managedProp);
-    fetchPayeesCategoriesTags(isSpringBoot, dispatch, api);
+    fetchPayeesCategoriesTagsRules(isSpringBoot, dispatch, api);
     dispatch({
       type: ImportTransactionsActionType.MANAGE_FORM_VISIBLE,
       payload: !state.isManageFormVisible,
@@ -106,6 +113,9 @@ function TransactionsMenu() {
         break;
       case "4":
         handleManagePayeeCatDescTagForm(ManagedProperty.TAG);
+        break;
+      case "5":
+        handleManagePayeeCatDescTagForm(ManagedProperty.RULE);
         break;
     }
   };
@@ -153,5 +163,4 @@ function TransactionsMenu() {
     </>
   );
 }
-
 export default TransactionsMenu;

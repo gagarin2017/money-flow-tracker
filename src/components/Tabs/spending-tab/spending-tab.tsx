@@ -78,7 +78,9 @@ function SpendingTab() {
     const dateTo = getStringFromMomentDate(moment().endOf("month"));
     const fetchedData = await fetchCurrentMonthTransactionsAPI(
       dateFrom,
-      dateTo
+      dateTo,
+      1,
+      1000 // Use a large number for now as this view is not paginated
     );
 
     const fetchedTransactions = isSpringBoot

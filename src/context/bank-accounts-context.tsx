@@ -33,11 +33,12 @@ function BankAccountsProvider({ children }: { children: React.ReactNode }) {
 
   const fetchBankAccounts = async () => {
     try {
-      const rawData = await fetchBankAccountsAPI();
+      const data = await fetchBankAccountsAPI();
 
       // TODO: Dev ONLY!
       // fix for production
-      const data = isSpringBoot ? rawData._embedded.bankAccounts : rawData;
+      // console.log(rawData)
+      //const data = isSpringBoot ? rawData._embedded.bankAccounts : rawData;
 
       if (data && data.length > 0) {
         const sortedBankAccounts = sortBankAccountsByBankNameAccName(data);

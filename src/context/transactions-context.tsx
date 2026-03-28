@@ -53,9 +53,11 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
 
       // DEV ONLY! 1 second pause
       // Fix for production
-      const fetchedTransactions = isSpringBoot
-        ? data._embedded.transactions
-        : data;
+      // const fetchedTransactions = isSpringBoot
+      //   ? data._embedded.transactions
+      //   : data;
+
+      const fetchedTransactions = data.transactions
 
       // DEV ONLY! 1 second pause
       // await pause(5000);

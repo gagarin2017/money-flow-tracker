@@ -19,7 +19,8 @@ export const fetchAccountTransactionsAPI = async (bankAccountId: number) => {
     .concat(TRANSACTIONS_FIELD)
     .concat("/")
     .concat(BANK_ACCOUNT_FIELD)
-    .concat(`/${bankAccountId}/`);
+    .concat(`/${bankAccountId}`)
+    .concat("?page=1&pageSize=30")
   const response = await fetch(transactionsUrl);
 
   if (!response.ok) {

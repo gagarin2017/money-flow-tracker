@@ -25,6 +25,12 @@ import AddNewRuleCard from "./manage-rules/add-new-rule-card";
 import Rule from "./model/rule";
 import RuleList from "./manage-rules/rule-list";
 import { useRules } from "../../../hooks/useRules";
+import {
+  NEW_PROP_VALID_SCHEMA,
+  PAYEE_VALID_SCHEMA,
+  RULE_VALID_SCHEMA,
+} from "../import-transactions/validation-schemas/import-transaction-field-validation-schemas";
+import ManagedPropertyComponent from "./managed-properties/managed-property-component";
 
 export enum ManagedProperty {
   PAYEE = "Payee",
@@ -130,7 +136,7 @@ const PayeeCatDescTagManager = ({
   const buildPayee = (formValues: FormData) => {
     const payeeToBeSaved: Payee = {
       id: generateRandomId(),
-      name: formValues.newPayeeName ?? "",
+      name: formValues.name ?? "",
       category: {
         id: formValues.category?.id || 0,
         name: formValues.category?.name || "",
@@ -262,12 +268,30 @@ const PayeeCatDescTagManager = ({
     }
   };
 
-  const getManagedPropsTable = () => {
+  const getManagedPropertyComponent = (handleSubmit: {
+    (e?: FormEvent<HTMLFormElement> | undefined): void;
+    (): void;
+  }) => {
     switch (managedProperty) {
-      case ManagedProperty.PAYEE:
-        return <PayeeList />;
-      case ManagedProperty.CATEGORY:
+      case ManagedProperty.PAYEE: {
+        const list = <PayeeList />;
+        const card = (
+          <AddNewPayeeCard
+            fieldPayeeName="name"
+            fieldCategory="category"
+            fieldDescription="description"
+            fieldTag="tag"
+            fieldAmount="amount"
+            handleAddPayeeBtnClick={handleSubmit}
+          />
+        );
+
         return (
+          <ManagedPropertyComponent managedPropsTable={list} formBody={card} />
+        );
+      }
+      case ManagedProperty.CATEGORY: {
+        const list = (
           <CategoriesList
             handleCategoryEdit={handleEditCategory}
             selectedCategory={selectedCategory}
@@ -276,35 +300,8 @@ const PayeeCatDescTagManager = ({
             handleShowAllCategoriesClick={handleShowAllCategoriesClick}
           />
         );
-      case ManagedProperty.DESC:
-        return <DescriptionList />;
-      case ManagedProperty.TAG:
-        return <DescriptionList isTag />;
-      case ManagedProperty.RULE:
-        return <RuleList />;
-      default:
-        <Empty />;
-    }
-  };
 
-  const getFormBody = (handleSubmit: {
-    (e?: FormEvent<HTMLFormElement> | undefined): void;
-    (): void;
-  }) => {
-    switch (managedProperty) {
-      case ManagedProperty.PAYEE:
-        return (
-          <AddNewPayeeCard
-            fieldPayeeName="newPayeeName"
-            fieldCategory="category"
-            fieldDescription="description"
-            fieldTag="tag"
-            fieldAmount="amount"
-            handleAddPayeeBtnClick={handleSubmit}
-          />
-        );
-      case ManagedProperty.CATEGORY:
-        return (
+        const card = (
           <AddNewCategoryCard
             fieldCategoryName="name"
             isSubcategoryFieldName="isSubcategory"
@@ -312,23 +309,40 @@ const PayeeCatDescTagManager = ({
             handleAddCategoryBtnClick={handleSubmit}
           />
         );
-      case ManagedProperty.DESC:
+
         return (
+          <ManagedPropertyComponent managedPropsTable={list} formBody={card} />
+        );
+      }
+      case ManagedProperty.DESC: {
+        const list = <DescriptionList />;
+        const card = (
           <AddNewDescriptionCard
             name="name"
             handleAddDescriptionBtnClick={handleSubmit}
           />
         );
-      case ManagedProperty.TAG:
+
         return (
+          <ManagedPropertyComponent managedPropsTable={list} formBody={card} />
+        );
+      }
+      case ManagedProperty.TAG: {
+        const list = <DescriptionList isTag />;
+        const card = (
           <AddNewDescriptionCard
             name="name"
             handleAddDescriptionBtnClick={handleSubmit}
             isTag
           />
         );
-      case ManagedProperty.RULE:
         return (
+          <ManagedPropertyComponent managedPropsTable={list} formBody={card} />
+        );
+      }
+      case ManagedProperty.RULE: {
+        const list = <RuleList />;
+        const card = (
           <AddNewRuleCard
             name="name"
             fieldMatchingString="matchingString"
@@ -336,6 +350,10 @@ const PayeeCatDescTagManager = ({
             handleAddRuleBtnClick={handleSubmit}
           />
         );
+        return (
+          <ManagedPropertyComponent managedPropsTable={list} formBody={card} />
+        );
+      }
       default:
         return <Empty />;
     }
@@ -353,14 +371,25 @@ const PayeeCatDescTagManager = ({
     ManagedPropertiesMap.get(managedProperty)?.multipleName
   }`;
 
+  function getValidationSchema() {
+    switch (managedProperty) {
+      case ManagedProperty.RULE:
+        return RULE_VALID_SCHEMA;
+      case ManagedProperty.PAYEE:
+        return PAYEE_VALID_SCHEMA;
+      default:
+        return NEW_PROP_VALID_SCHEMA;
+    }
+  }
+
   return (
     <ManageForm
       initialFormValues={getInitialValues()}
       isModalVisible={state.isManageFormVisible}
       modalTitle={theTitle}
-      managedPropsTable={getManagedPropsTable()}
-      getFormBody={getFormBody}
+      getFormContent={getManagedPropertyComponent}
       handleOnSubmit={onSubmit}
+      validationSchema={getValidationSchema()}
     />
   );
 };

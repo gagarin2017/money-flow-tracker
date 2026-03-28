@@ -8,10 +8,10 @@ import { Description } from "../../../../model/description";
 import { Tag } from "../../../../model/tag";
 import { ImportTransactionsActionType } from "../../../../context/import-transactions-context-helpers/constants";
 import Payee from "./model/payee";
-import { NEW_PROP_VALID_SCHEMA } from "../import-transactions/validation-schemas/import-transaction-field-validation-schema";
+import { AnyObjectSchema } from "yup";
 
 export interface FormData {
-  newPayeeName: string | undefined; // have it separate for validation purposes
+  // newPayeeName: string | undefined; // have it separate for validation purposes
   name: string;
   category: Category | undefined;
   description: Description | undefined;
@@ -33,7 +33,7 @@ export const emptyFormValues: FormData = {
   tag: undefined,
   payee: undefined,
   matchingString: "",
-  newPayeeName: "",
+  // newPayeeName: "",
   descriptionName: "",
   categoryName: "",
   tagName: "",
@@ -41,11 +41,11 @@ export const emptyFormValues: FormData = {
 };
 
 interface ManageFormProps {
+  validationSchema: AnyObjectSchema;
   modalTitle: string;
   isModalVisible: boolean;
   initialFormValues: FormData;
-  managedPropsTable?: JSX.Element;
-  getFormBody: (handleSubmit: {
+  getFormContent: (handleSubmit: {
     (e?: FormEvent<HTMLFormElement> | undefined): void;
     (): void;
   }) => ReactNode;
@@ -53,11 +53,11 @@ interface ManageFormProps {
 }
 
 const ManageForm = ({
+  validationSchema,
   isModalVisible,
   initialFormValues,
   modalTitle,
-  managedPropsTable,
-  getFormBody,
+  getFormContent,
   handleOnSubmit,
 }: ManageFormProps) => {
   const { dispatch } = useImportTransactionsContext();
@@ -79,14 +79,14 @@ const ManageForm = ({
 
   return (
     <Formik
-      // validationSchema={NEW_PROP_VALID_SCHEMA}
+      validationSchema={validationSchema}
       initialValues={initialFormValues}
       onSubmit={(values, handleReset) => {
         onSubmit(values, handleReset);
       }}
       enableReinitialize={true}
     >
-      {({ values, handleSubmit, handleReset, isSubmitting }) => (
+      {({ values, handleSubmit, handleReset, isSubmitting, errors }) => (
         <MinimalisticModal
           title={modalTitle}
           isModalVisible={isModalVisible}
@@ -96,12 +96,13 @@ const ManageForm = ({
           }}
           customWidth={1500}
         >
-          <Row gutter={[2, 4]} justify={"center"}>
-            <Col span={20}>{managedPropsTable}</Col>
-            <Col span={4}>
-              <Form>{getFormBody(handleSubmit)}</Form>
-            </Col>
-          </Row>
+          {getFormContent(handleSubmit)}
+          {(() => {
+            if (Object.keys(errors).length) {
+              console.log("form has errors", errors);
+            }
+            return null;
+          })()}
         </MinimalisticModal>
       )}
     </Formik>

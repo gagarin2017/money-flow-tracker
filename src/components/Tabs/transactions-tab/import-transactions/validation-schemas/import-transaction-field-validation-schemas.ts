@@ -18,7 +18,7 @@ const NAME_VALIDATION = Yup.string()
     return result;
   });
 
-export const NEW_PROP_VALID_SCHEMA = Yup.object().shape({
+export const NEW_PROP_VALID_SCHEMA: Yup.AnyObjectSchema = Yup.object().shape({
   payeeName: Yup.string()
     .min(3, "Too Short!")
     .max(50, "Too Long!")
@@ -74,4 +74,19 @@ export const NEW_PROP_VALID_SCHEMA = Yup.object().shape({
       }
       return result;
     }),
+});
+
+export const RULE_VALID_SCHEMA: Yup.AnyObjectSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, "Must be at least 2 letters")
+    .max(15, "Maximum 15 letters")
+    .required("Name is required"),
+  payee: Yup.object().required("Payee is required"),
+});
+
+export const PAYEE_VALID_SCHEMA: Yup.AnyObjectSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, "Must be at least 2 letters")
+    .max(15, "Maximum 15 letters")
+    .required("Name is required"),
 });

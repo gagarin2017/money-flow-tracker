@@ -16,22 +16,22 @@ const { Header, Footer, Sider, Content } = Layout;
 function App() {
   return (
     <div>
-      <Layout style={{ height: "100vh" }}>
-        <Header style={headerStyle}>Money Flow Tracker</Header>
-        <Layout hasSider>
-          <BankAccountsProvider>
-            <Sider style={siderStyle} width={200}>
-              <BankAccountList />
-            </Sider>
-            <Content style={contentStyle}>
-              <TransactionsProvider>
+      <BankAccountsProvider>
+        <TransactionsProvider>
+          <Layout style={{ height: "100vh" }}>
+            <Header style={headerStyle}>Money Flow Tracker</Header>
+            <Layout hasSider>
+              <Sider style={siderStyle} width={200}>
+                <BankAccountList />
+              </Sider>
+              <Content style={contentStyle}>
                 <ContentTabList />
-              </TransactionsProvider>
-            </Content>
-          </BankAccountsProvider>
-        </Layout>
-        <Footer style={footerStyle}>Footer</Footer>
-      </Layout>
+              </Content>
+            </Layout>
+            <Footer style={footerStyle}>Footer</Footer>
+          </Layout>
+        </TransactionsProvider>
+      </BankAccountsProvider>
     </div>
   );
 }

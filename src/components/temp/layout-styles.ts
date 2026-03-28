@@ -13,9 +13,9 @@ export const contentStyle: React.CSSProperties = {
   padding: 10,
   textAlign: "center",
   minHeight: 120,
-  lineHeight: "120px",
   color: "#fff",
   backgroundColor: "#108ee9",
+  overflowY: "auto",
 };
 
 export const siderStyle: React.CSSProperties = {
@@ -23,6 +23,7 @@ export const siderStyle: React.CSSProperties = {
   // lineHeight: "120px",
   color: "#fff",
   backgroundColor: "#3ba0e9",
+  overflowY: "auto",
 };
 
 export const footerStyle: React.CSSProperties = {

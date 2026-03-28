@@ -16,8 +16,19 @@ const description =
 export interface TransactionsData {
   transactions: Transaction[];
   isLoading: boolean;
-  fetchTransactionsByBankAccount: (bankAccount: BankAccount) => void;
-  fetchTransactionsByBankAccountId: (bankAccountId: number) => void;
+  totalElements: number;
+  currentPage: number;
+  pageSize: number;
+  fetchTransactionsByBankAccount: (
+    bankAccount: BankAccount,
+    page?: number,
+    pageSize?: number
+  ) => void;
+  fetchTransactionsByBankAccountId: (
+    bankAccountId: number,
+    page?: number,
+    pageSize?: number
+  ) => void;
   saveTransactions: (transactions: Transaction[]) => void;
   deleteTransaction: (id: number) => void;
 }
@@ -25,8 +36,19 @@ export interface TransactionsData {
 const TransactionsContext = createContext<TransactionsData>({
   transactions: [],
   isLoading: true,
-  fetchTransactionsByBankAccount: (bankAccount: BankAccount) => {},
-  fetchTransactionsByBankAccountId: (bankAccountId: number) => {},
+  totalElements: 0,
+  currentPage: 1,
+  pageSize: 10,
+  fetchTransactionsByBankAccount: (
+    bankAccount: BankAccount,
+    page?: number,
+    pageSize?: number
+  ) => {},
+  fetchTransactionsByBankAccountId: (
+    bankAccountId: number,
+    page?: number,
+    pageSize?: number
+  ) => {},
   saveTransactions: (transactions: Transaction[]) => {},
   deleteTransaction: (id: number) => {},
 });
@@ -34,14 +56,25 @@ const TransactionsContext = createContext<TransactionsData>({
 function TransactionsProvider({ children }: { children: React.ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
+  const [totalElements, setTotalElements] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const [errors, setErrors] = useState<Error[]>([]);
 
-  const fetchTransactionsByBankAccount = async (account: BankAccount) => {
-    fetchTransactionsByBankAccountId(account.id);
+  const fetchTransactionsByBankAccount = async (
+    account: BankAccount,
+    page?: number,
+    pageSize?: number
+  ) => {
+    fetchTransactionsByBankAccountId(account.id, page, pageSize);
   };
 
-  const fetchTransactionsByBankAccountId = async (bankAccountId: number) => {
+  const fetchTransactionsByBankAccountId = async (
+    bankAccountId: number,
+    page: number = 1,
+    size: number = 10
+  ) => {
     setLoading(true);
 
     if (bankAccountId < 0) {
@@ -49,26 +82,26 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const data: any = await fetchAccountTransactionsAPI(bankAccountId);
+      const data: any = await fetchAccountTransactionsAPI(
+        bankAccountId,
+        page,
+        size
+      );
 
-      // DEV ONLY! 1 second pause
-      // Fix for production
-      // const fetchedTransactions = isSpringBoot
-      //   ? data._embedded.transactions
-      //   : data;
-
-      const fetchedTransactions = data.transactions
-
-      // DEV ONLY! 1 second pause
-      // await pause(5000);
+      const fetchedTransactions = data.transactions;
+      const total = data.totalElements || data.total || 0;
 
       setTransactions(fetchedTransactions);
+      setTotalElements(total);
+      setCurrentPage(page);
+      setPageSize(size);
       setLoading(false);
     } catch (error) {
       console.error(
         `Error fetching transactions for account ${bankAccountId}:`,
         error
       );
+      setLoading(false);
     }
   };
 
@@ -127,6 +160,9 @@ function TransactionsProvider({ children }: { children: React.ReactNode }) {
   const valueToShare = {
     transactions,
     isLoading,
+    totalElements,
+    currentPage,
+    pageSize,
     fetchTransactionsByBankAccount,
     fetchTransactionsByBankAccountId,
     saveTransactions,

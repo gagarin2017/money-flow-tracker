@@ -11,7 +11,8 @@ import {
 } from "../../../utils/date-helper";
 import { getCategoryAsString } from "../../../utils/category-helper";
 import BankAccount from "../../../model/bank-account";
-import { useEffect, useState } from "react";
+import { useTransactionsContext } from "../../../context/transactions-context";
+import { useBankAccountsContext } from "../../../context/bank-accounts-context";
 
 // The representation of the transaction (we might not want to include all transaction fields to be displayed on the UI)
 interface DataType {
@@ -42,16 +43,9 @@ function TransactionsTable({
   isLoading,
   handleTransactionDeletion,
 }: TransactionsTableProps) {
-  const [pagination, setPagination] = useState<TablePaginationConfig>({
-    pageSize: 9,
-    showSizeChanger: false,
-    current: 1,
-  });
-
-  useEffect(() => {
-    // Reset pagination to the first page when data changes
-    setPagination({ ...pagination, current: 1 });
-  }, [transactions]);
+  const { totalElements, currentPage, pageSize, fetchTransactionsByBankAccountId } =
+    useTransactionsContext();
+  const { selectedBankAccountId } = useBankAccountsContext();
 
   const columns: ColumnsType<DataType> = [
     {
@@ -168,7 +162,13 @@ function TransactionsTable({
   };
 
   const handleTableChange = (pagination: TablePaginationConfig) => {
-    setPagination(pagination);
+    if (selectedBankAccountId !== undefined) {
+      fetchTransactionsByBankAccountId(
+        selectedBankAccountId,
+        pagination.current,
+        pagination.pageSize
+      );
+    }
   };
 
   const data: DataType[] = transactions.map((tx) => ({ ...tx, key: tx.id }));
@@ -178,7 +178,12 @@ function TransactionsTable({
       columns={columns}
       dataSource={data}
       loading={isLoading}
-      pagination={pagination}
+      pagination={{
+        current: currentPage,
+        pageSize: pageSize,
+        total: totalElements,
+        showSizeChanger: true,
+      }}
       onRow={(record, index) => ({
         style: {
           backgroundColor:

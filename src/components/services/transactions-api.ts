@@ -14,13 +14,17 @@ import { Method } from "./api-methods";
 const BANK_ACCOUNT_FIELD = "bank-account";
 const TRANSACTIONS_FIELD = "transactions";
 
-export const fetchAccountTransactionsAPI = async (bankAccountId: number) => {
+export const fetchAccountTransactionsAPI = async (
+  bankAccountId: number,
+  page: number = 1,
+  pageSize: number = 10
+) => {
   const transactionsUrl: string = BASE_URL.concat("/")
     .concat(TRANSACTIONS_FIELD)
     .concat("/")
     .concat(BANK_ACCOUNT_FIELD)
     .concat(`/${bankAccountId}`)
-    .concat("?page=1&pageSize=30")
+    .concat(`?page=${page}&pageSize=${pageSize}`);
   const response = await fetch(transactionsUrl);
 
   if (!response.ok) {
@@ -115,12 +119,15 @@ export const deleteTransactionAPI = async (transactionId: number) => {
 
 export const fetchCurrentMonthTransactionsAPI = async (
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
+  page: number = 1,
+  pageSize: number = 10
 ) => {
   const transactionsUrl: string = BASE_URL.concat("/")
     .concat(TRANSACTIONS_FIELD)
     .concat("?")
-    .concat(`dateFrom=${dateFrom}&dateTo=${dateTo}`);
+    .concat(`dateFrom=${dateFrom}&dateTo=${dateTo}`)
+    .concat(`&page=${page}&pageSize=${pageSize}`);
   const response = await fetch(transactionsUrl);
 
   if (!response.ok) {

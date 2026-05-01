@@ -91,7 +91,7 @@ export const deepDeleteCategoryFromList = (
 };
 
 export const getCategoryAsString = (category: Category | undefined): string => {
-  if (category === undefined) {
+  if (!category || !category.name) {
     return "";
   }
 
@@ -108,6 +108,11 @@ export const getCategoryAsString = (category: Category | undefined): string => {
 };
 
 function getParentCategoryAsString(parentCategory: Category): string {
+  if (!parentCategory.name) {
+    return parentCategory.parentCategory
+      ? getParentCategoryAsString(parentCategory.parentCategory)
+      : "";
+  }
   return ` : ${parentCategory.name}${
     parentCategory.parentCategory
       ? getParentCategoryAsString(parentCategory.parentCategory)

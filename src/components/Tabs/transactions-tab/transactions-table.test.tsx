@@ -77,7 +77,7 @@ const inputTransactions: Transaction[] = [
     reconsiled: true,
     amount: -1220.2,
     creditAmount: 0,
-    debitAmount: -1220.2,
+    debitAmount: 1220.2,
     runningBalance: 15641.2,
     betweenAccountsTransaction: false,
     created_At: "2023-10-15T18:58:10.672",
@@ -115,7 +115,8 @@ test("table titles are displayed on the screen", async () => {
   const memoTitle = screen.getByText("Memo");
   const tagTitle = screen.getByText("Tag");
   const reconsiledTitle = screen.getByText("Reconsiled");
-  const amountTitle = screen.getByText("Amount");
+  const debitTitle = screen.getByText("Debit");
+  const creditTitle = screen.getByText("Credit");
   const balanceTitle = screen.getByText("Balance");
   const actionTitle = screen.getByText("Action");
 
@@ -126,7 +127,8 @@ test("table titles are displayed on the screen", async () => {
   expect(memoTitle).toBeInTheDocument();
   expect(tagTitle).toBeInTheDocument();
   expect(reconsiledTitle).toBeInTheDocument();
-  expect(amountTitle).toBeInTheDocument();
+  expect(debitTitle).toBeInTheDocument();
+  expect(creditTitle).toBeInTheDocument();
   expect(balanceTitle).toBeInTheDocument();
   expect(actionTitle).toBeInTheDocument();
 });
@@ -148,8 +150,8 @@ test("the passed transactions properties are displayed on the screen", async () 
   const transactionMemo = screen.getByText(inputTransactions[0].memo);
   const transactionTag = screen.getByText(inputTransactions[0].tag.name);
   const transactionReconsiled = screen.getByText("Yes");
-  const transactionAmount = screen.getByText(
-    getAmountAsFormatedString(inputTransactions[0].amount)
+  const transactionDebitAmount = screen.getByText(
+    getAmountAsFormatedString(inputTransactions[0].debitAmount)
   );
   const transactionBalance = screen.getByText(
     getAmountAsFormatedString(inputTransactions[0].runningBalance)
@@ -163,7 +165,7 @@ test("the passed transactions properties are displayed on the screen", async () 
   expect(transactionMemo).toBeInTheDocument();
   expect(transactionTag).toBeInTheDocument();
   expect(transactionReconsiled).toBeInTheDocument();
-  expect(transactionAmount).toBeInTheDocument();
+  expect(transactionDebitAmount).toBeInTheDocument();
   expect(transactionBalance).toBeInTheDocument();
   expect(transactionActionDelete).toBeInTheDocument();
 });

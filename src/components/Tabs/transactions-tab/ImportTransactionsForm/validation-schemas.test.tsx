@@ -704,7 +704,7 @@ describe("validate account transactions", () => {
     );
   });
 
-  test("✅ Should pass when no transactions are selected (validation skipped)", async () => {
+  test("❌ Should fail when no transactions are selected", async () => {
     // Given
 
     let error;
@@ -740,7 +740,6 @@ describe("validate account transactions", () => {
       ],
     };
 
-    // When // Then
     await expect(
       NEW_TRANSACTIONS_FORM_DATA_SCHEMA.validate(
         accountTransactions_nothing_selected,
@@ -748,24 +747,7 @@ describe("validate account transactions", () => {
           context: accountTransactions_nothing_selected,
         }
       )
-    ).resolves.toBeDefined();
-
-    // This will catch validation errors and allow us to assert on them later
-    // try {
-    //   await NEW_TRANSACTIONS_FORM_DATAS_SCHEMA.validate(
-    //     accountTransactions_nothing_selected,
-    //     {
-    //       context: accountTransactions_nothing_selected,
-    //       abortEarly: false, // Ensure all errors are collected
-    //     }
-    //   );
-    // } catch (err: any) {
-    //   error = err;
-    // }
-    // expect(error).toBeDefined();
-    // expect(error.errors.length).toEqual(2);
-    // expect(error.errors[0]).toBe("Category is required");
-    // expect(error.errors[1]).toBe("Category is required");
+    ).rejects.toThrow("Select transaction to be saved");
   });
 
   test("✅ Should pass when all transactions are selected and all are valid", async () => {
